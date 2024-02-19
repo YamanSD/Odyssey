@@ -1,11 +1,11 @@
 import QuadTree from "./QuadTree.js";
-import {Sprite} from "./BaseSprites";
+import {Sprite, Timeout, Void} from "./BaseSprites";
 
 
 /**
  * @class Game
  *
- * Class encapsulating the game engine.
+ * Class encapsulating the Odyssey game engine.
  * // TODO implement sounds
  */
 export default class Game {
@@ -56,8 +56,8 @@ export default class Game {
     #updateQueue;
 
     /**
-     * @type {Object<number, ([number, Sprite])[]>} maps the object ID into an
-     * array of Sprites waiting for the sprite with the ID to be inserted, and
+     * @type {Object<number, Object<number, number>>} maps the object ID into a
+     * map (SpriteId: tick) of Sprites waiting for the sprite with the ID to be inserted, and
      * the ticks after insertAfter ticks to insert the object at.
      * @protected
      */
@@ -77,8 +77,8 @@ export default class Game {
 
     /**
      * @type {Object<string, {
-     *     handlers: Object<number, function(Event)>,
-     *     listening: boolean
+     *     handlers: Object<number, {func: function(Event), noPause: boolean}>,
+     *     listening: boolean,
      * }>} maps events to a list of event handlers.
      * @protected
      */
@@ -94,12 +94,45 @@ export default class Game {
      * @type {DOMHighResTimeStamp} records the latest tick timestamp.
      * @protected
      */
-    #lastRenderTime;
+    #latestRenderTime;
+
+    /**
+     * @type {DOMHighResTimeStamp} records the first tick timestamp.
+     * @protected
+     */
+    #initRenderTime;
+
+    /**
+     * @type {function(number)} called before ticking the objects,
+     *                          given current tick.
+     *                          Called even if the game is paused.
+     * @protected
+     */
+    #preTick;
+
+    /**
+     * @type {function(number)} called after ticking, given new tick.
+     *
+     * @protected
+     */
+    #postTick;
+
+    /**
+     * @param canvas {HTMLElement} to be resized to full screen.
+     * @protected
+     */
+    static resizeCanvas(canvas) {
+        canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth;
+    }
 
     /**
      * @param canvasId {string} HTML5 ID of the canvas element.
+     * @param preTick {function(number)?} called before ticking the objects,
+     *        given current tick. Called even if the game is paused.
+     * @param postTick {function(number)?} called after ticking, given new tick.
      */
-    constructor(canvasId) {
+    constructor(canvasId, preTick, postTick) {
         // Get the canvas HTML5 element from the document
         const canvas = document.getElementById(canvasId);
 
@@ -108,15 +141,25 @@ export default class Game {
             throw new Error("CANVAS DOES NOT EXIST");
         }
 
+        // Assign pre-tick and post-tick
+        this.preTick = preTick;
+        this.postTick = postTick;
+
         // Adjust canvas size to cover the screen
-        canvas.height = window.innerHeight;
-        canvas.width = window.innerWidth;
+        Game.resizeCanvas(canvas);
 
         // 2d context for the main canvas element
         this.#context = canvas.getContext("2d");
 
         // Initialize the data fields
         this.clear();
+
+        this.addEventListener('resize', () => {
+            Game.resizeCanvas(canvas);
+
+            // Redraw the sprites
+            this.redrawSprites();
+        }, true);
 
         // Start the game
         this.start();
@@ -130,10 +173,24 @@ export default class Game {
     }
 
     /**
+     * @returns {number} half the width of the canvas.
+     */
+    get halfWidth() {
+        return this.width / 2;
+    }
+
+    /**
      * @returns {number} height of the canvas.
      */
     get height() {
         return this.canvas.height;
+    }
+
+    /**
+     * @returns {number} half the height of the canvas.
+     */
+    get halfHeight() {
+        return this.height / 2;
     }
 
     /**
@@ -175,14 +232,82 @@ export default class Game {
     }
 
     /**
+     * @returns {(function(number))|(function())|*} function called right before ticking.
+     */
+    get preTick() {
+        return this.#preTick ?? (() => {});
+    }
+
+    /**
+     * @returns {(function(number))|(function())|*} function called after ticking.
+     */
+    get postTick() {
+        return this.#postTick ?? (() => {});
+    }
+
+    /**
+     * @param value {(function(number))} new pre-tick function.
+     */
+    set preTick(value) {
+        this.#preTick = value;
+    }
+
+    /**
+     * @param value {(function(number))} new post-tick function.
+     */
+    set postTick(value) {
+        this.#postTick = value;
+    }
+
+    /**
+     * @param origin {[number, number]} coordinates of the point of reference.
+     * @param coords {[number, number]} coordinates to map to the relative to the origin.
+     * @returns {[number, number]} the mapped coordinates relative to the origin.
+     */
+    mapRelative(origin, coords) {
+        return [origin[0] + coords[0], origin[1] + coords[1]];
+    }
+
+    /**
+     * @param coords {[number, number]} coordinates to map relative to the
+     *                                  top right corner.
+     * @returns {[number, number]} the mapped coordinates relative to the top right corner
+     *                             of the canvas.
+     */
+    mapTopRight(coords) {
+        return this.mapRelative([this.width, 0], coords);
+    }
+
+    /**
+     * @param coords {[number, number]} coordinates to map relative to the
+     *                                  bottom right corner.
+     * @returns {[number, number]} the mapped coordinates relative to the bottom right corner
+     *                             of the canvas.
+     */
+    mapBottomRight(coords) {
+        return this.mapRelative([this.width, this.height], coords);
+    }
+
+    /**
+     * @param coords {[number, number]} coordinates to map relative to the
+     *                                  bottom left corner.
+     * @returns {[number, number]} the mapped coordinates relative to the bottom left corner
+     *                             of the canvas.
+     */
+    mapBottomLeft(coords) {
+        return this.mapRelative([0, this.height], coords);
+    }
+
+    /**
      * Attaches the given event listener.
      * The sprite and game objects must be in the caller's scope.
      *
      * @param event {string} the event to listen for.
      * @param handler {function(Event)} event handler.
+     * @param noPause {boolean?} true if the event is not affected by pausing.
      * @returns the ID of the handler (used to remove it or update it).
      */
-    addEventListener(event, handler) {
+    addEventListener(event, handler, noPause) {
         // Check if the event does not exist
         if (!(event in this.#events)) {
             this.#events[event] = {
@@ -198,7 +323,10 @@ export default class Game {
         const id = this.handlerId;
 
         // Add to list of event handlers
-        this.#events[event].handlers[id] = handler;
+        this.#events[event].handlers[id] = {
+            func: handler,
+            noPause: noPause
+        };
 
         return id;
     }
@@ -209,13 +337,19 @@ export default class Game {
      *
      * @param event {string} the event to listen for.
      * @param id {number} ID of the handler.
-     * @param handler {function(Event)} new event handler.
+     * @param handler {{
+     *     func?: function(Event),
+     *     noPause?: boolean
+     * }} new event handler.
      */
     updateEventListener(event, id, handler) {
         // Check if there is an event
         if (event in this.#events
             && id in this.#events[event].handlers) {
-            this.#events[event].handlers[id] = handler;
+            this.#events[event].handlers[id] = {
+                ...this.#events[event].handlers[id],
+                ...handler
+            };
         }
     }
 
@@ -276,11 +410,16 @@ export default class Game {
 
         this.#erasedSpriteSet.clear();
         this.#insertedSpriteSet.clear();
+
+        // Initialize the rest of the fields
         this.#spriteWaitQueue = {};
-        this.#tick = 0;
+        this.#tick = -1;
         this.#handlerId = 0;
         this.#isRunning = false;
-        this.#lastRenderTime = 0;
+        this.#latestRenderTime = 0;
+
+        // Assigns the initial timestamp
+        this.#initRenderTime = performance.now();
     }
 
     /**
@@ -344,6 +483,48 @@ export default class Game {
     }
 
     /**
+     * @param handler {function()} called after the given ticks pass.
+     * @param ticks {number} number of ticks to wait.
+     * @returns {Timeout} a Timeout instance to control the event.
+     */
+    setTimeout(handler, ticks) {
+        // Create the void sprite
+        const v = new Void(
+            ticks,
+            this.currentTick,
+            handler
+        );
+
+        // Add to the sprites
+        this.insertSprite(v);
+
+        // Return the timeout instance
+        return new Timeout(v);
+    }
+
+    /**
+     * @param handler {function()} called after the given ticks pass.
+     * @param ticks {number} number of ticks to wait after the sprite is inserted.
+     * @param sprite {Sprite} sprite to wait for.
+     * @returns {Timeout} a Timeout instance to control the event.
+     */
+    setTimeoutAfter(handler, ticks, sprite) {
+        // Create the void sprite
+        const v = new Void(
+            ticks,
+            this.currentTick,
+            handler,
+            sprite.id
+        );
+
+        // Add to the sprites
+        this.insertSprite(v);
+
+        // Return the timeout instance
+        return new Timeout(v);
+    }
+
+    /**
      * Resumes the game if paused.
      */
     resume() {
@@ -358,6 +539,17 @@ export default class Game {
     }
 
     /**
+     * Redraws all the sprites, without triggering their updates.
+     * @protected
+     */
+    redrawSprites() {
+        // Redraw the sprites
+        for (const sprite of this.#sprites) {
+            this.render(sprite);
+        }
+    }
+
+    /**
      * Used to animate the game.
      *
      * @param timestamp {DOMHighResTimeStamp} current animation timestamp.
@@ -365,8 +557,8 @@ export default class Game {
      */
     loop(timestamp) {
         // Calculate the time difference. Currently not used
-        // const deltaTime = timestamp - this.#lastRenderTime;
-        // this.#lastRenderTime = timestamp;
+        // const deltaTime = timestamp - this.#latestRenderTime;
+        // this.#latestRenderTime = timestamp;
 
         // Tick the game
         this.tick();
@@ -390,6 +582,9 @@ export default class Game {
      * @protected
      */
     tick() {
+        // Call the pre-tick
+        this.preTick(this.currentTick);
+
         // Check if the game is running
         if (!this.#isRunning) {
             return;
@@ -414,6 +609,9 @@ export default class Game {
 
         // Process the updates
         this.tickUpdate(curTick);
+
+        // Call the post-tick
+        this.postTick(this.currentTick);
     }
 
     /**
@@ -488,10 +686,12 @@ export default class Game {
         if (!this.#events[eventType].listening) {
             window.addEventListener(eventType,
                 (event) => {
-                    if (this.#isRunning) {
-                        // Iterate over the current list of events
-                        for (const handler of Object.values(this.#events[eventType].handlers)) {
-                            handler(event);
+                    // Iterate over the current list of events
+                    for (const handler
+                        of Object.values(this.#events[eventType].handlers)) {
+                        // Check if the game is running or the event cannot be paused
+                        if (this.#isRunning || handler.noPause) {
+                            handler.func(event);
                         }
                     }
                 }
@@ -523,10 +723,10 @@ export default class Game {
                 // Check if there is not a wait queue
                 if (!(insertAfter in this.#spriteWaitQueue)) {
                     // Create an empty array
-                    this.#spriteWaitQueue[insertAfter] = [];
+                    this.#spriteWaitQueue[insertAfter] = {};
                 }
 
-                this.#spriteWaitQueue[insertAfter].push([tick, sprite]);
+                this.#spriteWaitQueue[insertAfter][sprite.id] = tick;
                 return;
             }
 
@@ -545,9 +745,14 @@ export default class Game {
 
             // Check if the sprite has waiting sprites
             if (sid in this.#spriteWaitQueue) {
-                for (const waitingSprite of this.#spriteWaitQueue[sid]) {
+                for (const [waitingSpriteId, waitTicks]
+                    of Object.entries(this.#spriteWaitQueue[sid])) {
                     // Insert the waiting sprite
-                    this.insertTick(waitingSprite[1], tick + waitingSprite[0], undefined);
+                    this.insertTick(
+                        Sprite.getSprite(Number(waitingSpriteId)),
+                        tick + waitTicks,
+                        undefined
+                    );
                 }
 
                 // Delete the sprite wait queue

@@ -90,7 +90,7 @@ export default class QuadTree {
         let i = 0;
         let indexes;
 
-        // if we have sub-nodes, call insert on matching sub-nodes
+        // If we have sub-nodes, call insert on matching sub-nodes
         if (this.#childrenNodes.length) {
             indexes = this.#getIndex(rect);
 
@@ -100,17 +100,17 @@ export default class QuadTree {
             return;
         }
 
-        // otherwise, store object here
+        // Otherwise, store object here
         this.#sprites.add(rect);
 
-        // max_objects reached
+        // Max_objects reached
         if (this.#sprites.size > this.#maxObjects && this.#level < this.#maxLevels) {
-            // split if we don't already have sub-nodes
+            // Split if we don't already have sub-nodes
             if (!this.#childrenNodes.length) {
                 this.#split();
             }
 
-            // add all objects to their corresponding sub-node
+            // Add all objects to their corresponding sub-node
             for (i = 0; i < this.#sprites.size; i++) {
                 indexes = this.#getIndex(this.#sprites[i]);
                 for (let k = 0; k < indexes.length; k++) {
@@ -118,7 +118,7 @@ export default class QuadTree {
                 }
             }
 
-            // clean up this node
+            // Clean up this node
             this.#sprites.clear();
         }
     }
@@ -150,7 +150,7 @@ export default class QuadTree {
 
         let returnObjects = new Set(this.#sprites);
 
-        // if we have sub-nodes, retrieve their objects
+        // If we have sub-nodes, retrieve their objects
         if (this.#childrenNodes.length) {
             for (const index of indices) {
                 this.#childrenNodes[index]?.retrieve(rects)?.forEach((rect) => {
@@ -159,12 +159,12 @@ export default class QuadTree {
             }
         }
 
-        // remove duplicates
+        // Remove duplicates
         if (this.#level === 0) {
             const idSet = new Set();
             const returnSet = new Set();
 
-            // iterate over the return set
+            // Iterate over the return set
             for (const rect of returnObjects) {
                 if (!idSet.has(rect.sprite.id)) {
                     returnSet.add(rect);
@@ -188,7 +188,7 @@ export default class QuadTree {
      * }} removes sprite from the intersecting hit-boxes.
      */
     remove(rect) {
-        // if we have sub-nodes, call insert on matching sub-nodes
+        // If we have sub-nodes, call insert on matching sub-nodes
         if (this.#childrenNodes.length) {
             const indexes = this.#getIndex(rect);
 
@@ -229,7 +229,7 @@ export default class QuadTree {
         const x = this.#bounds.x;
         const y = this.#bounds.y;
 
-        // top right node
+        // Top right node
         this.#childrenNodes[0] = new QuadTree(
             { x: x + subWidth, y, width: subWidth, height: subHeight },
             this.#maxObjects,
@@ -237,7 +237,7 @@ export default class QuadTree {
             nextLevel
         );
 
-        // top left node
+        // Top left node
         this.#childrenNodes[1] = new QuadTree(
             { x, y, width: subWidth, height: subHeight },
             this.#maxObjects,
@@ -245,7 +245,7 @@ export default class QuadTree {
             nextLevel
         );
 
-        // bottom left node
+        // Bottom left node
         this.#childrenNodes[2] = new QuadTree(
             { x, y: y + subHeight, width: subWidth, height: subHeight },
             this.#maxObjects,
@@ -253,7 +253,7 @@ export default class QuadTree {
             nextLevel
         );
 
-        // bottom right node
+        // Bottom right node
         this.#childrenNodes[3] = new QuadTree(
             { x: x + subWidth, y: y + subHeight, width: subWidth, height: subHeight },
             this.#maxObjects,
@@ -284,22 +284,22 @@ export default class QuadTree {
         const endIsEast = rect.x + rect.width > verticalMidpoint;
         const endIsSouth = rect.y + rect.height > horizontalMidpoint;
 
-        // top-right quad
+        // Top-right quad
         if (startIsNorth && endIsEast) {
             indexes.push(0);
         }
 
-        // top-left quad
+        // Top-left quad
         if (startIsWest && startIsNorth) {
             indexes.push(1);
         }
 
-        // bottom-left quad
+        // Bottom-left quad
         if (startIsWest && endIsSouth) {
             indexes.push(2);
         }
 
-        // bottom-right quad
+        // Bottom-right quad
         if (endIsEast && endIsSouth) {
             indexes.push(3);
         }

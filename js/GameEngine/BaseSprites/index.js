@@ -1,2 +1,3 @@
 export {default as Sprite} from './Sprite.js';
-export {default as Circle} from '../../GameScenario/Sprites/Circle.js';
+export {default as Void} from './Void.js';
+export {default as Timeout} from './Timeout.js';

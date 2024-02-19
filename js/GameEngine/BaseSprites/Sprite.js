@@ -91,6 +91,52 @@ export default class Sprite {
     }
 
     /**
+     * @returns {number} the dead tick value.
+     */
+    static get deadTick() {
+        return Sprite.#deadTick;
+    }
+
+    /**
+     * @returns {Object<number, Sprite>} the sprites map.
+     */
+    static get sprites() {
+        return Sprite.#sprites;
+    }
+
+    /**
+     * @returns {{tick: number}} used whenever no ticking is required.
+     */
+    static get noTick() {
+        return {
+            tick: Sprite.deadTick
+        };
+    }
+
+    /**
+     * @param id {number} the ID of the sprite.
+     * @returns {Sprite | undefined} the sprite associated with the ID if present.
+     *          Otherwise, undefined.
+     */
+    static getSprite(id) {
+        return Sprite.sprites[id];
+    }
+
+    /**
+     * @param id {number} the ID of the sprite to be removed.
+     * @returns {Sprite | undefined} the deleted sprite if present.
+     *          Otherwise, undefined.
+     */
+    static removeSprite(id) {
+        const res = Sprite.#sprites[id];
+
+        // Delete the sprite
+        delete Sprite.#sprites[id];
+
+        return res;
+    }
+
+    /**
      * @param description {any} sprite geometric description.
      * @param coords {[number, number]} the coordinates of the sprite.
      * @param onTick {(function(number): {
@@ -121,43 +167,6 @@ export default class Sprite {
 
         // Store the sprite into the sprites map
         Sprite.sprites[this.id] = this;
-    }
-
-    /**
-     * @returns {number} the dead tick value.
-     */
-    static get deadTick() {
-        return Sprite.#deadTick;
-    }
-
-    /**
-     * @returns {Object<number, Sprite>} the sprites map.
-     */
-    static get sprites() {
-        return Sprite.#sprites;
-    }
-
-    /**
-     * @param id {number} the ID of the sprite.
-     * @returns {Sprite | undefined} the sprite associated with the ID if present.
-     *          Otherwise, undefined.
-     */
-    static getSprite(id) {
-        return Sprite.sprites[id];
-    }
-
-    /**
-     * @param id {number} the ID of the sprite to be removed.
-     * @returns {Sprite | undefined} the deleted sprite if present.
-     *          Otherwise, undefined.
-     */
-    static removeSprite(id) {
-        const res = Sprite.#sprites[id];
-
-        // Delete the sprite
-        delete Sprite.#sprites[id];
-
-        return res;
     }
 
     /**
