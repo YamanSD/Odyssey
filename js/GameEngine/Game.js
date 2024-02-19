@@ -9,6 +9,7 @@ import {Rectangle} from "../GameScenario/Sprites";
  * Class encapsulating the Odyssey game engine.
  * // TODO implement sounds.
  * // TODO fix quadtree collisions.
+ * https://github.com/timohausmann/quadtree-ts/tree/main/src
  */
 export default class Game {
     /**
