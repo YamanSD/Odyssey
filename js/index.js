@@ -16,10 +16,7 @@ const red = new Circle({
     // Update on every tick. This is the default function
     return {tick};
 }, (rects) => {
-    rects.forEach(r => {
-        console.log(r.sprite.id);
-    });
-    console.log("-------");
+    console.log(rects.size);
 
     if (reverse) {
         if (red.x - red.radius <= 0) {
@@ -71,7 +68,6 @@ const leftPaddle = new Rectangle({
     width: 10,
     topLeftCoords: [10, g.halfHeight]
 }, undefined, undefined, {
-    borderColor: "black",
     fillColor: "black"
 });
 
@@ -80,7 +76,6 @@ const rightPaddle = new Rectangle({
     width: 10,
     topLeftCoords: g.mapTopRight([-20, g.height - 100])
 }, undefined, undefined, {
-    borderColor: "black",
     fillColor: "black"
 });
 
@@ -104,6 +99,17 @@ const rightPaddle = new Rectangle({
 //     }
 // };
 
+for (const i of [1, 2, 3, 4, 5, 6, 7, 8]) {
+    const c = new Circle({
+        radius: 10,
+        centerCoords: [10 * i, 10 * i]
+    }, undefined, undefined, {
+        fillColor: "yellow"
+    });
+
+    g.insertSprite(c);
+}
+
 // g.addEventListener('keydown', keyPressHandler);
 
 g.insertSprite(leftPaddle);
@@ -112,8 +118,8 @@ g.insertSprite(red); // Overshadows blue on intersection
 // g.insertSprite(blue);
 // g.insertSprite(black); // Falls under blue on intersection
 
-g.setTimeout(() => {
-    g.pause();
-}, 10);
+// g.setTimeout(() => {
+//     g.pause();
+// }, 10);
 
 g.resume();

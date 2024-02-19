@@ -1,12 +1,14 @@
 import QuadTree from "./QuadTree.js";
 import {Sprite, Timeout, Void} from "./BaseSprites";
+import {Rectangle} from "../GameScenario/Sprites";
 
 
 /**
  * @class Game
  *
  * Class encapsulating the Odyssey game engine.
- * // TODO implement sounds
+ * // TODO implement sounds.
+ * // TODO fix quadtree collisions.
  */
 export default class Game {
     /**
