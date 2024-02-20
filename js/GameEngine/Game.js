@@ -9,7 +9,6 @@ import {Rectangle} from "../GameScenario/Sprites";
  * Class encapsulating the Odyssey game engine.
  * // TODO implement sounds.
  * // TODO fix quadtree collisions.
- * https://github.com/timohausmann/quadtree-ts/tree/main/src
  */
 export default class Game {
     /**
@@ -165,7 +164,7 @@ export default class Game {
         }, true);
 
         // Start the game
-        this.start();
+        this.#start();
     }
 
     /**
@@ -528,6 +527,13 @@ export default class Game {
     }
 
     /**
+     * Attempts to free memory.
+     */
+    cleanUp() {
+        this.#quadTree.cleanUp();
+    }
+
+    /**
      * Resumes the game if paused.
      */
     resume() {
@@ -567,15 +573,6 @@ export default class Game {
         this.tick();
 
         // Go to next tick
-        this.#requestAnimationFrame();
-    }
-
-    /**
-     * Starts the game for the first time.
-     * @protected
-     */
-    start() {
-        // Initialize the game loop
         this.#requestAnimationFrame();
     }
 
@@ -621,13 +618,13 @@ export default class Game {
      * Erases the object, exposing any objects beneath it.
      *
      * @param sprite {Sprite} to be erased.
-     * @returns {Set<{
+     * @returns {{
      *     x: number,
      *     y: number,
      *     height: number,
      *     width: number,
      *     sprite: Sprite
-     * }>} the intersection rectangles.
+     * }[]} the intersection rectangles.
      * @protected
      */
     eraseSprite(sprite) {
@@ -636,13 +633,23 @@ export default class Game {
             sprite.hitBox
         );
 
+        interRects.sort((a, b) => {
+           return a.sprite.id - b.sprite.id;
+        });
+
         // Clear the hit-box rectangles
         for (let rect of interRects) {
-            this.clearRect(rect);
+            // Clear
+            this.markedRect(rect, "red", true);
         }
 
+        // TODO FIX
         // Add to the erased sprite set
         this.#erasedSpriteSet.add(sprite.id);
+
+        if (sprite.id === 8) {
+            console.log(interRects.map(i => i.sprite.id));
+        }
 
         // Iterate over the sprites in the collision rectangles and redraw
         for (const interRect of interRects) {
@@ -676,6 +683,46 @@ export default class Game {
             rect.width,
             rect.height
         );
+    }
+
+    /**
+     * @param rect {{
+     *     x: number,
+     *     y: number,
+     *     height: number,
+     *     width: number
+     * }} rectangle to draw.
+     * @param color {string} color of the rect.
+     * @param fill {boolean?} true to fill the rect.
+     * @protected
+     */
+    markedRect(rect, color, fill) {
+        const oldBrush = this.setBrush({
+            borderColor: color,
+            fillColor: fill ? color : undefined,
+            borderWidth: 1,
+        });
+
+        // Draw the border
+        this.context.rect(
+            rect.x,
+            rect.y,
+            rect.width,
+            rect.height
+        );
+
+        if (fill) {
+            // Fill the rectangle
+            this.context.fillRect(
+                rect.x,
+                rect.y,
+                rect.width,
+                rect.height
+            );
+        }
+
+        // Reset the brush
+        this.setBrush(oldBrush);
     }
 
     /**
@@ -804,14 +851,30 @@ export default class Game {
      *    font?: string
      *  }?
      * } properties of the brush that draws the sprite.
+     * @returns {{
+     *    borderWidth?: number,
+     *    borderColor?: string,
+     *    fillColor?: string,
+     *    font?: string
+     *  }} old brush.
      * @protected
      */
     setBrush(brush) {
+        // Old brush
+        const rs = {
+            borderWidth: this.context.lineWidth,
+            borderColor: this.context.strokeStyle,
+            fillColor: this.context.fillStyle,
+            font: this.context.font
+        };
+
         // Apply brush styles
         this.context.lineWidth = brush?.borderWidth ?? 0;
         this.context.strokeStyle = brush?.borderColor ?? "transparent";
         this.context.fillStyle = brush?.fillColor ?? "transparent";
         this.context.font = brush?.font;
+
+        return rs;
     }
 
     /**
@@ -841,16 +904,8 @@ export default class Game {
         // Begin new path
         this.context.beginPath();
 
-        // Store old context style parameters
-        const oldBrush = {
-            borderWidth: this.context.lineWidth,
-            borderColor: this.context.strokeStyle,
-            fillColor: this.context.fillStyle,
-            font: this.context.font
-        };
-
-        // Apply brush styles
-        this.setBrush(brush ?? sprite.brush);
+        // Apply brush styles, store old context style parameters
+        const oldBrush = this.setBrush(brush ?? sprite.brush);
 
         // Draw the sprite
         sprite.draw(this.context);
@@ -895,11 +950,20 @@ export default class Game {
 
     /**
      * Requests an animation frame for the game.
-     * @protected
+     * @private
      */
     #requestAnimationFrame() {
         requestAnimationFrame((timestamp) => {
             this.loop(timestamp);
         });
+    }
+
+    /**
+     * Starts the game for the first time.
+     * @private
+     */
+    #start() {
+        // Initialize the game loop
+        this.#requestAnimationFrame();
     }
 }

@@ -67,7 +67,7 @@ export default class Void extends Sprite {
      * Marks the Void as done.
      *
      * @returns {
-     *  function(Set<{x: number, y: number, height: number, width: number, sprite: Sprite}>): *
+     *  function({x: number, y: number, height: number, width: number, sprite: Sprite}[]): *
      * } the update function.
      */
     get onUpdate() {
@@ -82,7 +82,7 @@ export default class Void extends Sprite {
      * Needed because we must override both getter and setter.
      *
      * @param onUpdate {
-     *  function(Set<{x: number, y: number, height: number, width: number, sprite: Sprite}>): *
+     *  function({x: number, y: number, height: number, width: number, sprite: Sprite}[]): *
      * } the new update function.
      */
     set onUpdate(onUpdate) {

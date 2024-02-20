@@ -55,13 +55,13 @@ export default class Sprite {
     #id;
 
     /**
-     * @type {(function(Set<{
+     * @type {(function({
      *     x: number,
      *     y: number,
      *     height: number,
      *     width: number,
      *     sprite: Sprite
-     * }>): any) | undefined} called on each update cycle.
+     * }[]): any) | undefined} called on each update cycle.
      * @private
      */
     #onUpdate;
@@ -143,13 +143,13 @@ export default class Sprite {
      *     tick: number,
      *     insertAfter?: number
      * })?} called on each tick.
-     * @param onUpdate {(function(Set<{
+     * @param onUpdate {(function({
      *     x: number,
      *     y: number,
      *     height: number,
      *     width: number,
      *     sprite: Sprite
-     * }>): any)?} called on each update cycle.
+     * }[]): any)?} called on each update cycle.
      * @param brush {{
      *    borderWidth?: number,
      *    borderColor?: string,
@@ -203,13 +203,13 @@ export default class Sprite {
     }
 
     /**
-     * @returns {(function(Set<{
+     * @returns {(function({
      *     x: number,
      *     y: number,
      *     height: number,
      *     width: number,
      *     sprite: Sprite
-     * }>): any)} the onUpdate function.
+     * }[]): any)} the onUpdate function.
      */
     get onUpdate() {
         return this.#onUpdate ?? (() => undefined);
@@ -260,13 +260,13 @@ export default class Sprite {
     }
 
     /**
-     * @param onUpdate {(function(Set<{
+     * @param onUpdate {(function({
      *     x: number,
      *     y: number,
      *     height: number,
      *     width: number,
      *     sprite: Sprite
-     * }>): any)?} new onUpdate function.
+     * }[]): any)?} new onUpdate function.
      */
     set onUpdate(onUpdate) {
         this.#onUpdate = onUpdate;

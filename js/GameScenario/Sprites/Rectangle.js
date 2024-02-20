@@ -16,13 +16,13 @@ export default class Rectangle extends Sprite {
      *     tick: number,
      *     insertAfter?: number
      * }) | undefined} called on each tick cycle.
-     * @param onUpdate {(function(Set<{
+     * @param onUpdate {(function({
      *     x: number,
      *     y: number,
      *     height: number,
      *     width: number,
      *     sprite: Sprite
-     * }>): boolean)?} called on each update cycle
+     * }[]): boolean)?} called on each update cycle
      * @param brush {{
      *    borderWidth?: number,
      *    borderColor?: string,
