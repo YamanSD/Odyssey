@@ -1,6 +1,5 @@
 import QuadTree from "./QuadTree.js";
 import {Sprite, Timeout, Void} from "./BaseSprites";
-import {Rectangle} from "../GameScenario/Sprites";
 
 
 /**
@@ -8,7 +7,8 @@ import {Rectangle} from "../GameScenario/Sprites";
  *
  * Class encapsulating the Odyssey game engine.
  * // TODO implement sounds.
- * // TODO fix quadtree collisions.
+ * // TODO resize quadtree on resize.
+ * // TODO optimize the quadtree implementation.
  */
 export default class Game {
     /**
@@ -226,6 +226,13 @@ export default class Game {
     }
 
     /**
+     * @return {boolean} true if the game is running.
+     */
+    get isRunning() {
+        return this.#isRunning;
+    }
+
+    /**
      * @returns {number} a usable handler ID.
      * @protected
      */
@@ -262,6 +269,24 @@ export default class Game {
     }
 
     /**
+     * Draws the quadrant outlines.
+     *
+     * @param brush {{
+     *     borderWidth?: number,
+     *     borderColor?: string,
+     *     fillColor?: string,
+     *     font?: string
+     * }?} controls the style of the quadrants.
+     */
+    drawQuadrants(brush) {
+        const oldBrush = this.setBrush(brush);
+
+        this.#quadTree.displayBounds(this.context);
+
+        this.setBrush(oldBrush);
+    }
+
+    /**
      * @param origin {[number, number]} coordinates of the point of reference.
      * @param coords {[number, number]} coordinates to map to the relative to the origin.
      * @returns {[number, number]} the mapped coordinates relative to the origin.
@@ -288,6 +313,16 @@ export default class Game {
      */
     mapBottomRight(coords) {
         return this.mapRelative([this.width, this.height], coords);
+    }
+
+    /**
+     * @param coords {[number, number]} coordinates to map relative to the
+     *                                  center.
+     * @returns {[number, number]} the mapped coordinates relative to the center
+     *                             of the canvas.
+     */
+    mapCenter(coords) {
+        return this.mapRelative([this.halfWidth, this.halfHeight], coords);
     }
 
     /**
@@ -415,7 +450,7 @@ export default class Game {
 
         // Initialize the rest of the fields
         this.#spriteWaitQueue = {};
-        this.#tick = -1;
+        this.#tick = 0;
         this.#handlerId = 0;
         this.#isRunning = false;
         this.#latestRenderTime = 0;
@@ -628,28 +663,21 @@ export default class Game {
      * @protected
      */
     eraseSprite(sprite) {
+        const hitBox = sprite.hitBox;
+
         // Get the intersection rectangles
         const interRects = this.#quadTree.retrieve(
-            sprite.hitBox
+            hitBox
         );
 
-        interRects.sort((a, b) => {
-           return a.sprite.id - b.sprite.id;
-        });
-
         // Clear the hit-box rectangles
-        for (let rect of interRects) {
+        for (let rect of hitBox) {
             // Clear
-            this.markedRect(rect, "red", true);
+            this.clearRect(rect);
         }
 
-        // TODO FIX
         // Add to the erased sprite set
         this.#erasedSpriteSet.add(sprite.id);
-
-        if (sprite.id === 8) {
-            console.log(interRects.map(i => i.sprite.id));
-        }
 
         // Iterate over the sprites in the collision rectangles and redraw
         for (const interRect of interRects) {

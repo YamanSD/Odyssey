@@ -132,6 +132,48 @@ export default class QuadTree {
     }
 
     /**
+     * Draws the QuadTree rectangles.
+     * To control the style of these rectangles, use the setBrush of the Game class.
+     *
+     * @Abstract
+     * @param context {CanvasRenderingContext2D} 2d canvas element context.
+     */
+    displayBounds(context) {
+        // Begin path
+        context.beginPath();
+
+        // Draw the border rectangle
+        context.rect(
+            this.#bounds.x,
+            this.#bounds.y,
+            this.#bounds.width,
+            this.#bounds.height
+        );
+
+        // Fill the rectangle
+        context.fillRect(
+            this.#bounds.x,
+            this.#bounds.y,
+            this.#bounds.width,
+            this.#bounds.height
+        )
+
+        // Stroke the rectangle
+        context.stroke();
+
+        // Fill the rectangle
+        context.fill();
+
+        // Close the path
+        context.closePath();
+
+        // Draw the children
+        for (const child of this.#childrenNodes) {
+            child.displayBounds(context);
+        }
+    }
+
+    /**
      * {@link Sprite} links the Sprite class.
      * Return all objects that could collide with the given object
      * @param {{
@@ -160,18 +202,23 @@ export default class QuadTree {
         }
 
         // List of objects to return
-        let returnObjects = new Set(this.#sprites);
+        let returnObjects = this.#sprites;
 
         // If we have sub-nodes, retrieve their objects
         if (this.#childrenNodes.length) {
             for (const index of indices) {
-                this.#childrenNodes[index].retrieve(rects).forEach(r => {
-                    returnObjects.add(r);
-                });
+                returnObjects = returnObjects.concat(
+                    this.#childrenNodes[index].retrieve(rects)
+                );
             }
         }
 
-        return Array.from(returnObjects);
+        // Remove duplicates at root
+        if (this.isRoot) {
+            return  Array.from(new Set(returnObjects));
+        }
+
+        return returnObjects;
     }
 
     /**
