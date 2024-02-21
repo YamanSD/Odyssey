@@ -463,6 +463,11 @@ export default class Game {
      * @param sprite {Sprite} to be inserted into the canvas.
      */
     insertSprite(sprite) {
+        // Check if the sprite is textual
+        if (sprite.textual) {
+            sprite.metrics = this.measureText(sprite.text);
+        }
+
         // Draw the sprite
         this.render(sprite);
 
@@ -670,6 +675,10 @@ export default class Game {
             hitBox
         );
 
+        interRects.sort((a, b) => {
+            return b.sprite.id - a.sprite.id;
+        });
+
         // Clear the hit-box rectangles
         for (let rect of hitBox) {
             // Clear
@@ -859,6 +868,14 @@ export default class Game {
 
         // Delete the tick list to save memory
         delete this.#updateQueue[tick];
+    }
+
+    /**
+     * @param text {string} to be measured.
+     * @returns {TextMetrics} of the string after measuring.
+     */
+    measureText(text) {
+        return this.context.measureText(text);
     }
 
     /**

@@ -260,6 +260,42 @@ export default class Sprite {
     }
 
     /**
+     * @Note that if we have more attributes of this form, a flag system
+     *       can be implemented.
+     * Returns false by default.
+     * NOTE: This feature needs revision.
+     *
+     * @returns {boolean} true if the sprite is text based.
+     */
+    get textual() {
+        return false;
+    }
+
+    /**
+     * New text metrics.
+     * Used by textual shapes only.
+     *
+     * @param metrics {TextMetrics} new metrics.
+     */
+    set metrics(metrics) {}
+
+    /**
+     * used by textual shapes.
+     *
+     * @returns {TextMetrics}
+     */
+    get metrics() {
+        return undefined;
+    }
+
+    /**
+     * Used by textual shapes.
+     *
+     * @returns {string}
+     */
+    get text() {}
+
+    /**
      * @param onUpdate {(function({
      *     x: number,
      *     y: number,

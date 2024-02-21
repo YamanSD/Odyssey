@@ -1,4 +1,4 @@
-import Game from './GameEngine/Game.js';
+import {Game, Text} from './GameEngine';
 import {Circle, Rectangle} from "./GameScenario/Sprites";
 
 
@@ -7,6 +7,8 @@ const g = new Game(
 );
 const speed = 4;
 let dirs = [0, 0];
+let left = 0; // Score
+let right = 0; // Score
 
 // Example for straight line trajectory
 let reverse = false;
@@ -17,26 +19,22 @@ const red = new Circle({
     // Update on every tick. This is the default function
     return {tick};
 }, (rects) => {
-    g.drawQuadrants({
-        borderWidth: 1,
-        borderColor: "green"
-    });
-
     if (reverse) {
         if (red.x - red.radius <= 0) {
+            right++;
             reverse = false;
             return;
         }
 
-        red.y -= speed;
         red.x -= speed;
     } else {
         if (red.x + red.radius >= g.width) {
+            left++;
+
             reverse = true;
             return;
         }
 
-        red.y += speed;
         red.x += speed;
     }
 }, {
@@ -72,6 +70,36 @@ const black = new Circle({
     fillColor: "black",
 });
 
+const scoreLeft = new Text({
+    text: "",
+    bottomLeftCoords: [10, 10]
+}, undefined, () => {
+    scoreLeft.text = `Player 1 Score: ${left}`;
+
+    if (left === 10) {
+        g.pause();
+        alert("Player 1 wins!");
+    }
+}, {
+    fillColor: "black",
+    borderColor: "black",
+});
+
+const scoreRight = new Text({
+    text: "",
+    bottomLeftCoords: g.mapTopRight([-90, 10])
+}, undefined, () => {
+    scoreRight.text = `Player 2 Score: ${right}`;
+
+    if (right === 10) {
+        g.pause();
+        alert("Player 2 wins!");
+    }
+}, {
+    fillColor: "black",
+    borderColor: "black",
+});
+
 const leftPaddle = new Rectangle({
     height: 100,
     width: 10,
@@ -83,7 +111,7 @@ const leftPaddle = new Rectangle({
 const rightPaddle = new Rectangle({
     height: 100,
     width: 10,
-    topLeftCoords: g.mapTopRight([-20, g.height - 100])
+    topLeftCoords: g.mapTopRight([-20, g.halfHeight])
 }, undefined, undefined, {
     fillColor: "black"
 });
@@ -118,11 +146,14 @@ const keyPressHandler = (e) => {
 
 g.insertSprite(red); // Overshadows blue on intersection
 g.addEventListener('keydown', keyPressHandler);
-
-g.insertSprite(leftPaddle);
-g.insertSprite(middlePaddle);
-g.insertSprite(rightPaddle);
 g.insertSprite(blue);
-g.insertSprite(black); // Falls under blue on intersection
+g.insertSprite(scoreLeft);
+g.insertSprite(scoreRight);
+g.insertSprite(leftPaddle);
+// g.insertSprite(middlePaddle);
+g.insertSprite(rightPaddle);
+// g.insertSprite(black); // Falls under blue on intersection
 
 g.resume();
+
+

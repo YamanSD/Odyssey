@@ -1,2 +1,2 @@
 export {default as Game} from './Game.js';
-export {Sprite, Timeout} from './BaseSprites';
+export {Sprite, Timeout, Text} from './BaseSprites';
