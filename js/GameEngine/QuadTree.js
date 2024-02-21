@@ -2,7 +2,6 @@
  * @class QuadTree.
  * Class used by a 2d canvas to divide the screen into sub-quadrants recursively.
  * Provides better performance for handling clicks on canvas and collisions.
- * // TODO optimize
  */
 export default class QuadTree {
     /**
@@ -39,16 +38,16 @@ export default class QuadTree {
      * in the same QuadTree.
      *
      * {@link Sprite} links the Sprite class.
-     * @type {{
+     * @type {Set<{
      *   width: number,
      *   height: number,
      *   x: number,
      *   y: number,
      *   sprite: Sprite,
-     * }[]} array of rectangular objects inside the node's boundaries.
+     * }>} set of rectangular objects inside the node's boundaries.
      * @private
      */
-    #sprites;
+    #spritesBoxes;
 
     /**
      * @type {QuadTree[]} list of child nodes.
@@ -73,7 +72,7 @@ export default class QuadTree {
         this.#maxLevels = maxLevels || 5;
         this.#level = level || 0;
         this.#bounds = bounds;
-        this.#sprites = [];
+        this.#spritesBoxes = new Set();
         this.#childrenNodes = [];
     }
 
@@ -109,17 +108,17 @@ export default class QuadTree {
         }
 
         // Otherwise, store object here
-        this.#sprites.push(rect);
+        this.#spritesBoxes.add(rect);
 
         // Max_objects reached
-        if (this.#sprites.length > this.#maxObjects && this.#level < this.#maxLevels) {
+        if (this.#spritesBoxes.size > this.#maxObjects && this.#level < this.#maxLevels) {
             // Split if we do not already have sub-nodes
             if (!this.#childrenNodes.length) {
                 this.#split();
             }
 
             // Add all objects to their corresponding sub-node
-            for (const spriteRect of this.#sprites) {
+            for (const spriteRect of this.#spritesBoxes) {
                 const indices = this.#getIndices(spriteRect);
 
                 for (const index of indices) {
@@ -128,7 +127,7 @@ export default class QuadTree {
             }
 
             // Clean up this node
-            this.#sprites = [];
+            this.#spritesBoxes.clear();
         }
     }
 
@@ -160,13 +159,13 @@ export default class QuadTree {
      *   x: number,
      *   y: number
      * }[]} rects bounds of the object to be checked.
-     * @return {{
+     * @return {Set<{
      *   width: number,
      *   height: number,
      *   x: number,
      *   y: number,
      *   sprite: Sprite
-     * }[]} array with all detected objects.
+     * }>} array with all detected objects.
      */
     retrieve(rects) {
         /**
@@ -180,20 +179,15 @@ export default class QuadTree {
         }
 
         // List of objects to return
-        let returnObjects = this.#sprites;
+        let returnObjects = new Set(this.#spritesBoxes);
 
         // If we have sub-nodes, retrieve their objects
         if (this.#childrenNodes.length) {
             for (const index of indices) {
-                returnObjects = returnObjects.concat(
-                    this.#childrenNodes[index].retrieve(rects)
-                );
+                this.#childrenNodes[index].retrieve(rects).forEach(r => {
+                    returnObjects.add(r);
+                });
             }
-        }
-
-        // Remove duplicates at root
-        if (this.isRoot) {
-            return  Array.from(new Set(returnObjects));
         }
 
         return returnObjects;
@@ -207,51 +201,41 @@ export default class QuadTree {
      *   y: number,
      *   sprite: Sprite
      * }} removes sprite from the intersecting hit-boxes.
-     * @returns {boolean} true if the object was removed from this node.
      */
     remove(rect) {
-        // Get the index of the rectangle object
-        const indexOf = this.#sprites.indexOf(rect);
-
-        // Remove object
-        if(indexOf > -1) {
-            this.#sprites.splice(indexOf, 1);
-        }
+        // Delete the rect from the hit-boxes
+        this.#spritesBoxes.delete(rect);
 
         // Remove object from all children
         for (const child of this.#childrenNodes) {
             child.remove(rect);
         }
-
-        // If we found the rect, then indexOf is not -1
-        return indexOf !== -1;
     }
 
     /**
      * Tries to clean up memory by merging nodes.
-     * @returns {{
+     * @returns {Set<{
      *   width: number,
      *   height: number,
      *   x: number,
      *   y: number,
      *   sprite: Sprite
-     * }[]} all the sprites from this node and its children combined.
+     * }>} all the sprites from this node and its children combined.
      */
     cleanUp() {
         // Duplicate the sprites
-        let allObjects= Array.from(this.#sprites);
+        let allObjects= this.#spritesBoxes;
 
         // Join with the children
         for (const child of this.#childrenNodes) {
-            allObjects.push(...child.cleanUp());
+            child.cleanUp().forEach(obj => {
+                allObjects.add(obj);
+            });
         }
 
-        // Remove duplicates
-        const uniqueObjects = Array.from(new Set(allObjects));
-
         // If the number of unique objects is less than max (valid), then join
-        if (uniqueObjects.length <= this.#maxObjects) {
-            this.#sprites = uniqueObjects;
+        if (allObjects.size <= this.#maxObjects) {
+            this.#spritesBoxes = allObjects;
             this.#childrenNodes = [];
         }
 
@@ -262,7 +246,7 @@ export default class QuadTree {
      * Clears the quadtree.
      */
     clear() {
-        this.#sprites = [];
+        this.#spritesBoxes.clear();
 
         for (let i = 0; i < this.#childrenNodes.length; i++) {
             if (this.#childrenNodes.length) {

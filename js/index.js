@@ -4,9 +4,12 @@ import {Circle, Rectangle} from "./GameScenario/Sprites";
 
 const g = new Game(
     "mainCanvas",
-    true
+    true,
+    {
+        borderColor: "green"
+    }
 );
-const speed = 4;
+const speed = 1;
 let dirs = [0, 0];
 let left = 0; // Score
 let right = 0; // Score
@@ -163,8 +166,8 @@ g.insertSprite(rightPaddle);
 g.showHitBoxes = true;
 g.resume();
 
-g.setTimeout(() => {
-    // g.showHitBoxes = false;
-    // g.pause();
-}, 10);
+// g.setTimeout(() => {
+//     g.showHitBoxes = false;
+//     g.pause();
+// }, 0);
 

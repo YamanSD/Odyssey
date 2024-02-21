@@ -7,7 +7,6 @@ import {Sprite, Timeout, Void} from "./BaseSprites";
  *
  * Class encapsulating the Odyssey game engine.
  * // TODO implement sounds.
- * // TODO optimize the quadtree implementation.
  */
 export default class Game {
     /**
@@ -110,6 +109,16 @@ export default class Game {
     #initRenderTime;
 
     /**
+     * @type {{
+     *     borderWidth?: number,
+     *     borderColor?: string,
+     *     fillColor?: string,
+     *     font?: string
+     * } | unescape} controls the style of the quadrants on draw.
+     */
+    #quadrantBrush;
+
+    /**
      * @type {function(number)} called before ticking the objects,
      *                          given current tick.
      *                          Called even if the game is paused.
@@ -136,11 +145,23 @@ export default class Game {
     /**
      * @param canvasId {string} HTML5 ID of the canvas element.
      * @param showHitBoxes {boolean?} true to show sprite hit-boxes.
+     * @param quadrantBrush {{
+     *     borderWidth?: number,
+     *     borderColor?: string,
+     *     fillColor?: string,
+     *     font?: string
+     * }?} controls the style of the quadrants.
      * @param preTick {function(number)?} called before ticking the objects,
      *        given current tick. Called even if the game is paused.
      * @param postTick {function(number)?} called after ticking, given new tick.
      */
-    constructor(canvasId, showHitBoxes, preTick, postTick) {
+    constructor(
+        canvasId,
+        showHitBoxes,
+        quadrantBrush,
+        preTick,
+        postTick
+    ) {
         // Get the canvas HTML5 element from the document
         const canvas = document.getElementById(canvasId);
 
@@ -172,6 +193,9 @@ export default class Game {
         // Hit-boxes value
         this.showHitBoxes = showHitBoxes;
 
+        // Set quadrant brush
+        this.quadrantBrush = quadrantBrush;
+
         // Start the game
         this.#start();
     }
@@ -181,6 +205,14 @@ export default class Game {
      */
     get showHitBoxes() {
         return this.#showHitBoxes;
+    }
+
+    /**
+     * @returns {{borderWidth?: number, borderColor?: string, fillColor?: string, font?: string}|unescape}
+     *          the quadrant brush.
+     */
+    get quadrantBrush() {
+        return this.#quadrantBrush;
     }
 
     /**
@@ -278,6 +310,18 @@ export default class Game {
     }
 
     /**
+     * @param brush {{
+     *     borderWidth?: number,
+     *     borderColor?: string,
+     *     fillColor?: string,
+     *     font?: string
+     * }?} new brush style of the quadrants.
+     */
+    set quadrantBrush(brush) {
+        this.#quadrantBrush = brush;
+    }
+
+    /**
      * @param v {boolean} true to show the object hit-boxes.
      */
     set showHitBoxes(v) {
@@ -289,29 +333,6 @@ export default class Game {
      */
     set postTick(value) {
         this.#postTick = value;
-    }
-
-    /**
-     * Draws the quadrant outlines.
-     *
-     * @param brush {{
-     *     borderWidth?: number,
-     *     borderColor?: string,
-     *     fillColor?: string,
-     *     font?: string
-     * }?} controls the style of the quadrants.
-     */
-    showQuadrants(brush) {
-        // Set the new brush
-        const oldBrush = this.setBrush(brush);
-
-        // Display the quadrants
-        for (const bound of this.#quadTree.displayBounds) {
-            this.markedRect(bound, brush);
-        }
-
-        // Reset the old brush
-        this.setBrush(oldBrush);
     }
 
     /**
@@ -630,6 +651,7 @@ export default class Game {
 
     /**
      * @param sprite {Sprite} to be inserted to the quadtree.
+     * @protected
      */
     insertToTree(sprite) {
         for (const rect of sprite.hitBox) {
@@ -641,6 +663,25 @@ export default class Game {
                 sprite: sprite
             });
         }
+    }
+
+    /**
+     * Draws the quadrant outlines.
+     * @protected
+     */
+    showQuadrants() {
+        const brush = this.quadrantBrush;
+
+        // Set the new brush
+        const oldBrush = this.setBrush(brush);
+
+        // Display the quadrants
+        for (const bound of this.#quadTree.displayBounds) {
+            this.markedRect(bound, brush);
+        }
+
+        // Reset the old brush
+        this.setBrush(oldBrush);
     }
 
     /**
@@ -727,13 +768,13 @@ export default class Game {
      * Erases the object, exposing any objects beneath it.
      *
      * @param sprite {Sprite} to be erased.
-     * @returns {{
+     * @returns {Set<{
      *     x: number,
      *     y: number,
      *     height: number,
      *     width: number,
      *     sprite: Sprite
-     * }[]} the intersection rectangles.
+     * }>} the intersection rectangles.
      * @protected
      */
     eraseSprite(sprite) {
@@ -1041,6 +1082,11 @@ export default class Game {
      * @protected
      */
     render(sprite, brush) {
+        // Show the quadrants
+        if (this.showHitBoxes) {
+            this.showQuadrants();
+        }
+
         // Check if the sprite is textual
         if (sprite.textual) {
             sprite.metrics = this.measureText(sprite.text);
