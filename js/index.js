@@ -4,12 +4,12 @@ import {Circle, Rectangle} from "./GameScenario/Sprites";
 
 const g = new Game(
     "mainCanvas",
-    true,
+    false,
     {
-        borderColor: "green"
+        borderColor: "green",
     }
 );
-const speed = 1;
+const speed = 5;
 let dirs = [0, 0];
 let left = 0; // Score
 let right = 0; // Score
@@ -22,7 +22,7 @@ const red = new Circle({
 }, (tick) => {
     // Update on every tick. This is the default function
     return {tick};
-}, (rects) => {
+}, () => {
     if (reverse) {
         if (red.x - red.radius <= 0) {
             right++;
@@ -47,7 +47,9 @@ const red = new Circle({
     fillColor: "red",
     borderColor: "black",
 }, {
-    fillColor: "#00990055"
+    fillColor: "#00990055",
+    borderColor: "black",
+    borderWidth: 3
 });
 
 //
@@ -163,11 +165,10 @@ g.insertSprite(middlePaddle);
 g.insertSprite(rightPaddle);
 // g.insertSprite(black); // Falls under blue on intersection
 
-g.showHitBoxes = true;
+// g.showHitBoxes = true;
 g.resume();
 
-// g.setTimeout(() => {
-//     g.showHitBoxes = false;
-//     g.pause();
-// }, 0);
+g.setTimeout(() => {
+    g.pause();
+}, 100);
 

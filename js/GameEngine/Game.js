@@ -591,12 +591,22 @@ export default class Game {
      * @returns {Timeout} a Timeout instance to control the event.
      */
     setInterval(handler, ticks) {
-        //TODO
         // Create the void sprite
         const v = new Void(
             ticks,
             this.currentTick,
-            handler
+            () => {
+                handler();
+
+                if (!v.canceled) {
+                    // Reinsert the tick update
+                    this.insertTick(
+                        v,
+                        this.currentTick + ticks,
+                        undefined
+                    );
+                }
+            }
         );
 
         // Add to the sprites
