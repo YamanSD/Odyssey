@@ -48,6 +48,7 @@ export default class Void extends Sprite {
                     return Sprite.noTick;
                 },
             onUpdate,
+            undefined,
             undefined
         );
 

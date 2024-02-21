@@ -29,19 +29,27 @@ export default class Rectangle extends Sprite {
      *    fillColor?: string,
      *    font?: string
      *  }?}
+     *  @param hitBoxBrush {{
+     *    borderWidth?: number,
+     *    borderColor?: string,
+     *    fillColor?: string,
+     *    font?: string
+     *  }?} object hit-box brush properties.
      */
     constructor(
         description,
         onTick,
         onUpdate,
-        brush
+        brush,
+        hitBoxBrush
     ) {
         super(
             description,
             description.topLeftCoords,
             onTick,
             onUpdate,
-            brush
+            brush,
+            hitBoxBrush
         );
     }
 

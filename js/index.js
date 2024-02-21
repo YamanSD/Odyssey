@@ -4,6 +4,7 @@ import {Circle, Rectangle} from "./GameScenario/Sprites";
 
 const g = new Game(
     "mainCanvas",
+    true
 );
 const speed = 4;
 let dirs = [0, 0];
@@ -26,6 +27,7 @@ const red = new Circle({
             return;
         }
 
+        red.y -= speed;
         red.x -= speed;
     } else {
         if (red.x + red.radius >= g.width) {
@@ -35,11 +37,14 @@ const red = new Circle({
             return;
         }
 
+        red.y += speed;
         red.x += speed;
     }
 }, {
     fillColor: "red",
     borderColor: "black",
+}, {
+    fillColor: "#00990055"
 });
 
 //
@@ -145,15 +150,21 @@ const keyPressHandler = (e) => {
 };
 
 g.insertSprite(red); // Overshadows blue on intersection
-g.addEventListener('keydown', keyPressHandler);
 g.insertSprite(blue);
+
+g.addEventListener('keydown', keyPressHandler);
 g.insertSprite(scoreLeft);
 g.insertSprite(scoreRight);
 g.insertSprite(leftPaddle);
-// g.insertSprite(middlePaddle);
+g.insertSprite(middlePaddle);
 g.insertSprite(rightPaddle);
 // g.insertSprite(black); // Falls under blue on intersection
 
+g.showHitBoxes = true;
 g.resume();
 
+g.setTimeout(() => {
+    // g.showHitBoxes = false;
+    // g.pause();
+}, 10);
 

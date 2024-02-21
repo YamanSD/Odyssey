@@ -28,19 +28,27 @@ export default class Circle extends Sprite {
      *    fillColor?: string,
      *    font?: string
      *  }?}
+     *  @param hitBoxBrush {{
+     *    borderWidth?: number,
+     *    borderColor?: string,
+     *    fillColor?: string,
+     *    font?: string
+     *  }?}
      */
     constructor(
         description,
         onTick,
         onUpdate,
-        brush
+        brush,
+        hitBoxBrush
     ) {
         super(
             description,
             description.centerCoords,
             onTick,
             onUpdate,
-            brush
+            brush,
+            hitBoxBrush
         );
     }
 

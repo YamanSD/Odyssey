@@ -49,6 +49,19 @@ export default class Sprite {
     #brush;
 
     /**
+     * Brush properties before drawing the shape's hit-boxes.
+     *
+     * @type {{
+     *    borderWidth?: number,
+     *    borderColor?: string,
+     *    fillColor?: string,
+     *    font?: string
+     *  } | undefined}
+     * @private
+     */
+    #hitBoxBrush;
+
+    /**
      * @type {number} ID of the sprite.
      * @private
      */
@@ -156,12 +169,26 @@ export default class Sprite {
      *    fillColor?: string,
      *    font?: string
      *  }?} object brush properties.
+     *  @param hitBoxBrush {{
+     *    borderWidth?: number,
+     *    borderColor?: string,
+     *    fillColor?: string,
+     *    font?: string
+     *  }?} object hit-box brush properties.
      */
-    constructor(description, coords, onTick, onUpdate, brush) {
+    constructor(
+        description,
+        coords,
+        onTick,
+        onUpdate,
+        brush,
+        hitBoxBrush
+    ) {
         this.#id = Sprite.#spriteId();
         this.#desc = description;
         this.#coords = coords;
         this.brush = brush;
+        this.hitBoxBrush = hitBoxBrush;
         this.onUpdate = onUpdate;
         this.onTick = onTick;
 
@@ -200,6 +227,24 @@ export default class Sprite {
      */
     get brush() {
         return this.#brush;
+    }
+
+    /**
+     * Default is ({
+     *     fillColor: "#FF000044"
+     * });
+     *
+     * @returns {{
+     *    borderWidth?: number,
+     *    borderColor?: string,
+     *    fillColor?: string,
+     *    font?: string
+     *  }} hit-box brush properties.
+     */
+    get hitBoxBrush() {
+        return this.#hitBoxBrush ?? {
+            fillColor: "#FF000044"
+        };
     }
 
     /**
@@ -334,6 +379,18 @@ export default class Sprite {
      */
     set brush(brush) {
         this.#brush = brush;
+    }
+
+    /**
+     * @param brush {{
+     *    borderWidth?: number,
+     *    borderColor?: string,
+     *    fillColor?: string,
+     *    font?: string
+     *  }} new hit-box brush properties.
+     */
+    set hitBoxBrush(brush) {
+        this.#hitBoxBrush = brush;
     }
 
     /**

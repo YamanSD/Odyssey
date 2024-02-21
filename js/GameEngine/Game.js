@@ -7,7 +7,6 @@ import {Sprite, Timeout, Void} from "./BaseSprites";
  *
  * Class encapsulating the Odyssey game engine.
  * // TODO implement sounds.
- * // TODO resize quadtree on resize.
  * // TODO optimize the quadtree implementation.
  */
 export default class Game {
@@ -93,6 +92,12 @@ export default class Game {
     #isRunning;
 
     /**
+     * @type {boolean} true if the game shows the object hit-boxes.
+     * @protected
+     */
+    #showHitBoxes;
+
+    /**
      * @type {DOMHighResTimeStamp} records the latest tick timestamp.
      * @protected
      */
@@ -130,11 +135,12 @@ export default class Game {
 
     /**
      * @param canvasId {string} HTML5 ID of the canvas element.
+     * @param showHitBoxes {boolean?} true to show sprite hit-boxes.
      * @param preTick {function(number)?} called before ticking the objects,
      *        given current tick. Called even if the game is paused.
      * @param postTick {function(number)?} called after ticking, given new tick.
      */
-    constructor(canvasId, preTick, postTick) {
+    constructor(canvasId, showHitBoxes, preTick, postTick) {
         // Get the canvas HTML5 element from the document
         const canvas = document.getElementById(canvasId);
 
@@ -160,11 +166,21 @@ export default class Game {
             Game.resizeCanvas(canvas);
 
             // Redraw the sprites
-            this.redrawSprites();
+            this.resetTree();
         }, true);
+
+        // Hit-boxes value
+        this.showHitBoxes = showHitBoxes;
 
         // Start the game
         this.#start();
+    }
+
+    /**
+     * @returns {boolean} true if the hit-boxes are shown.
+     */
+    get showHitBoxes() {
+        return this.#showHitBoxes;
     }
 
     /**
@@ -262,6 +278,13 @@ export default class Game {
     }
 
     /**
+     * @param v {boolean} true to show the object hit-boxes.
+     */
+    set showHitBoxes(v) {
+        this.#showHitBoxes = v;
+    }
+
+    /**
      * @param value {(function(number))} new post-tick function.
      */
     set postTick(value) {
@@ -278,11 +301,16 @@ export default class Game {
      *     font?: string
      * }?} controls the style of the quadrants.
      */
-    drawQuadrants(brush) {
+    showQuadrants(brush) {
+        // Set the new brush
         const oldBrush = this.setBrush(brush);
 
-        this.#quadTree.displayBounds(this.context);
+        // Display the quadrants
+        for (const bound of this.#quadTree.displayBounds) {
+            this.markedRect(bound, brush);
+        }
 
+        // Reset the old brush
         this.setBrush(oldBrush);
     }
 
@@ -413,7 +441,12 @@ export default class Game {
         this.setBrush(undefined);
 
         // Reset the canvas and its data fields
-        this.context.clearRect(0, 0, this.width, this.height);
+        this.clearRect({
+            x: 0,
+            y: 0,
+            width: this.width,
+            height: this.height
+        });
 
         // Create a new quadtree
         this.#quadTree = new QuadTree({
@@ -452,8 +485,8 @@ export default class Game {
         this.#spriteWaitQueue = {};
         this.#tick = 0;
         this.#handlerId = 0;
-        this.#isRunning = false;
         this.#latestRenderTime = 0;
+        this.#isRunning = false;
 
         // Assigns the initial timestamp
         this.#initRenderTime = performance.now();
@@ -463,24 +496,11 @@ export default class Game {
      * @param sprite {Sprite} to be inserted into the canvas.
      */
     insertSprite(sprite) {
-        // Check if the sprite is textual
-        if (sprite.textual) {
-            sprite.metrics = this.measureText(sprite.text);
-        }
-
         // Draw the sprite
         this.render(sprite);
 
         // Insert the sprite to the quadtree
-        for (const rect of sprite.hitBox) {
-            this.#quadTree.insert({
-                x: rect.x,
-                y: rect.y,
-                width: rect.width,
-                height: rect.height,
-                sprite: sprite
-            });
-        }
+        this.insertToTree(sprite);
 
         // Add the sprite to the sprites set
         this.#sprites.add(sprite);
@@ -545,6 +565,27 @@ export default class Game {
     }
 
     /**
+     * @param handler {function()} called on every time the ticks pass.
+     * @param ticks {number} number of ticks to wait each cycle.
+     * @returns {Timeout} a Timeout instance to control the event.
+     */
+    setInterval(handler, ticks) {
+        //TODO
+        // Create the void sprite
+        const v = new Void(
+            ticks,
+            this.currentTick,
+            handler
+        );
+
+        // Add to the sprites
+        this.insertSprite(v);
+
+        // Return the timeout instance
+        return new Timeout(v);
+    }
+
+    /**
      * @param handler {function()} called after the given ticks pass.
      * @param ticks {number} number of ticks to wait after the sprite is inserted.
      * @param sprite {Sprite} sprite to wait for.
@@ -588,12 +629,40 @@ export default class Game {
     }
 
     /**
+     * @param sprite {Sprite} to be inserted to the quadtree.
+     */
+    insertToTree(sprite) {
+        for (const rect of sprite.hitBox) {
+            this.#quadTree.insert({
+                x: rect.x,
+                y: rect.y,
+                width: rect.width,
+                height: rect.height,
+                sprite: sprite
+            });
+        }
+    }
+
+    /**
      * Redraws all the sprites, without triggering their updates.
+     * Resets the quad tree.
      * @protected
      */
-    redrawSprites() {
-        // Redraw the sprites
+    resetTree() {
+        // Clear the screen
+        this.clearRect({
+            x: 0,
+            y: 0,
+            height: this.height,
+            width: this.width
+        });
+
+        // Clear the tree
+        this.#quadTree.clear();
+
+        // Redraw and re-insert the sprites
         for (const sprite of this.#sprites) {
+            this.insertToTree(sprite);
             this.render(sprite);
         }
     }
@@ -675,14 +744,24 @@ export default class Game {
             hitBox
         );
 
-        interRects.sort((a, b) => {
-            return b.sprite.id - a.sprite.id;
-        });
-
         // Clear the hit-box rectangles
         for (let rect of hitBox) {
-            // Clear
-            this.clearRect(rect);
+            // Erase the marked hit-box if needed
+            if (this.showHitBoxes) {
+                // Border width
+                const borderWidth = sprite.hitBoxBrush?.borderWidth ?? 1;
+
+                // Clear the sprite and its shown hit-box
+                this.clearRect({
+                    x: rect.x - borderWidth,
+                    y: rect.y - borderWidth,
+                    width: rect.width + 2 * borderWidth,
+                    height: rect.height + 2 * borderWidth
+                });
+            } else {
+                // Clear
+                this.clearRect(rect);
+            }
         }
 
         // Add to the erased sprite set
@@ -729,16 +808,19 @@ export default class Game {
      *     height: number,
      *     width: number
      * }} rectangle to draw.
-     * @param color {string} color of the rect.
-     * @param fill {boolean?} true to fill the rect.
+     * @param brush {{
+     *     borderWidth?: number,
+     *     borderColor?: string,
+     *     fillColor?: string,
+     *     font?: string
+     * }?} style brush.
      * @protected
      */
-    markedRect(rect, color, fill) {
-        const oldBrush = this.setBrush({
-            borderColor: color,
-            fillColor: fill ? color : undefined,
-            borderWidth: 1,
-        });
+    markedRect(rect, brush) {
+        // Begin the path
+        this.context.beginPath();
+
+        const oldBrush = this.setBrush(brush);
 
         // Draw the border
         this.context.rect(
@@ -748,15 +830,19 @@ export default class Game {
             rect.height
         );
 
-        if (fill) {
-            // Fill the rectangle
-            this.context.fillRect(
-                rect.x,
-                rect.y,
-                rect.width,
-                rect.height
-            );
-        }
+        // Fill the rectangle
+        this.context.fillRect(
+            rect.x,
+            rect.y,
+            rect.width,
+            rect.height
+        );
+
+        // Process the rects
+        this.process();
+
+        // Close the path
+        this.context.closePath();
 
         // Reset the brush
         this.setBrush(oldBrush);
@@ -862,7 +948,16 @@ export default class Game {
             // Iterate over the Sprite objects in reverse
             while (i--) {
                 // Trigger the Sprite update
-                this.update(tickList.pop());
+                this.update(tickList[i]);
+            }
+
+            // Reset i
+            i = tickList.length;
+
+            // Iterate over the Sprite objects in reverse and redraw
+            while (i--) {
+                // Trigger the Sprite update
+                this.render(tickList[i]);
             }
         }
 
@@ -946,6 +1041,11 @@ export default class Game {
      * @protected
      */
     render(sprite, brush) {
+        // Check if the sprite is textual
+        if (sprite.textual) {
+            sprite.metrics = this.measureText(sprite.text);
+        }
+
         // Begin new path
         this.context.beginPath();
 
@@ -966,11 +1066,23 @@ export default class Game {
 
         // Remove from the erased sprite set
         this.#erasedSpriteSet.delete(sprite.id);
+
+        // Draw the hit-box if needed
+        if (this.showHitBoxes) {
+            // Hit-box brush
+            const brush = sprite.hitBoxBrush;
+
+            for (const hitBox of sprite.hitBox) {
+                this.markedRect(hitBox, brush);
+            }
+        }
     }
 
     /**
+     * Does not redraw the updated sprite, only erases it.
+     *
      * {@link Sprite} links the Sprite class.
-     * @param sprite {Sprite} sprite to be drawn.
+     * @param sprite {Sprite} sprite to be updated.
      * @protected
      */
     update(sprite) {
@@ -980,8 +1092,8 @@ export default class Game {
         // Call the sprite update function
         sprite.onUpdate(interRects);
 
-        // Redraw the sprite
-        this.insertSprite(sprite);
+        // Re-insert to the QuadTree
+        this.insertToTree(sprite);
     }
 
     /**

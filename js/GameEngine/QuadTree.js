@@ -2,6 +2,7 @@
  * @class QuadTree.
  * Class used by a 2d canvas to divide the screen into sub-quadrants recursively.
  * Provides better performance for handling clicks on canvas and collisions.
+ * // TODO optimize
  */
 export default class QuadTree {
     /**
@@ -132,45 +133,22 @@ export default class QuadTree {
     }
 
     /**
-     * Draws the QuadTree rectangles.
-     * To control the style of these rectangles, use the setBrush of the Game class.
-     *
-     * @Abstract
-     * @param context {CanvasRenderingContext2D} 2d canvas element context.
+     * @returns {{
+     *     x: number,
+     *     y: number,
+     *     width: number,
+     *     height: number
+     * }[]} list of bounds to be drawn.
      */
-    displayBounds(context) {
-        // Begin path
-        context.beginPath();
+    get displayBounds() {
+        const res = [this.#bounds];
 
-        // Draw the border rectangle
-        context.rect(
-            this.#bounds.x,
-            this.#bounds.y,
-            this.#bounds.width,
-            this.#bounds.height
-        );
-
-        // Fill the rectangle
-        context.fillRect(
-            this.#bounds.x,
-            this.#bounds.y,
-            this.#bounds.width,
-            this.#bounds.height
-        )
-
-        // Stroke the rectangle
-        context.stroke();
-
-        // Fill the rectangle
-        context.fill();
-
-        // Close the path
-        context.closePath();
-
-        // Draw the children
+        // Append to the children
         for (const child of this.#childrenNodes) {
-            child.displayBounds(context);
+            res.push(...child.displayBounds);
         }
+
+        return res;
     }
 
     /**

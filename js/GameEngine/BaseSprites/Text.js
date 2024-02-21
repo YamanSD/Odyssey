@@ -33,19 +33,27 @@ export default class Text extends Sprite {
      *    fillColor?: string,
      *    font?: string
      *  }?}
+     *  @param hitBoxBrush {{
+     *    borderWidth?: number,
+     *    borderColor?: string,
+     *    fillColor?: string,
+     *    font?: string
+     *  }?} object hit-box brush properties.
      */
     constructor(
         description,
         onTick,
         onUpdate,
-        brush
+        brush,
+        hitBoxBrush
     ) {
         super(
             description,
             description.bottomLeftCoords,
             onTick,
             onUpdate,
-            brush
+            brush,
+            hitBoxBrush
         );
     }
 
@@ -79,15 +87,15 @@ export default class Text extends Sprite {
      * @returns {number} text height if metrics are defined.
      */
     get height() {
-        return (this.metrics?.fontBoundingBoxAscent
-            + this.metrics?.fontBoundingBoxDescent) ?? 0;
+        return (this.metrics?.fontBoundingBoxAscent ?? 0
+            + this.metrics?.fontBoundingBoxDescent ?? 0);
     }
 
     /**
      * @returns {number} text width if metrics are defined.
      */
     get width() {
-        return (this.metrics?.width ?? 0) + 1;
+        return (this.metrics?.width ?? 0);
     }
 
     /**
@@ -192,9 +200,9 @@ export default class Text extends Sprite {
 
         return [{
             x: this.x,
-            y: this.y - this.height,
+            y: this.y - this.height + 1,
             width: this.width,
-            height: this.height
+            height: this.height + 1
         }];
     }
 }
