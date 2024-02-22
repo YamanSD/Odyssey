@@ -1092,21 +1092,21 @@ export default class Game {
      * @protected
      */
     render(sprite, brush) {
+        // Apply brush styles, store old context style parameters
+        const oldBrush = this.setBrush(brush ?? sprite.brush);
+
+        // Check if the sprite is textual and set its metrics
+        if (sprite.textual) {
+            sprite.metrics = this.measureText(sprite.text);
+        }
+
         // Show the quadrants
         if (this.showHitBoxes) {
             this.showQuadrants();
         }
 
-        // Check if the sprite is textual
-        if (sprite.textual) {
-            sprite.metrics = this.measureText(sprite.text);
-        }
-
         // Begin new path
         this.context.beginPath();
-
-        // Apply brush styles, store old context style parameters
-        const oldBrush = this.setBrush(brush ?? sprite.brush);
 
         // Draw the sprite
         sprite.draw(this.context);
