@@ -159,16 +159,24 @@ const keyPressHandler = (e) => {
 const keyLiftHandler = (e) => {
     switch (e.key) {
         case 'd':
-            dirs[0] = 0;
+            if (dirs[0] === speed) {
+                dirs[0] = 0;
+            }
             break;
         case 's':
-            dirs[1] = 0;
+            if (dirs[1] === speed) {
+                dirs[1] = 0;
+            }
             break;
         case 'a':
-            dirs[0] = 0;
+            if (dirs[0] === -speed) {
+                dirs[0] = 0;
+            }
             break;
         case 'w':
-            dirs[1] = 0;
+            if (dirs[1] === -speed) {
+                dirs[1] = 0;
+            }
             break;
     }
 }
