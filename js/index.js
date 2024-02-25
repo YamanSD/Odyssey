@@ -9,7 +9,7 @@ const g = new Game(
         borderColor: "green",
     }
 );
-const speed = 5;
+const speed = 3;
 let dirs = [0, 0];
 let left = 0; // Score
 let right = 0; // Score
@@ -60,7 +60,6 @@ const blue = new Circle({
 }, undefined, () => {
     blue.x += dirs[0];
     blue.y += dirs[1];
-    dirs = [0, 0];
 }, {
     fillColor: "blue",
     borderColor: "black"
@@ -140,24 +139,45 @@ const middlePaddle = new Rectangle({
 const keyPressHandler = (e) => {
     switch (e.key) {
         case 'd':
-            dirs[0] += speed;
+            dirs[0] = speed;
             break;
         case 's':
-            dirs[1] += speed;
+            dirs[1] = speed;
             break;
         case 'a':
-            dirs[0] -= speed;
+            dirs[0] = -speed;
             break;
         case 'w':
-            dirs[1] -= speed;
+            dirs[1] = -speed;
             break;
     }
 };
+
+/**
+ * @param e {KeyboardEvent}
+ */
+const keyLiftHandler = (e) => {
+    switch (e.key) {
+        case 'd':
+            dirs[0] = 0;
+            break;
+        case 's':
+            dirs[1] = 0;
+            break;
+        case 'a':
+            dirs[0] = 0;
+            break;
+        case 'w':
+            dirs[1] = 0;
+            break;
+    }
+}
 
 g.insertSprite(red); // Overshadows blue on intersection
 g.insertSprite(blue);
 
 g.addEventListener('keydown', keyPressHandler);
+g.addEventListener('keyup', keyLiftHandler);
 g.insertSprite(scoreLeft);
 g.insertSprite(scoreRight);
 g.insertSprite(leftPaddle);
@@ -168,7 +188,7 @@ g.insertSprite(rightPaddle);
 // g.showHitBoxes = true;
 g.resume();
 
-g.setTimeout(() => {
-    g.pause();
-}, 100);
+// g.setTimeout(() => {
+//     g.pause();
+// }, 100);
 
