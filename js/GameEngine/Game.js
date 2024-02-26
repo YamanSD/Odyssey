@@ -149,6 +149,15 @@ export default class Game {
     }
 
     /**
+     * @param s0 {Sprite} first sprite.
+     * @param s1 {Sprite} second sprite.
+     * @returns {true} if the hit-boxes of both sprites are overlapping.
+     */
+    static areColliding(s0, s1) {
+        // TODO
+    }
+
+    /**
      * @param canvasId {string} HTML5 ID of the canvas element.
      * @param showHitBoxes {boolean?} true to show sprite hit-boxes.
      * @param quadrantBrush {{
