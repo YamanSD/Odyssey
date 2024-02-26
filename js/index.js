@@ -6,78 +6,127 @@ const g = new Game(
     "mainCanvas",
     false,
     {
-        borderColor: "green",
+        borderColor: "green"
     }
 );
-const speed = 3;
-let dirs = [0, 0];
+const speed = 6;
+let paddleMove = {
+    rightY: 0,
+    leftY: 0
+}; // To handle paddle movements
+let ballMove = [speed, speed / 2];
 let left = 0; // Score
 let right = 0; // Score
 
-// Example for straight line trajectory
-let reverse = false;
+/**
+ * @param circle {Circle}
+ * @param rect {Rectangle}
+ * @returns {boolean}
+ * @constructor
+ */
+function RectCircleColliding(circle, rect){
+    let distX = Math.abs(circle.x - rect.x - rect.width / 2);
+    let distY = Math.abs(circle.y - rect.y - rect.height / 2);
+
+    if (distX > (rect.width / 2 + circle.radius)) {
+        return false;
+    }
+
+    if (distY > (rect.height / 2 + circle.radius)) {
+        return false;
+    }
+
+    if (distX <= (rect.width / 2)) {
+        return true;
+    }
+
+    if (distY <= (rect.height / 2)) {
+        return true;
+    }
+
+    let dx= distX - rect.width / 2;
+    let dy= distY - rect.height / 2;
+    return (dx*dx+dy*dy<=(circle.radius*circle.radius));
+}
+
 const red = new Circle({
     radius: 10,
-    centerCoords: [100, 100]
+    centerCoords: g.mapCenter([0, 0])
 }, (tick) => {
     // Update on every tick. This is the default function
     return {tick};
-}, () => {
-    if (reverse) {
-        if (red.x - red.radius <= 0) {
-            right++;
-            reverse = false;
-            return;
-        }
-
-        red.y -= speed;
-        red.x -= speed;
-    } else {
-        if (red.x + red.radius >= g.width) {
-            left++;
-
-            reverse = true;
-            return;
-        }
-
-        red.y += speed;
-        red.x += speed;
+}, (sprites) => {
+    // Check collisions with left-right borders
+    if (red.x - red.radius <= 0) {
+        right++;
+        ballMove[0] *= -1;
+    } else if (red.x + red.radius >= g.width) {
+        left++;
+        ballMove[0] *= -1;
+    } else if (red.y - red.radius <= 0 || red.y + red.radius >= g.height) { // Check collisions with top-down borders
+        ballMove[1] *= -1;
     }
+
+    // Check collision with paddles
+    for (const {sprite} of sprites) {
+        if (sprite === leftPaddle) {
+            if (RectCircleColliding(red, leftPaddle)) {
+                if (paddleMove.leftY < 0) {
+                    ballMove[1] = -Math.abs(ballMove[1]);
+                } else if (paddleMove.leftY > 0) {
+                    ballMove[1] = Math.abs(ballMove[1]);
+                } else {
+                    ballMove[1] *= -1;
+                }
+                ballMove[0] *= -1;
+            }
+        } else if (sprite === rightPaddle) {
+            if (RectCircleColliding(red, rightPaddle)) {
+                if (paddleMove.rightY < 0) {
+                    ballMove[1] = -Math.abs(ballMove[1]);
+                } else if (paddleMove.rightY > 0) {
+                    ballMove[1] = Math.abs(ballMove[1]);
+                } else {
+                    ballMove[1] *= -1;
+                }
+                ballMove[0] *= -1;
+            }
+        }
+    }
+
+    red.x += ballMove[0];
+    red.y += ballMove[1];
 }, {
     fillColor: "red",
     borderColor: "black",
-}, {
-    fillColor: "#00990055",
-    borderColor: "black",
-    borderWidth: 3
 });
 
 //
 // // Example for player controlled trajectory
-const blue = new Circle({
-    radius: 30,
-    centerCoords: [150, 100]
-}, undefined, () => {
-    blue.x += dirs[0];
-    blue.y += dirs[1];
-}, {
-    fillColor: "blue",
-    borderColor: "black"
-});
-
-// Example for circular trajectory
-const black = new Circle({
-    radius: 9,
-    centerCoords: [300, 300]
-}, undefined, () => {
-    const angle = g.degToRadians((speed * g.currentTick) % 361);
-    const path = {x: 300, y: 400, r: 50};
-
-    black.x = path.x + path.r * Math.cos(angle);
-    black.y = path.y + path.r * Math.sin(angle);
-}, {
-    fillColor: "black",
-});
+// const blue = new Circle({
+//     radius: 30,
+//     centerCoords: [150, 100]
+// }, undefined, () => {
+//     blue.x += paddleMove[0];
+//     blue.y += paddleMove[1];
+// }, {
+//     fillColor: "blue",
+//     borderColor: "black"
+// });
+//
+// // Example for circular trajectory
+// const black = new Circle({
+//     radius: 9,
+//     centerCoords: [300, 300]
+// }, undefined, () => {
+//     const angle = g.degToRadians((speed * g.currentTick) % 361);
+//     const path = {x: 300, y: 400, r: 50};
+//
+//     black.x = path.x + path.r * Math.cos(angle);
+//     black.y = path.y + path.r * Math.sin(angle);
+// }, {
+//     fillColor: "black",
+// });
 
 const scoreLeft = new Text({
     text: "",
@@ -85,7 +134,7 @@ const scoreLeft = new Text({
 }, undefined, () => {
     scoreLeft.text = `Player 1 Score: ${left}`;
 
-    if (left === 10) {
+    if (left === 10000) {
         g.pause();
         alert("Player 1 wins!");
     }
@@ -100,7 +149,7 @@ const scoreRight = new Text({
 }, undefined, () => {
     scoreRight.text = `Player 2 Score: ${right}`;
 
-    if (right === 10) {
+    if (right === 10000) {
         g.pause();
         alert("Player 2 wins!");
     }
@@ -113,7 +162,13 @@ const leftPaddle = new Rectangle({
     height: 100,
     width: 10,
     topLeftCoords: [10, g.halfHeight]
-}, undefined, undefined, {
+}, undefined, () => {
+    const newY = leftPaddle.y + paddleMove.leftY;
+
+    if (newY + leftPaddle.height <= g.height && newY >= 0) {
+        leftPaddle.y = newY;
+    }
+}, {
     fillColor: "black"
 });
 
@@ -121,15 +176,13 @@ const rightPaddle = new Rectangle({
     height: 100,
     width: 10,
     topLeftCoords: g.mapTopRight([-20, g.halfHeight])
-}, undefined, undefined, {
-    fillColor: "black"
-});
+}, undefined, () => {
+    const newY = rightPaddle.y + paddleMove.rightY;
 
-const middlePaddle = new Rectangle({
-    height: 100,
-    width: 10,
-    topLeftCoords: g.mapCenter([0, 0])
-}, undefined, undefined, {
+    if (newY + rightPaddle.height <= g.height && newY >= 0) {
+        rightPaddle.y = newY;
+    }
+}, {
     fillColor: "black"
 });
 
@@ -138,17 +191,17 @@ const middlePaddle = new Rectangle({
  */
 const keyPressHandler = (e) => {
     switch (e.key) {
-        case 'd':
-            dirs[0] = speed;
-            break;
         case 's':
-            dirs[1] = speed;
-            break;
-        case 'a':
-            dirs[0] = -speed;
+            paddleMove.leftY = speed;
             break;
         case 'w':
-            dirs[1] = -speed;
+            paddleMove.leftY = -speed;
+            break;
+        case 'ArrowDown':
+            paddleMove.rightY = speed;
+            break;
+        case 'ArrowUp':
+            paddleMove.rightY = -speed;
             break;
     }
 };
@@ -158,38 +211,37 @@ const keyPressHandler = (e) => {
  */
 const keyLiftHandler = (e) => {
     switch (e.key) {
-        case 'd':
-            if (dirs[0] === speed) {
-                dirs[0] = 0;
-            }
-            break;
         case 's':
-            if (dirs[1] === speed) {
-                dirs[1] = 0;
-            }
-            break;
-        case 'a':
-            if (dirs[0] === -speed) {
-                dirs[0] = 0;
+            if (paddleMove.leftY === speed) {
+                paddleMove.leftY = 0;
             }
             break;
         case 'w':
-            if (dirs[1] === -speed) {
-                dirs[1] = 0;
+            if (paddleMove.leftY === -speed) {
+                paddleMove.leftY = 0;
+            }
+            break;
+        case 'ArrowDown':
+            if (paddleMove.rightY === speed) {
+                paddleMove.rightY = 0;
+            }
+            break;
+        case 'ArrowUp':
+            if (paddleMove.rightY === -speed) {
+                paddleMove.rightY = 0;
             }
             break;
     }
 }
 
 g.insertSprite(red); // Overshadows blue on intersection
-g.insertSprite(blue);
+// g.insertSprite(blue);
 
 g.addEventListener('keydown', keyPressHandler);
 g.addEventListener('keyup', keyLiftHandler);
 g.insertSprite(scoreLeft);
 g.insertSprite(scoreRight);
 g.insertSprite(leftPaddle);
-g.insertSprite(middlePaddle);
 g.insertSprite(rightPaddle);
 // g.insertSprite(black); // Falls under blue on intersection
 
@@ -197,6 +249,9 @@ g.insertSprite(rightPaddle);
 g.resume();
 
 // g.setTimeout(() => {
-//     g.pause();
+//     g.removeSprite(red);
+//
+//     g.setTimeout(() => {
+//         g.insertSprite(red);
+//     }, 100);
 // }, 100);
-

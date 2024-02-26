@@ -192,7 +192,7 @@ export default class Sprite {
         this.onUpdate = onUpdate;
         this.onTick = onTick;
 
-        // Store the sprite into the sprites map
+        // Store the sprite reference into the sprites map
         Sprite.sprites[this.id] = this;
     }
 

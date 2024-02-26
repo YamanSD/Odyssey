@@ -76,6 +76,12 @@ export default class Game {
     #erasedSpriteSet;
 
     /**
+     * @type {Set<Sprite>} set of Sprites removed from the Game.
+     * @protected
+     */
+    #removedSprites;
+
+    /**
      * @type {Object<string, {
      *     handlers: Object<number, {func: function(Event), noPause: boolean}>,
      *     listening: boolean,
@@ -205,6 +211,13 @@ export default class Game {
      */
     get showHitBoxes() {
         return this.#showHitBoxes;
+    }
+
+    /**
+     * @returns {Set<Sprite>} set of all sprites in the game.
+     */
+    get sprites() {
+        return this.#sprites;
     }
 
     /**
@@ -462,12 +475,7 @@ export default class Game {
         this.setBrush(undefined);
 
         // Reset the canvas and its data fields
-        this.clearRect({
-            x: 0,
-            y: 0,
-            width: this.width,
-            height: this.height
-        });
+        this.clearScreen();
 
         // Create a new quadtree
         this.#quadTree = new QuadTree({
@@ -494,13 +502,19 @@ export default class Game {
             this.#insertedSpriteSet = new Set();
         }
 
+        // Check if there is a removed sprite set
+        if (!this.#removedSprites) {
+            this.#removedSprites = new Set();
+        }
+
         // Check if there is an erased sprite set
         if (!this.#erasedSpriteSet) {
             this.#erasedSpriteSet = new Set();
         }
 
-        this.#erasedSpriteSet.clear();
+        this.#removedSprites.clear();
         this.#insertedSpriteSet.clear();
+        this.#erasedSpriteSet.clear();
 
         // Initialize the rest of the fields
         this.#spriteWaitQueue = {};
@@ -525,6 +539,20 @@ export default class Game {
 
         // Add the sprite to the sprites set
         this.#sprites.add(sprite);
+    }
+
+    /**
+     * @param sprite {Sprite} to be removed.
+     */
+    removeSprite(sprite) {
+        // Erase the sprite and remove it from the Tree
+        this.eraseSprite(sprite);
+
+        // Remove the sprite from the sprites set
+        this.#sprites.delete(sprite);
+
+        // Add to the removed set
+        this.#removedSprites.add(sprite);
     }
 
     /**
@@ -687,6 +715,7 @@ export default class Game {
 
         // Display the quadrants
         for (const bound of this.#quadTree.displayBounds) {
+            this.clearRect(bound);
             this.markedRect(bound, brush);
         }
 
@@ -701,12 +730,7 @@ export default class Game {
      */
     resetTree() {
         // Clear the screen
-        this.clearRect({
-            x: 0,
-            y: 0,
-            height: this.height,
-            width: this.width
-        });
+        this.clearScreen();
 
         // Clear the tree
         this.#quadTree.clear();
@@ -742,6 +766,11 @@ export default class Game {
      * @protected
      */
     tick() {
+        // Show the quadrants
+        if (this.showHitBoxes) {
+            this.showQuadrants();
+        }
+
         // Call the pre-tick
         this.preTick(this.currentTick);
 
@@ -756,7 +785,7 @@ export default class Game {
         // Trigger the onTick for all sprites
         for (const sprite of this.#sprites) {
             // Ignore the sprite
-            if (sprite.ignorable) {
+            if (sprite.ignorable || this.#removedSprites.has(sprite)) {
                 continue;
             }
 
@@ -772,6 +801,9 @@ export default class Game {
 
         // Call the post-tick
         this.postTick(this.currentTick);
+
+        // Clear the removed sprites
+        this.#removedSprites.clear();
     }
 
     /**
@@ -797,22 +829,24 @@ export default class Game {
 
         // Clear the hit-box rectangles
         for (let rect of hitBox) {
+            let borderWidth = 0;
+
             // Erase the marked hit-box if needed
             if (this.showHitBoxes) {
                 // Border width
-                const borderWidth = sprite.hitBoxBrush?.borderWidth ?? 1;
-
-                // Clear the sprite and its shown hit-box
-                this.clearRect({
-                    x: rect.x - borderWidth,
-                    y: rect.y - borderWidth,
-                    width: rect.width + 2 * borderWidth,
-                    height: rect.height + 2 * borderWidth
-                });
+                borderWidth = sprite.hitBoxBrush?.borderWidth ?? 1;
             } else {
-                // Clear
-                this.clearRect(rect);
+                // Border width
+                borderWidth = sprite.brush?.borderWidth ?? 1;
             }
+
+            // Clear the sprite
+            this.clearRect({
+                x: rect.x - borderWidth,
+                y: rect.y - borderWidth,
+                width: rect.width + 2 * borderWidth,
+                height: rect.height + 2 * borderWidth
+            });
         }
 
         // Add to the erased sprite set
@@ -850,6 +884,19 @@ export default class Game {
             rect.width,
             rect.height
         );
+    }
+
+    /**
+     * Clears all the screen.
+     * @protected
+     */
+    clearScreen() {
+        this.clearRect({
+            x: 0,
+            y: 0,
+            width: this.width,
+            height: this.height
+        });
     }
 
     /**
@@ -992,14 +1039,26 @@ export default class Game {
     tickUpdate(tick) {
         const tickList = this.#updateQueue[tick];
 
+        /**
+         * @type {Sprite}
+         */
+        let sprite;
+
         // Check if the list is undefined
         if (tickList) {
             let i = tickList.length;
 
             // Iterate over the Sprite objects in reverse
             while (i--) {
+                sprite = tickList[i];
+
+                // Do not update a removed sprite
+                if (this.#removedSprites.has(sprite)) {
+                    continue;
+                }
+
                 // Trigger the Sprite update
-                this.update(tickList[i]);
+                this.update(sprite);
             }
 
             // Reset i
@@ -1007,8 +1066,15 @@ export default class Game {
 
             // Iterate over the Sprite objects in reverse and redraw
             while (i--) {
-                // Trigger the Sprite update
-                this.render(tickList[i]);
+                sprite = tickList[i];
+
+                // Do not update a removed sprite
+                if (this.#removedSprites.has(sprite)) {
+                    continue;
+                }
+
+                // Process the Sprite update
+                this.render(sprite);
             }
         }
 
@@ -1098,11 +1164,6 @@ export default class Game {
         // Check if the sprite is textual and set its metrics
         if (sprite.textual) {
             sprite.metrics = this.measureText(sprite.text);
-        }
-
-        // Show the quadrants
-        if (this.showHitBoxes) {
-            this.showQuadrants();
         }
 
         // Begin new path

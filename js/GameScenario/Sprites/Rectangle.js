@@ -78,6 +78,14 @@ export default class Rectangle extends Sprite {
         return this.desc.height;
     }
 
+    get centerX() {
+        return this.x + this.width / 2;
+    }
+
+    get centerY() {
+        return this.y + this.height / 2;
+    }
+
     /**
      * @param x {number} x-coordinate of a point.
      * @param y {number} y-coordinate of a point.

@@ -210,6 +210,9 @@ export default class QuadTree {
         for (const child of this.#childrenNodes) {
             child.remove(rect);
         }
+
+        // Cleanup
+        this.cleanUp();
     }
 
     /**
