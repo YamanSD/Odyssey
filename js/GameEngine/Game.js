@@ -158,6 +158,30 @@ export default class Game {
     }
 
     /**
+     * Sets the margin and padding to zero of all the given class elements.
+     *
+     * @param name {string} class name to zero its elements.
+     * @protected
+     */
+    static zeroMarginPaddings(name) {
+        // Set margin and padding of the element to zero
+        for (const element of document.querySelectorAll(name)) {
+            element.style.padding = element.style.margin = '0';
+            element.style.verticalAlign = 'middle';
+        }
+    }
+
+    /**
+     * Removes all the margins and padding for the necessary elements.
+     */
+    static zeroMarginElements() {
+        // Iterate over the vital classes
+        for (const element of ["body", "canvas"]) {
+            Game.zeroMarginPaddings(element);
+        }
+    }
+
+    /**
      * @param canvasId {string} HTML5 ID of the canvas element.
      * @param showHitBoxes {boolean?} true to show sprite hit-boxes.
      * @param quadrantBrush {{
@@ -191,6 +215,9 @@ export default class Game {
 
         // Adjust canvas size to cover the screen
         Game.resizeCanvas(canvas);
+
+        // Remove margins and padding
+        Game.zeroMarginElements();
 
         // 2d context for the main canvas element
         this.#context = canvas.getContext("2d");
