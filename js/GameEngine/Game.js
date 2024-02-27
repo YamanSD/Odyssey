@@ -140,21 +140,21 @@ export default class Game {
     #postTick;
 
     /**
-     * @param canvas {HTMLElement} to be resized to full screen.
-     * @protected
-     */
-    static resizeCanvas(canvas) {
-        canvas.height = window.innerHeight;
-        canvas.width = window.innerWidth;
-    }
-
-    /**
      * @param s0 {Sprite} first sprite.
      * @param s1 {Sprite} second sprite.
      * @returns {true} if the hit-boxes of both sprites are overlapping.
      */
     static areColliding(s0, s1) {
         // TODO
+    }
+
+    /**
+     * @param canvas {HTMLElement} to be resized to full screen.
+     * @protected
+     */
+    static resizeCanvas(canvas) {
+        canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth;
     }
 
     /**
@@ -173,6 +173,7 @@ export default class Game {
 
     /**
      * Removes all the margins and padding for the necessary elements.
+     * @protected
      */
     static zeroMarginElements() {
         // Iterate over the vital classes
