@@ -91,12 +91,7 @@ export default class Rectangle extends Sprite {
     }
 
     /**
-     * @returns {{
-     *   x: number,
-     *   y: number,
-     *   height: number,
-     *   width: number
-     * }[]} the smallest rectangle that surrounds the shape.
+     * @returns {HitBox[]} the smallest rectangle that surrounds the shape.
      */
     get hitBox() {
         return this.convertHitBoxes([{

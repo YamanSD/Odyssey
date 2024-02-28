@@ -53,6 +53,14 @@ const red = new Circle({
     // Update on every tick. This is the default function
     return {tick};
 }, (sprites) => {
+    if (g.areCollidingHitBoxes(rightPaddle.hitBox[0], red.hitBox[0])) {
+        console.log("COLLIDING RIGHT");
+    }
+
+    if (g.areCollidingHitBoxes(leftPaddle.hitBox[0], red.hitBox[0])) {
+        console.log("COLLIDING LEFT");
+    }
+
     // Check collisions with left-right borders
     if (red.x - red.radius <= 0) {
         right++;
@@ -69,10 +77,6 @@ const red = new Circle({
         const sprite = hitBox.sprite;
 
         if (sprite === leftPaddle) {
-            if (g.areCollidingHitBoxes(hitBox, red.hitBox[0])) {
-                console.log("COLLIDING");
-            }
-
             if (RectCircleColliding(red, leftPaddle)) {
                 if (paddleMove.leftY < 0) {
                     ballMove[1] = -Math.abs(ballMove[1]);

@@ -79,10 +79,11 @@ export default class HitBox {
     get axis() {
         const ox = new Vector(1, 0), oy = new Vector(0, 1);
         const rx = ox.rotate(this.rotation), ry = oy.rotate(this.rotation);
+        const center = this.center;
 
         return [
-            new DLine(this.centerX, this.centerY, rx.x, rx.y),
-            new DLine(this.centerX, this.centerY, ry.x, ry.y)
+            new DLine(center.x, center.y, rx.x, rx.y),
+            new DLine(center.x, center.y, ry.x, ry.y)
         ];
     }
 
@@ -108,7 +109,12 @@ export default class HitBox {
      * @returns {Vector} vector for the center of the hit box.
      */
     get center() {
-        return new Vector(this.centerX, this.centerY);
+        return new Vector(
+            ...this.#rotatePoint(
+                this.x + this.width / 2,
+                this.y + this.height / 2
+            )
+        );
     }
 
     /**
@@ -144,20 +150,6 @@ export default class HitBox {
      */
     get rotation() {
         return this.desc.rotation ?? 0;
-    }
-
-    /**
-     * @returns {number} the x-coordinate of the center of the hit box.
-     */
-    get centerX() {
-        return this.x + this.width / 2;
-    }
-
-    /**
-     * @returns {number} the y-coordinate of the center of the hit box.
-     */
-    get centerY() {
-        return this.y + this.height / 2;
     }
 
     /**
