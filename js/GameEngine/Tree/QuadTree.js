@@ -1,7 +1,7 @@
 /**
  * @class QuadTree.
  * Class used by a 2d canvas to divide the screen into sub-quadrants recursively.
- * Provides better performance for handling clicks on canvas and collisions.
+ * Provides better performance for handling collisions.
  */
 export default class QuadTree {
     /**
@@ -38,16 +38,10 @@ export default class QuadTree {
      * in the same QuadTree.
      *
      * {@link Sprite} links the Sprite class.
-     * @type {Set<{
-     *   width: number,
-     *   height: number,
-     *   x: number,
-     *   y: number,
-     *   sprite: Sprite,
-     * }>} set of rectangular objects inside the node's boundaries.
+     * @type {Set<HitBox>} set of HitBox objects inside the node's boundaries.
      * @private
      */
-    #spritesBoxes;
+    #hitBoxes;
 
     /**
      * @type {QuadTree[]} list of child nodes.
@@ -68,11 +62,11 @@ export default class QuadTree {
      * @param {number?} [level=0] depth level, required for sub-nodes (default: 0).
      */
     constructor(bounds, maxObjects, maxLevels, level) {
-        this.#maxObjects = maxObjects || 5;
+        this.#maxObjects = maxObjects || 1;
         this.#maxLevels = maxLevels || 5;
         this.#level = level || 0;
         this.#bounds = bounds;
-        this.#spritesBoxes = new Set();
+        this.#hitBoxes = new Set();
         this.#childrenNodes = [];
     }
 
@@ -88,37 +82,31 @@ export default class QuadTree {
      * Insert the object into the node. If the node
      * exceeds the capacity, it will split and add all
      * objects to their corresponding sub-nodes.
-     * @param {{
-     *   width: number,
-     *   height: number,
-     *   x: number,
-     *   y: number,
-     *   sprite: Sprite
-     * }} rect one of the bounds of the object to be added.
+     * @param {HitBox} hitBox one of the bounds of the object to be added.
      */
-    insert(rect) {
+    insert(hitBox) {
         // If we have sub-nodes, call insert on matching sub-nodes
         if (this.#childrenNodes.length) {
-            const indices = this.#getIndices(rect);
+            const indices = this.#getIndices(hitBox);
 
             for (const index of indices) {
-                this.#childrenNodes[index].insert(rect);
+                this.#childrenNodes[index].insert(hitBox);
             }
             return;
         }
 
         // Otherwise, store object here
-        this.#spritesBoxes.add(rect);
+        this.#hitBoxes.add(hitBox);
 
         // Max_objects reached
-        if (this.#spritesBoxes.size > this.#maxObjects && this.#level < this.#maxLevels) {
+        if (this.#hitBoxes.size > this.#maxObjects && this.#level < this.#maxLevels) {
             // Split if we do not already have sub-nodes
             if (!this.#childrenNodes.length) {
                 this.#split();
             }
 
             // Add all objects to their corresponding sub-node
-            for (const spriteRect of this.#spritesBoxes) {
+            for (const spriteRect of this.#hitBoxes) {
                 const indices = this.#getIndices(spriteRect);
 
                 for (const index of indices) {
@@ -127,7 +115,7 @@ export default class QuadTree {
             }
 
             // Clean up this node
-            this.#spritesBoxes.clear();
+            this.#hitBoxes.clear();
         }
     }
 
@@ -153,38 +141,27 @@ export default class QuadTree {
     /**
      * {@link Sprite} links the Sprite class.
      * Return all objects that could collide with the given object
-     * @param {{
-     *   width: number,
-     *   height: number,
-     *   x: number,
-     *   y: number
-     * }[]} rects bounds of the object to be checked.
-     * @return {Set<{
-     *   width: number,
-     *   height: number,
-     *   x: number,
-     *   y: number,
-     *   sprite: Sprite
-     * }>} array with all detected objects.
+     * @param {HitBox[]} hitBoxes bounds of the object to be checked.
+     * @return {Set<HitBox>} array with all detected objects.
      */
-    retrieve(rects) {
+    retrieve(hitBoxes) {
         /**
          * @type {number[]}
          */
         const indices = [];
 
-        // Get the rect indices
-        for (const rect of rects) {
-            indices.push(...this.#getIndices(rect));
+        // Get the hitBox indices
+        for (const hitBox of hitBoxes) {
+            indices.push(...this.#getIndices(hitBox));
         }
 
         // List of objects to return
-        let returnObjects = new Set(this.#spritesBoxes);
+        let returnObjects = new Set(this.#hitBoxes);
 
         // If we have sub-nodes, retrieve their objects
         if (this.#childrenNodes.length) {
             for (const index of indices) {
-                this.#childrenNodes[index].retrieve(rects).forEach(r => {
+                this.#childrenNodes[index].retrieve(hitBoxes).forEach(r => {
                     returnObjects.add(r);
                 });
             }
@@ -194,21 +171,15 @@ export default class QuadTree {
     }
 
     /**
-     * @param rect {{
-     *   width: number,
-     *   height: number,
-     *   x: number,
-     *   y: number,
-     *   sprite: Sprite
-     * }} removes sprite from the intersecting hit-boxes.
+     * @param hitBox {HitBox} removes sprite from the intersecting hit-boxes.
      */
-    remove(rect) {
-        // Delete the rect from the hit-boxes
-        this.#spritesBoxes.delete(rect);
+    remove(hitBox) {
+        // Delete the hitBox from the hit-boxes
+        this.#hitBoxes.delete(hitBox);
 
         // Remove object from all children
         for (const child of this.#childrenNodes) {
-            child.remove(rect);
+            child.remove(hitBox);
         }
 
         // Cleanup
@@ -217,17 +188,11 @@ export default class QuadTree {
 
     /**
      * Tries to clean up memory by merging nodes.
-     * @returns {Set<{
-     *   width: number,
-     *   height: number,
-     *   x: number,
-     *   y: number,
-     *   sprite: Sprite
-     * }>} all the sprites from this node and its children combined.
+     * @returns {Set<HitBox>} all the sprites from this node and its children combined.
      */
     cleanUp() {
         // Duplicate the sprites
-        let allObjects= this.#spritesBoxes;
+        let allObjects= this.#hitBoxes;
 
         // Join with the children
         for (const child of this.#childrenNodes) {
@@ -238,7 +203,7 @@ export default class QuadTree {
 
         // If the number of unique objects is less than max (valid), then join
         if (allObjects.size <= this.#maxObjects) {
-            this.#spritesBoxes = allObjects;
+            this.#hitBoxes = allObjects;
             this.#childrenNodes = [];
         }
 
@@ -249,7 +214,7 @@ export default class QuadTree {
      * Clears the quadtree.
      */
     clear() {
-        this.#spritesBoxes.clear();
+        this.#hitBoxes.clear();
 
         for (let i = 0; i < this.#childrenNodes.length; i++) {
             if (this.#childrenNodes.length) {
@@ -305,47 +270,63 @@ export default class QuadTree {
 
     /**
      * Determine which node the object belongs to
-     * @param {{
-     *   width: number,
-     *   height: number,
-     *   x: number,
-     *   y: number
-     * }} rect bounds of the area to be checked.
-     * @return {number[]}  an array of indices of the intersecting sub-nodes
+     * @param {[number, number]} point coordinates of point to be checked.
+     * @return {Set<number>}  an array of indices of the intersecting sub-nodes
      *         (0-3 = top-right, top-left, bottom-left, bottom-right / ne, nw, sw, se)
      * @private
      */
-    #getIndices(rect) {
+    #getIndicesOfPoint(point) {
         /**
-         * @type {number[]}
+         * @type {Set<number>}
          */
-        const indices = [];
-        const verticalMidpoint = this.#bounds.x + this.#bounds.width / 2;
-        const horizontalMidpoint = this.#bounds.y + this.#bounds.height / 2;
+        const indices = new Set();
+        const xMidpoint = this.#bounds.x + this.#bounds.width / 2;
+        const yMidpoint = this.#bounds.y + this.#bounds.height / 2;
 
-        const startIsNorth = rect.y < horizontalMidpoint;
-        const startIsWest = rect.x < verticalMidpoint;
-        const endIsEast = rect.x + rect.width > verticalMidpoint;
-        const endIsSouth = rect.y + rect.height > horizontalMidpoint;
+        const isNorth = point[1] < yMidpoint;
+        const isWest = point[0] < xMidpoint;
 
         // Top-right quad
-        if (startIsNorth && endIsEast) {
-            indices.push(0);
+        if (isNorth && !isWest) {
+            indices.add(0);
         }
 
         // Top-left quad
-        if (startIsWest && startIsNorth) {
-            indices.push(1);
+        if (isWest && isNorth) {
+            indices.add(1);
         }
 
         // Bottom-left quad
-        if (startIsWest && endIsSouth) {
-            indices.push(2);
+        if (isWest && !isNorth) {
+            indices.add(2);
         }
 
         // Bottom-right quad
-        if (endIsEast && endIsSouth) {
-            indices.push(3);
+        if (!isWest && !isNorth) {
+            indices.add(3);
+        }
+
+        return indices;
+    }
+
+    /**
+     * Determine which node the object belongs to
+     * @param {HitBox} hitBox bounds of the area to be checked.
+     * @return {Set<number>}  an array of indices of the intersecting sub-nodes
+     *         (0-3 = top-right, top-left, bottom-left, bottom-right / ne, nw, sw, se)
+     * @private
+     */
+    #getIndices(hitBox) {
+        /**
+         * @type {Set<number>}
+         */
+        const indices = new Set();
+
+        // Iterate over the points of a hit box to determine the quadrant
+        for (const point of hitBox.corners) {
+            this.#getIndicesOfPoint(point).forEach(q => {
+                indices.add(q);
+            });
         }
 
         return indices;

@@ -1,4 +1,4 @@
-import QuadTree from "./QuadTree.js";
+import {QuadTree} from "./Tree";
 import {Sprite, Timeout, Void} from "./BaseSprites";
 
 
@@ -142,7 +142,7 @@ export default class Game {
     /**
      * @param s0 {Sprite} first sprite.
      * @param s1 {Sprite} second sprite.
-     * @returns {true} if the hit-boxes of both sprites are overlapping.
+     * @returns {boolean} if the hit-boxes of both sprites are overlapping.
      */
     static areColliding(s0, s1) {
         // TODO
@@ -604,6 +604,15 @@ export default class Game {
     }
 
     /**
+     * @param p0 {[number, number]} coordinates of first point.
+     * @param p1 {[number, number]} coordinates of second point.
+     * @returns {number} the Manhattan distance between p0 and p1.
+     */
+    manhattanDistance(p0, p1) {
+        return Math.abs(p0[0] - p1[0]) + Math.abs(p0[1] - p1[1]);
+    }
+
+    /**
      * @param angle {number} angle in degrees.
      * @returns {number} the angle in radians.
      */
@@ -729,14 +738,8 @@ export default class Game {
      * @protected
      */
     insertToTree(sprite) {
-        for (const rect of sprite.hitBox) {
-            this.#quadTree.insert({
-                x: rect.x,
-                y: rect.y,
-                width: rect.width,
-                height: rect.height,
-                sprite: sprite
-            });
+        for (const hitBox of sprite.hitBox) {
+            this.#quadTree.insert(hitBox);
         }
     }
 
@@ -745,6 +748,11 @@ export default class Game {
      * @protected
      */
     showQuadrants() {
+        // Check if the game is running
+        if (!this.#isRunning) {
+            return;
+        }
+
         const brush = this.quadrantBrush;
 
         // Set the new brush
@@ -847,25 +855,19 @@ export default class Game {
      * Erases the object, exposing any objects beneath it.
      *
      * @param sprite {Sprite} to be erased.
-     * @returns {Set<{
-     *     x: number,
-     *     y: number,
-     *     height: number,
-     *     width: number,
-     *     sprite: Sprite
-     * }>} the intersection rectangles.
+     * @returns {Set<HitBox>} the intersection rectangles.
      * @protected
      */
     eraseSprite(sprite) {
-        const hitBox = sprite.hitBox;
+        const hitBoxes = sprite.hitBox;
 
         // Get the intersection rectangles
         const interRects = this.#quadTree.retrieve(
-            hitBox
+            hitBoxes
         );
 
         // Clear the hit-box rectangles
-        for (let rect of hitBox) {
+        for (let hitBox of hitBoxes) {
             let borderWidth = 0;
 
             // Erase the marked hit-box if needed
@@ -877,12 +879,13 @@ export default class Game {
                 borderWidth = sprite.brush?.borderWidth ?? 1;
             }
 
-            // Clear the sprite
+            // Clear the sprite TODO FIX
             this.clearRect({
-                x: rect.x - borderWidth,
-                y: rect.y - borderWidth,
-                width: rect.width + 2 * borderWidth,
-                height: rect.height + 2 * borderWidth
+                x: hitBox.x - borderWidth + (this.showHitBoxes ? 1 : 0),
+                y: hitBox.y - borderWidth,
+                width: hitBox.width + 2 * borderWidth,
+                height: hitBox.height + 2 * borderWidth,
+                rotation: hitBox.rotation
             });
         }
 
@@ -891,7 +894,7 @@ export default class Game {
 
         // Iterate over the sprites in the collision rectangles and redraw
         for (const interRect of interRects) {
-            const {sprite: rectSprite} = interRect;
+            const rectSprite = interRect.sprite;
 
             // Redraw all the sprites except the ones erased
             if (!this.#erasedSpriteSet.has(rectSprite.id)) {
@@ -910,17 +913,38 @@ export default class Game {
      *     x: number,
      *     y: number,
      *     height: number,
-     *     width: number
-     * }} rectangle to clear.
+     *     width: number,
+     *     rotation?: number
+     * } | HitBox} rectangle to clear.
      * @protected
      */
     clearRect(rect) {
+        // Begin a new path
+        this.context.beginPath();
+
+        const rotation = rect.rotation ?? 0;
+
+        // Translate to the top-left point
+        this.context.translate(rect.x, rect.y);
+
+        // Rotate the context
+        this.context.rotate(rotation);
+
         this.context.clearRect(
-            rect.x,
-            rect.y,
+            0,
+            0,
             rect.width,
             rect.height
         );
+
+        // Rotate back to original rotation
+        this.context.rotate(-rotation);
+
+        // Translate back to origin
+        this.context.translate(-rect.x, -rect.y);
+
+        // Close the path
+        this.context.closePath();
     }
 
     /**
@@ -941,8 +965,9 @@ export default class Game {
      *     x: number,
      *     y: number,
      *     height: number,
-     *     width: number
-     * }} rectangle to draw.
+     *     width: number,
+     *     rotation?: number
+     * } | HitBox} rectangle to draw.
      * @param brush {{
      *     borderWidth?: number,
      *     borderColor?: string,
@@ -955,26 +980,40 @@ export default class Game {
         // Begin the path
         this.context.beginPath();
 
+        const rotation = rect.rotation ?? 0;
+
+        // Translate to the top-left point
+        this.context.translate(rect.x, rect.y);
+
+        // Rotate the context
+        this.context.rotate(rotation);
+
         const oldBrush = this.setBrush(brush);
 
         // Draw the border
         this.context.rect(
-            rect.x,
-            rect.y,
+            0,
+            0,
             rect.width,
             rect.height
         );
 
         // Fill the rectangle
         this.context.fillRect(
-            rect.x,
-            rect.y,
+            0,
+            0,
             rect.width,
             rect.height
         );
 
         // Process the rects
         this.process();
+
+        // Rotate back to original rotation
+        this.context.rotate(-rotation);
+
+        // Translate back to origin
+        this.context.translate(-rect.x, -rect.y);
 
         // Close the path
         this.context.closePath();

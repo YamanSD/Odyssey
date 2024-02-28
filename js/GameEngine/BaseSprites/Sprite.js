@@ -1,3 +1,5 @@
+import {HitBox} from "../Tree";
+
 /**
  * @Abstract
  * @class Sprite
@@ -156,13 +158,7 @@ export default class Sprite {
      *     tick: number,
      *     insertAfter?: number
      * })?} called on each tick.
-     * @param onUpdate {(function(Set<{
-     *     x: number,
-     *     y: number,
-     *     height: number,
-     *     width: number,
-     *     sprite: Sprite
-     * }>): any)?} called on each update cycle.
+     * @param onUpdate {(function(Set<HitBox>): any)?} called on each update cycle.
      * @param brush {{
      *    borderWidth?: number,
      *    borderColor?: string,
@@ -248,13 +244,7 @@ export default class Sprite {
     }
 
     /**
-     * @returns {(function(Set<{
-     *     x: number,
-     *     y: number,
-     *     height: number,
-     *     width: number,
-     *     sprite: Sprite
-     * }>): any)} the onUpdate function.
+     * @returns {(function(Set<HitBox>): any)} the onUpdate function.
      */
     get onUpdate() {
         return this.#onUpdate ?? (() => undefined);
@@ -341,13 +331,7 @@ export default class Sprite {
     get text() {}
 
     /**
-     * @param onUpdate {(function(Set<{
-     *     x: number,
-     *     y: number,
-     *     height: number,
-     *     width: number,
-     *     sprite: Sprite
-     * }>): any)?} new onUpdate function.
+     * @param onUpdate {(function(Set<HitBox>): any)?} new onUpdate function.
      */
     set onUpdate(onUpdate) {
         this.#onUpdate = onUpdate;
@@ -416,15 +400,28 @@ export default class Sprite {
     hasPoint(x, y) {}
 
     /**
-     * The returned hit box is used in collision detection and quadtree.
-     *
-     * @Abstract
-     * @returns {{
+     * @param rects {{
      *   x: number,
      *   y: number,
      *   height: number,
-     *   width: number
-     * }[]} a list of rectangles that represent the hit-boxes of the sprite.
+     *   width: number,
+     *   rotation?: number
+     *  }[]} list of rectangles to convert to HitBox instances.
+     */
+    convertHitBoxes(rects) {
+        return rects.map(r => new HitBox({
+            topLeftCoords: [r.x, r.y],
+            rotation: r.rotation,
+            height: r.height,
+            width: r.width
+        }, this));
+    }
+
+    /**
+     * The returned hit box is used in collision detection and quadtree.
+     *
+     * @Abstract
+     * @returns {HitBox[]} a list of hit boxes that represent the hit-boxes of the sprite.
      */
     get hitBox() {}
 

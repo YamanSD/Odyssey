@@ -15,13 +15,7 @@ export default class Circle extends Sprite {
      *     tick: number,
      *     insertAfter?: number
      * }) | undefined} called on each tick cycle.
-     * @param onUpdate {(function(Set<{
-     *     x: number,
-     *     y: number,
-     *     height: number,
-     *     width: number,
-     *     sprite: Sprite
-     * }>): boolean)?} called on each update cycle
+     * @param onUpdate {(function(Set<HitBox>): boolean)?} called on each update cycle
      * @param brush {{
      *    borderWidth?: number,
      *    borderColor?: string,
@@ -119,11 +113,11 @@ export default class Circle extends Sprite {
         // Alias for the desc parameters
         const r = this.radius + (this.brush.borderWidth ?? 1);
 
-        return [{
+        return this.convertHitBoxes([{
             x: this.x - r,
             y: this.y - r,
             width: 2 * r,
             height: 2 * r,
-        }];
+        }]);
     }
 }

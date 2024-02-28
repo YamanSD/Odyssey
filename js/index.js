@@ -3,11 +3,7 @@ import {Circle, Rectangle} from "./GameScenario/Sprites";
 
 
 const g = new Game(
-    "mainCanvas",
-    false,
-    {
-        borderColor: "green"
-    }
+    "mainCanvas"
 );
 const speed = 6;
 let paddleMove = {
@@ -99,6 +95,8 @@ const red = new Circle({
 }, {
     fillColor: "red",
     borderColor: "black",
+}, {
+    fillColor: "#0000FF55"
 });
 
 //
@@ -107,8 +105,8 @@ const red = new Circle({
 //     radius: 30,
 //     centerCoords: [150, 100]
 // }, undefined, () => {
-//     blue.x += paddleMove[0];
-//     blue.y += paddleMove[1];
+//     // blue.x += paddleMove[0];
+//     // blue.y += paddleMove[1];
 // }, {
 //     fillColor: "blue",
 //     borderColor: "black"
@@ -244,14 +242,10 @@ g.insertSprite(scoreRight);
 g.insertSprite(leftPaddle);
 g.insertSprite(rightPaddle);
 // g.insertSprite(black); // Falls under blue on intersection
+// g.insertSprite(blue);
 
-// g.showHitBoxes = true;
 g.resume();
 
 // g.setTimeout(() => {
-//     g.removeSprite(red);
-//
-//     g.setTimeout(() => {
-//         g.insertSprite(red);
-//     }, 100);
-// }, 100);
+//     g.pause();
+// }, 60);

@@ -16,13 +16,7 @@ export default class Rectangle extends Sprite {
      *     tick: number,
      *     insertAfter?: number
      * }) | undefined} called on each tick cycle.
-     * @param onUpdate {(function(Set<{
-     *     x: number,
-     *     y: number,
-     *     height: number,
-     *     width: number,
-     *     sprite: Sprite
-     * }>): boolean)?} called on each update cycle
+     * @param onUpdate {(function(Set<HitBox>): boolean)?} called on each update cycle
      * @param brush {{
      *    borderWidth?: number,
      *    borderColor?: string,
@@ -105,12 +99,12 @@ export default class Rectangle extends Sprite {
      * }[]} the smallest rectangle that surrounds the shape.
      */
     get hitBox() {
-        return [{
+        return this.convertHitBoxes([{
             x: this.x,
             y: this.y,
             width: this.width,
             height: this.height
-        }];
+        }]);
     }
 
     /**

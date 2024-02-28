@@ -20,13 +20,7 @@ export default class Text extends Sprite {
      *     tick: number,
      *     insertAfter?: number
      * }) | undefined} called on each tick cycle.
-     * @param onUpdate {(function(Set<{
-     *     x: number,
-     *     y: number,
-     *     height: number,
-     *     width: number,
-     *     sprite: Sprite
-     * }>): boolean)?} called on each update cycle
+     * @param onUpdate {(function(Set<HitBox>): boolean)?} called on each update cycle
      * @param brush {{
      *    borderWidth?: number,
      *    borderColor?: string,
@@ -119,6 +113,9 @@ export default class Text extends Sprite {
         return this.desc.text;
     }
 
+    /**
+     * @param v {string} new text value.
+     */
     set text(v) {
         this.desc.text = v;
     }
@@ -132,6 +129,9 @@ export default class Text extends Sprite {
         return this.desc.font;
     }
 
+    /**
+     * @returns {boolean} true for text.
+     */
     get textual() {
         return true;
     }
@@ -190,6 +190,11 @@ export default class Text extends Sprite {
         return Text.type;
     }
 
+    /**
+     * The returned hit box is used in collision detection and quadtree.
+     *
+     * @returns {HitBox[]} a list of hit boxes that represent the hit-boxes of the sprite.
+     */
     get hitBox() {
         const metrics = this.metrics;
 
@@ -198,11 +203,11 @@ export default class Text extends Sprite {
             return [];
         }
 
-        return [{
+        return this.convertHitBoxes([{
             x: this.x,
             y: this.y - this.height + 1,
             width: this.width,
             height: this.height + 1
-        }];
+        }]);
     }
 }
