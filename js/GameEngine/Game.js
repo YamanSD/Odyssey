@@ -879,7 +879,7 @@ export default class Game {
                 borderWidth = sprite.brush?.borderWidth ?? 1;
             }
 
-            // Clear the sprite TODO FIX
+            // Clear the sprite
             this.clearRect({
                 x: hitBox.x - borderWidth + (this.showHitBoxes ? 1 : 0),
                 y: hitBox.y - borderWidth,
