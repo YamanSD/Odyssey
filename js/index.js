@@ -15,36 +15,6 @@ let ballMove = [speed, speed / 2];
 let left = 0; // Score
 let right = 0; // Score
 
-/**
- * @param circle {Circle}
- * @param rect {Rectangle}
- * @returns {boolean}
- * @constructor
- */
-function RectCircleColliding(circle, rect){
-    let distX = Math.abs(circle.x - rect.x - rect.width / 2);
-    let distY = Math.abs(circle.y - rect.y - rect.height / 2);
-
-    if (distX > (rect.width / 2 + circle.radius)) {
-        return false;
-    }
-
-    if (distY > (rect.height / 2 + circle.radius)) {
-        return false;
-    }
-
-    if (distX <= (rect.width / 2)) {
-        return true;
-    }
-
-    if (distY <= (rect.height / 2)) {
-        return true;
-    }
-
-    let dx= distX - rect.width / 2;
-    let dy= distY - rect.height / 2;
-    return (dx*dx+dy*dy<=(circle.radius*circle.radius));
-}
 
 const red = new Circle({
     radius: 10,
@@ -53,14 +23,6 @@ const red = new Circle({
     // Update on every tick. This is the default function
     return {tick};
 }, (sprites) => {
-    if (g.areCollidingHitBoxes(rightPaddle.hitBox[0], red.hitBox[0])) {
-        console.log("COLLIDING RIGHT");
-    }
-
-    if (g.areCollidingHitBoxes(leftPaddle.hitBox[0], red.hitBox[0])) {
-        console.log("COLLIDING LEFT");
-    }
-
     // Check collisions with left-right borders
     if (red.x - red.radius <= 0) {
         right++;
@@ -76,26 +38,8 @@ const red = new Circle({
     for (const hitBox of sprites) {
         const sprite = hitBox.sprite;
 
-        if (sprite === leftPaddle) {
-            if (RectCircleColliding(red, leftPaddle)) {
-                if (paddleMove.leftY < 0) {
-                    ballMove[1] = -Math.abs(ballMove[1]);
-                } else if (paddleMove.leftY > 0) {
-                    ballMove[1] = Math.abs(ballMove[1]);
-                } else {
-                    ballMove[1] *= -1;
-                }
-                ballMove[0] *= -1;
-            }
-        } else if (sprite === rightPaddle) {
-            if (RectCircleColliding(red, rightPaddle)) {
-                if (paddleMove.rightY < 0) {
-                    ballMove[1] = -Math.abs(ballMove[1]);
-                } else if (paddleMove.rightY > 0) {
-                    ballMove[1] = Math.abs(ballMove[1]);
-                } else {
-                    ballMove[1] *= -1;
-                }
+        if (sprite === leftPaddle || sprite === rightPaddle) {
+            if (g.areColliding(red, sprite)) {
                 ballMove[0] *= -1;
             }
         }

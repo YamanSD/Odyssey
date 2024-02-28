@@ -62,7 +62,7 @@ export default class QuadTree {
      * @param {number?} [level=0] depth level, required for sub-nodes (default: 0).
      */
     constructor(bounds, maxObjects, maxLevels, level) {
-        this.#maxObjects = maxObjects || 1;
+        this.#maxObjects = maxObjects || 5;
         this.#maxLevels = maxLevels || 5;
         this.#level = level || 0;
         this.#bounds = bounds;
