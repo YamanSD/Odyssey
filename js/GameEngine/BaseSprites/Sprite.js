@@ -326,9 +326,15 @@ export default class Sprite {
     /**
      * Used by textual shapes.
      *
-     * @returns {string}
+     * @returns {string} the text inside the Sprite.
      */
     get text() {}
+
+    /**
+     * @returns {Sprite} a clone of this sprite.
+     * @Abstract
+     */
+    get clone() {}
 
     /**
      * @param onUpdate {(function(Set<HitBox>): any)?} new onUpdate function.

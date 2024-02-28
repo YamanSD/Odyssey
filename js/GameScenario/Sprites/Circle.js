@@ -1,4 +1,4 @@
-import Sprite from "../../GameEngine/BaseSprites/Sprite.js";
+import {Sprite} from "../../GameEngine";
 
 /**
  * @class Circle.
@@ -61,6 +61,19 @@ export default class Circle extends Sprite {
      */
     get radius() {
         return this.desc.radius;
+    }
+
+    /**
+     * @returns {Sprite} a clone of this sprite.
+     */
+    get clone() {
+        return new Circle(
+            this.desc,
+            this.onTick,
+            this.onUpdate,
+            this.brush,
+            this.hitBoxBrush
+        );
     }
 
     /**

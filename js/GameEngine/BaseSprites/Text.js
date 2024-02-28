@@ -107,6 +107,19 @@ export default class Text extends Sprite {
     }
 
     /**
+     * @returns {Sprite} a clone of this sprite.
+     */
+    get clone() {
+        return new Text(
+            this.desc,
+            this.onTick,
+            this.onUpdate,
+            this.brush,
+            this.hitBoxBrush
+        );
+    }
+
+    /**
      * @returns {string} the text data.
      */
     get text() {

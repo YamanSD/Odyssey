@@ -1,4 +1,4 @@
-import Sprite from "../../GameEngine/BaseSprites/Sprite.js";
+import {Sprite} from "../../GameEngine";
 
 /**
  * @class Rectangle.
@@ -105,6 +105,19 @@ export default class Rectangle extends Sprite {
             width: this.width,
             height: this.height
         }]);
+    }
+
+    /**
+     * @returns {Sprite} a clone of this sprite.
+     */
+    get clone() {
+        return new Rectangle(
+            this.desc,
+            this.onTick,
+            this.onUpdate,
+            this.brush,
+            this.hitBoxBrush
+        );
     }
 
     /**
