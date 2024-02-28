@@ -3,7 +3,8 @@ import {Circle, Rectangle} from "./GameScenario/Sprites";
 
 
 const g = new Game(
-    "mainCanvas"
+    "mainCanvas",
+    true,
 );
 const speed = 6;
 let paddleMove = {
@@ -64,8 +65,14 @@ const red = new Circle({
     }
 
     // Check collision with paddles
-    for (const {sprite} of sprites) {
+    for (const hitBox of sprites) {
+        const sprite = hitBox.sprite;
+
         if (sprite === leftPaddle) {
+            if (g.areCollidingHitBoxes(hitBox, red.hitBox[0])) {
+                console.log("COLLIDING");
+            }
+
             if (RectCircleColliding(red, leftPaddle)) {
                 if (paddleMove.leftY < 0) {
                     ballMove[1] = -Math.abs(ballMove[1]);

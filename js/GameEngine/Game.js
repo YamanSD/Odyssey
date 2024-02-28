@@ -140,15 +140,6 @@ export default class Game {
     #postTick;
 
     /**
-     * @param s0 {Sprite} first sprite.
-     * @param s1 {Sprite} second sprite.
-     * @returns {boolean} if the hit-boxes of both sprites are overlapping.
-     */
-    static areColliding(s0, s1) {
-        // TODO
-    }
-
-    /**
      * @param canvas {HTMLElement} to be resized to full screen.
      * @protected
      */
@@ -392,6 +383,50 @@ export default class Game {
      */
     mapRelative(origin, coords) {
         return [origin[0] + coords[0], origin[1] + coords[1]];
+    }
+
+    /**
+     * @param s0 {Sprite} first sprite.
+     * @param s1 {Sprite} second sprite.
+     * @returns {boolean} if the hit-boxes of both sprites are overlapping.
+     */
+    areColliding(s0, s1) {
+        for (const h0 of s0.hitBox) {
+            for (const h1 of s1.hitBox) {
+                if (this.areCollidingHitBoxes(h0, h1)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param s0 {Sprite} first sprite.
+     * @param hitBoxes {HitBox[]} list of hit boxes.
+     * @returns {boolean} if the hit-boxes of both sprites are overlapping.
+     */
+    isColliding(s0, hitBoxes) {
+        for (const h0 of s0.hitBox) {
+            for (const h1 of hitBoxes) {
+                if (this.areCollidingHitBoxes(h0, h1)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * {@link DLine} links the Line class.
+     * @param r0 {HitBox} first hit box.
+     * @param r1 {HitBox} second hit box.
+     * @returns {boolean} true if the hit boxes are colliding.
+     */
+    areCollidingHitBoxes(r0, r1) {
+        return this.areCollidingProjections(r0, r1) && this.areCollidingProjections(r1, r0);
     }
 
     /**
@@ -1287,6 +1322,70 @@ export default class Game {
 
         // Re-insert to the QuadTree
         this.insertToTree(sprite);
+    }
+
+    /**
+     * @param hitBox {HitBox}
+     * @param line {DLine}
+     * @param corner {Vector}
+     * @returns {number} the signed distance
+     * @protected
+     */
+    getSignedDistance(hitBox, line, corner) {
+        const projected = corner.project(line);
+        const CP = projected.add(hitBox.center.multiply(-1));
+
+        // Sign: Same direction of axis: true.
+        const sign = CP.x * line.direction.x + CP.y * line.direction.y > 0;
+        return CP.magnitude * (sign ? 1 : -1);
+    }
+
+    /**
+     * {@link DLine} links the Line class.
+     * @param r0 {HitBox} first hit box.
+     * @param r1 {HitBox} second hit box.
+     * @returns {boolean} true if the hit boxes are colliding.
+     * @protected
+     */
+    areCollidingProjections(r0, r1) {
+        const lines = r1.axis;
+        const corners = r0.vectorCorners;
+
+        let isCollide = true;
+
+        lines.forEach((line, dimension) => {
+            /**
+             * @type {{
+             *     signedDistance: number,
+             *     corner: Vector,
+             * }[]}
+             */
+            let minMax = [null, null];
+
+            // Size of r1 half the size on the line direction
+            const rectHalfSize = (dimension === 0 ? r1.width : r1.height) / 2;
+
+            corners.forEach(corner => {
+                const signedDistance = this.getSignedDistance(r1, line, corner);
+
+                if (!minMax[0] || minMax[0].signedDistance > signedDistance) {
+                    minMax[0] = {signedDistance, corner};
+                }
+                if (!minMax[1] || minMax[1].signedDistance < signedDistance) {
+                    minMax[1] = {signedDistance, corner};
+                }
+            });
+
+            if (
+                !(minMax[0].signedDistance < 0 && minMax[1].signedDistance > 0
+                    || Math.abs(minMax[0].signedDistance) < rectHalfSize
+                    || Math.abs(minMax[1].signedDistance) < rectHalfSize)
+            ) {
+                isCollide = false;
+            }
+        });
+
+        return isCollide;
     }
 
     /**

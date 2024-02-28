@@ -1,3 +1,7 @@
+import Vector from './Vector.js';
+import DLine from './DLine.js';
+
+
 /**
  * @class HitBox
  *
@@ -66,6 +70,45 @@ export default class HitBox {
      */
     get width() {
         return this.desc.width;
+    }
+
+    /**
+     * {@link DLine} links the Line class.
+     * @returns {[DLine, DLine]} the two axis of center of the hit box.
+     */
+    get axis() {
+        const ox = new Vector(1, 0), oy = new Vector(0, 1);
+        const rx = ox.rotate(this.rotation), ry = oy.rotate(this.rotation);
+
+        return [
+            new DLine(this.centerX, this.centerY, rx.x, rx.y),
+            new DLine(this.centerX, this.centerY, ry.x, ry.y)
+        ];
+    }
+
+    /**
+     * @returns {[Vector, Vector, Vector, Vector]} four vectors for the corners of the
+     *                                             hit box.
+     */
+    get vectorCorners() {
+        const axis = this.axis;
+        const rx = axis[0].direction.multiply(this.width / 2);
+        const ry = axis[1].direction.multiply(this.height / 2);
+        const center = this.center;
+
+        return [
+            center.add(rx).add(ry),
+            center.add(rx).add(ry.multiply(-1)),
+            center.add(rx.multiply(-1)).add(ry.multiply(-1)),
+            center.add(rx.multiply(-1)).add(ry)
+        ];
+    }
+
+    /**
+     * @returns {Vector} vector for the center of the hit box.
+     */
+    get center() {
+        return new Vector(this.centerX, this.centerY);
     }
 
     /**
