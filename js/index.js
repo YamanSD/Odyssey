@@ -1,4 +1,4 @@
-import {Game, Text} from './GameEngine';
+import {Game, Sprite, Text} from './GameEngine';
 import {Circle, Rectangle} from "./GameScenario/Sprites";
 
 
@@ -18,10 +18,10 @@ let right = 0; // Score
 
 const red = new Circle({
     radius: 10,
-    centerCoords: g.mapCenter([0, 0])
+    centerCoords: [0, 0]
 }, (tick) => {
     // Update on every tick. This is the default function
-    return {tick};
+    return Sprite.noTick;
 }, (sprites) => {
     // Check collisions with left-right borders
     if (red.x - red.radius <= 0) {

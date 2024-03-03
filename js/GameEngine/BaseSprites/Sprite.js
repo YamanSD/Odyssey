@@ -1,4 +1,5 @@
 import {HitBox} from "../Tree";
+import {RelativePoint} from "../Engine";
 
 /**
  * @Abstract
@@ -62,6 +63,14 @@ export default class Sprite {
      * @private
      */
     #hitBoxBrush;
+
+    /**
+     * Used in drawing the sprite.
+     *
+     * @type {RelativePoint} relative point of the sprite.
+     * @private
+     */
+    #relativePoint;
 
     /**
      * @type {number} ID of the sprite.
@@ -171,6 +180,8 @@ export default class Sprite {
      *    fillColor?: string,
      *    font?: string
      *  }?} object hit-box brush properties.
+     *  @param relativePoint {RelativePoint?} relative point of the sprite.
+     *  default is TopLeft.
      */
     constructor(
         description,
@@ -178,7 +189,8 @@ export default class Sprite {
         onTick,
         onUpdate,
         brush,
-        hitBoxBrush
+        hitBoxBrush,
+        relativePoint
     ) {
         this.#id = Sprite.#spriteId();
         this.#desc = description;
@@ -187,6 +199,7 @@ export default class Sprite {
         this.hitBoxBrush = hitBoxBrush;
         this.onUpdate = onUpdate;
         this.onTick = onTick;
+        this.relativePoint = relativePoint;
 
         // Store the sprite reference into the sprites map
         Sprite.sprites[this.id] = this;
@@ -197,6 +210,13 @@ export default class Sprite {
      */
     get id() {
         return this.#id;
+    }
+
+    /**
+     * @returns {RelativePoint} the relative point of the sprite.
+     */
+    get relativePoint() {
+        return this.#relativePoint;
     }
 
     /**
@@ -286,9 +306,8 @@ export default class Sprite {
      * @Note that if we have more attributes of this form, a flag system
      *       can be implemented.
      * Returns false by default.
-     * NOTE: This feature needs revision.
      *
-     * @returns {boolean} true if the sprite is to be ignored by other entities.
+     * @returns {boolean} true if the sprite does not tick.
      */
     get ignorable() {
         return false;
@@ -298,21 +317,12 @@ export default class Sprite {
      * @Note that if we have more attributes of this form, a flag system
      *       can be implemented.
      * Returns false by default.
-     * NOTE: This feature needs revision.
      *
      * @returns {boolean} true if the sprite is text based.
      */
     get textual() {
         return false;
     }
-
-    /**
-     * New text metrics.
-     * Used by textual shapes only.
-     *
-     * @param metrics {TextMetrics} new metrics.
-     */
-    set metrics(metrics) {}
 
     /**
      * used by textual shapes.
@@ -342,6 +352,21 @@ export default class Sprite {
     set onUpdate(onUpdate) {
         this.#onUpdate = onUpdate;
     }
+
+    /**
+     * @param v {RelativePoint | undefined} new relative point of the Sprite.
+     */
+    set relativePoint(v) {
+        this.#relativePoint = v ?? RelativePoint.TopLeft;
+    }
+
+    /**
+     * New text metrics.
+     * Used by textual shapes only.
+     *
+     * @param metrics {TextMetrics} new metrics.
+     */
+    set metrics(metrics) {}
 
     /**
      * @param onTick {(function(number): {

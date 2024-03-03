@@ -1,4 +1,4 @@
-import {Sprite} from "../../GameEngine";
+import {RelativePoint, Sprite} from "../../GameEngine";
 
 /**
  * @class Circle.
@@ -42,7 +42,8 @@ export default class Circle extends Sprite {
             onTick,
             onUpdate,
             brush,
-            hitBoxBrush
+            hitBoxBrush,
+            RelativePoint.Center
         );
     }
 

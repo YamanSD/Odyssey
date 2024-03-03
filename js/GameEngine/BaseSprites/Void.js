@@ -49,6 +49,7 @@ export default class Void extends Sprite {
                 },
             onUpdate,
             undefined,
+            undefined,
             undefined
         );
 

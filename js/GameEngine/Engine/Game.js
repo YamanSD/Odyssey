@@ -1,5 +1,5 @@
-import {QuadTree} from "./Tree";
-import {Sprite, Timeout, Void} from "./BaseSprites";
+import {QuadTree} from "../Tree";
+import {Sprite, Timeout, Void} from "../BaseSprites";
 
 
 /**
@@ -218,10 +218,13 @@ export default class Game {
         this.clear();
 
         this.addEventListener('resize', () => {
+            // Store old width and height
+            const oldWidth = this.width, oldHeight = this.height;
+
             Game.resizeCanvas(canvas);
 
             // Redraw the sprites
-            this.resetTree();
+            this.resetTree(oldWidth, oldHeight);
         }, true);
 
         // Hit-boxes value
@@ -603,6 +606,9 @@ export default class Game {
      * @param sprite {Sprite} to be inserted into the canvas.
      */
     insertSprite(sprite) {
+        // Adjust the coordinates of the sprite on insertion
+        this.adjustRelativity(sprite, this.width, this.height);
+
         // Draw the sprite
         this.render(sprite);
 
@@ -779,6 +785,18 @@ export default class Game {
     }
 
     /**
+     * @param sprite {Sprite} Sprite whose coordinates adjusted.
+     * @param x {number} x-component of the adjustment.
+     * @param y {number} y-component of the adjustment.
+     * @protected
+     */
+    adjustRelativity(sprite, x, y) {
+        const rp = sprite.relativePoint;
+        sprite.x += rp.x * x;
+        sprite.y += rp.y * y;
+    }
+
+    /**
      * Draws the quadrant outlines.
      * @protected
      */
@@ -806,9 +824,12 @@ export default class Game {
     /**
      * Redraws all the sprites, without triggering their updates.
      * Resets the quad tree.
+     *
+     * @param oldWidth {number} old width of the canvas.
+     * @param oldHeight {number} old height of the canvas.
      * @protected
      */
-    resetTree() {
+    resetTree(oldWidth, oldHeight) {
         // Clear the screen
         this.clearScreen();
 
@@ -817,6 +838,12 @@ export default class Game {
 
         // Redraw and re-insert the sprites
         for (const sprite of this.#sprites) {
+            this.adjustRelativity(
+                sprite,
+                this.width - oldWidth,
+                this.height - oldHeight
+            );
+
             this.insertToTree(sprite);
             this.render(sprite);
         }
@@ -1284,7 +1311,7 @@ export default class Game {
         sprite.draw(this.context);
 
         // Process the drawing action
-        this.process()
+        this.process();
 
         // Apply old brush styles
         this.setBrush(oldBrush);

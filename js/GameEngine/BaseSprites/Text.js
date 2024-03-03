@@ -33,13 +33,16 @@ export default class Text extends Sprite {
      *    fillColor?: string,
      *    font?: string
      *  }?} object hit-box brush properties.
+     *  @param relativePoint {RelativePoint?} relative point of the sprite.
+     *  default is TopLeft.
      */
     constructor(
         description,
         onTick,
         onUpdate,
         brush,
-        hitBoxBrush
+        hitBoxBrush,
+        relativePoint
     ) {
         super(
             description,
@@ -47,7 +50,8 @@ export default class Text extends Sprite {
             onTick,
             onUpdate,
             brush,
-            hitBoxBrush
+            hitBoxBrush,
+            relativePoint
         );
     }
 
@@ -127,13 +131,6 @@ export default class Text extends Sprite {
     }
 
     /**
-     * @param v {string} new text value.
-     */
-    set text(v) {
-        this.desc.text = v;
-    }
-
-    /**
      * Overrides the DynamicCanvas brush font.
      *
      * @returns {string} the text font.
@@ -147,6 +144,27 @@ export default class Text extends Sprite {
      */
     get textual() {
         return true;
+    }
+
+    /**
+     * @param v {string} new text value.
+     */
+    set text(v) {
+        this.desc.text = v;
+    }
+
+    /**
+     * @param v {number} new bottomLeft x-coordinate of the text.
+     */
+    set x(v) {
+        this.desc.bottomLeftCoords[0] = v;
+    }
+
+    /**
+     * @param v {number} new bottomLeft y-coordinate of the text.
+     */
+    set y(v) {
+        this.desc.bottomLeftCoords[1] = v;
     }
 
     /**
