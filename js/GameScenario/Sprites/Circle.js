@@ -43,7 +43,6 @@ export default class Circle extends Sprite {
             onUpdate,
             brush,
             hitBoxBrush,
-            RelativePoint.Center
         );
     }
 

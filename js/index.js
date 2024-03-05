@@ -5,6 +5,9 @@ import {Circle, Rectangle} from "./GameScenario/Sprites";
 const g = new Game(
     "mainCanvas",
     true,
+    {
+        borderColor: "green"
+    }
 );
 const speed = 6;
 let paddleMove = {
@@ -18,10 +21,10 @@ let right = 0; // Score
 
 const red = new Circle({
     radius: 10,
-    centerCoords: [0, 0]
+    centerCoords: g.mapCenter([0, 0])
 }, (tick) => {
     // Update on every tick. This is the default function
-    return Sprite.noTick;
+    return {tick};
 }, (sprites) => {
     // Check collisions with left-right borders
     if (red.x - red.radius <= 0) {
