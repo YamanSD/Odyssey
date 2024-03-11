@@ -1,4 +1,4 @@
-import {Game, Sprite, Text} from './GameEngine';
+import {Game, Text} from './GameEngine';
 import {Circle, Rectangle} from "./GameScenario/Sprites";
 
 

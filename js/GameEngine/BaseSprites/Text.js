@@ -237,8 +237,8 @@ export default class Text extends Sprite {
         return this.convertHitBoxes([{
             x: this.x,
             y: this.y - this.height + 1,
-            width: this.width,
-            height: this.height + 1
+            width: this.width * 1.02,
+            height: this.height * 1.25
         }]);
     }
 }
