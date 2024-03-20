@@ -7,6 +7,8 @@ import {Sprite, Timeout, Void} from "../BaseSprites";
  *
  * Class encapsulating the Odyssey game engine.
  * // TODO implement sounds.
+ * // TODO implement moving screen with rendering and update optimizations.
+ * // TODO implement foreground and background rendering.
  */
 export default class Game {
     /**
