@@ -123,8 +123,21 @@ export default class Game {
      *     fillColor?: string,
      *     font?: string
      * } | unescape} controls the style of the quadrants on draw.
+     * @protected
      */
     #quadrantBrush;
+
+    /**
+     * @type {Sprite} followed sprite.
+     * @protected
+     */
+    #followed;
+
+    /**
+     * @type {[number, number]} dimensions of the dead zone.
+     * @protected
+     */
+    #deadZone;
 
     /**
      * @type {function(number)} called before ticking the objects,
@@ -259,6 +272,20 @@ export default class Game {
      */
     get quadrantBrush() {
         return this.#quadrantBrush;
+    }
+
+    /**
+     * @returns {Sprite} the followed sprite.
+     */
+    get followed() {
+        return this.#followed;
+    }
+
+    /**
+     * @returns {[number, number]} the follow dead zone.
+     */
+    get deadZone() {
+        return this.#deadZone;
     }
 
     /**
@@ -599,6 +626,8 @@ export default class Game {
         this.#handlerId = 0;
         this.#latestRenderTime = 0;
         this.#isRunning = false;
+        this.#followed = null;
+        this.#deadZone = [0, 0];
 
         // Assigns the initial timestamp
         this.#initRenderTime = performance.now();
@@ -612,13 +641,23 @@ export default class Game {
         this.adjustRelativity(sprite, this.width, this.height);
 
         // Draw the sprite
-        this.render(sprite);
+        this.draw(sprite);
 
         // Insert the sprite to the quadtree
         this.insertToTree(sprite);
 
         // Add the sprite to the sprites set
         this.#sprites.add(sprite);
+    }
+
+
+    /**
+     * @param sprite {Sprite} sprite to follow.
+     * @param deadZone {[number, number]} dimensions of the dead zone.
+     */
+    follow(sprite, deadZone) {
+        this.#followed = sprite;
+        this.#deadZone = deadZone;
     }
 
     /**
@@ -847,7 +886,7 @@ export default class Game {
             );
 
             this.insertToTree(sprite);
-            this.render(sprite);
+            this.draw(sprite);
         }
     }
 
@@ -916,6 +955,37 @@ export default class Game {
     }
 
     /**
+     * Does the necessary translations for the camera.
+     *
+     * @param multiplier {number} multiplier for the translation distance.
+     * @protected
+     */
+    translateCamera(multiplier) {
+        if (this.followed) {
+            this.context.translate(
+                multiplier * (this.halfWidth - this.followed.x),
+                multiplier * (this.halfHeight - this.followed.y)
+            );
+        }
+    }
+
+    /**
+     * Adjusts the camera according to the followed sprite.
+     * @protected
+     */
+    adjustCamera() {
+        this.translateCamera(1);
+    }
+
+    /**
+     * Resets the camera according to the followed sprite.
+     * @protected
+     */
+    revertCamera() {
+        this.translateCamera(-1);
+    }
+
+    /**
      * Erases the object, exposing any objects beneath it.
      *
      * @param sprite {Sprite} to be erased.
@@ -962,7 +1032,7 @@ export default class Game {
 
             // Redraw all the sprites except the ones erased
             if (!this.#erasedSpriteSet.has(rectSprite.id)) {
-                this.render(rectSprite);
+                this.draw(rectSprite);
             } else if (rectSprite.id === sprite.id) {
                 // Remove from QuadTree
                 this.#quadTree.remove(interRect);
@@ -983,6 +1053,8 @@ export default class Game {
      * @protected
      */
     clearRect(rect) {
+        this.adjustCamera();
+
         // Begin a new path
         this.context.beginPath();
 
@@ -1009,6 +1081,8 @@ export default class Game {
 
         // Close the path
         this.context.closePath();
+
+        this.revertCamera();
     }
 
     /**
@@ -1041,6 +1115,11 @@ export default class Game {
      * @protected
      */
     markedRect(rect, brush) {
+        // Save the old context
+        this.context.save();
+
+        this.adjustCamera();
+
         // Begin the path
         this.context.beginPath();
 
@@ -1081,6 +1160,11 @@ export default class Game {
 
         // Close the path
         this.context.closePath();
+
+        this.revertCamera();
+
+        // Restore the old context
+        this.context.restore();
 
         // Reset the brush
         this.setBrush(oldBrush);
@@ -1214,7 +1298,7 @@ export default class Game {
                 }
 
                 // Process the Sprite update
-                this.render(sprite);
+                this.draw(sprite);
             }
         }
 
@@ -1297,7 +1381,10 @@ export default class Game {
      * }?} overrides the sprite brush.
      * @protected
      */
-    render(sprite, brush) {
+    draw(sprite, brush) {
+        // Save the context
+        this.context.save();
+
         // Apply brush styles, store old context style parameters
         const oldBrush = this.setBrush(brush ?? sprite.brush);
 
@@ -1305,6 +1392,8 @@ export default class Game {
         if (sprite.textual) {
             sprite.metrics = this.measureText(sprite.text);
         }
+
+        this.adjustCamera();
 
         // Begin new path
         this.context.beginPath();
@@ -1320,6 +1409,11 @@ export default class Game {
 
         // End path
         this.context.closePath();
+
+        this.revertCamera();
+
+        // Restore the old context
+        this.context.restore();
 
         // Remove from the erased sprite set
         this.#erasedSpriteSet.delete(sprite.id);
