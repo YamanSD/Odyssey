@@ -4,9 +4,14 @@ import {Circle, Rectangle} from "./GameScenario/Sprites";
 let camera = undefined;
 const g = new Game(
     "mainCanvas",
+    2000,
+    2000,
     true,
+    {
+        'borderColor': 'green'
+    }
 );
-const speed = 6;
+const speed = 20;
 let blueMove = [0, 0];
 
 
@@ -17,7 +22,9 @@ const blue = new Circle({
 }, undefined, () => {
     blue.x += blueMove[0];
     blue.y += blueMove[1];
-    g.cameraCoords = {x: blue.x - g.halfWidth, y: blue.y - g.halfHeight};
+
+    blue.x = Math.max(0, Math.min(blue.x, g.width));
+    blue.y = Math.max(0, Math.min(blue.y, g.height));
 }, {
     fillColor: "blue",
     borderColor: "black"
@@ -25,7 +32,7 @@ const blue = new Circle({
 
 // Example for circular trajectory
 const black = new Circle({
-    radius: 9,
+    radius: 90,
     centerCoords: [300, 300]
 }, undefined, () => {
     const angle = g.degToRadians((speed * g.currentTick) % 361);
@@ -72,7 +79,7 @@ const keyLiftHandler = (e) => {
             break;
     }
 }
-g.follow(blue, [10, 10])
+g.follow(blue)
 
 g.insertSprite(blue);
 g.addEventListener('keydown', keyPressHandler);

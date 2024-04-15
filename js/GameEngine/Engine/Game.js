@@ -7,7 +7,6 @@ import {Sprite, Timeout, Void} from "../BaseSprites";
  *
  * Class encapsulating the Odyssey game engine.
  * // TODO implement sounds.
- * // TODO implement moving screen with rendering and update optimizations.
  * // TODO implement foreground and background rendering.
  */
 export default class Game {
@@ -134,12 +133,6 @@ export default class Game {
     #followed;
 
     /**
-     * @type {[number, number]} dimensions of the dead zone.
-     * @protected
-     */
-    #deadZone;
-
-    /**
      * @type {function(number)} called before ticking the objects,
      *                          given current tick.
      *                          Called even if the game is paused.
@@ -155,12 +148,17 @@ export default class Game {
     #postTick;
 
     /**
-     * @param canvas {HTMLElement} to be resized to full screen.
-     * @protected
+     * @returns {number} the browser window height.
      */
-    static resizeCanvas(canvas) {
-        canvas.height = window.innerHeight;
-        canvas.width = window.innerWidth;
+    static get windowHeight() {
+        return window.innerHeight;
+    }
+
+    /**
+     * @returns {number} the browser window width.
+     */
+    static get windowWidth() {
+        return window.innerWidth;
     }
 
     /**
@@ -174,6 +172,7 @@ export default class Game {
         for (const element of document.querySelectorAll(name)) {
             element.style.padding = element.style.margin = '0';
             element.style.verticalAlign = 'middle';
+            element.style.overflowY = element.style.overflowX = 'hidden';
         }
     }
 
@@ -190,6 +189,8 @@ export default class Game {
 
     /**
      * @param canvasId {string} HTML5 ID of the canvas element.
+     * @param width {number} width of the game map.
+     * @param height {number} height of the game map.
      * @param showHitBoxes {boolean?} true to show sprite hit-boxes.
      * @param quadrantBrush {{
      *     borderWidth?: number,
@@ -203,6 +204,8 @@ export default class Game {
      */
     constructor(
         canvasId,
+        width,
+        height,
         showHitBoxes,
         quadrantBrush,
         preTick,
@@ -220,8 +223,9 @@ export default class Game {
         this.preTick = preTick;
         this.postTick = postTick;
 
-        // Adjust canvas size to cover the screen
-        Game.resizeCanvas(canvas);
+        // Set the width and height of the canvas.
+        canvas.width = width;
+        canvas.height = height;
 
         // Remove margins and padding
         Game.zeroMarginElements();
@@ -232,16 +236,6 @@ export default class Game {
         // Initialize the data fields
         this.clear();
 
-        this.addEventListener('resize', () => {
-            // Store old width and height
-            const oldWidth = this.width, oldHeight = this.height;
-
-            Game.resizeCanvas(canvas);
-
-            // Redraw the sprites
-            this.resetTree(oldWidth, oldHeight);
-        }, true);
-
         // Hit-boxes value
         this.showHitBoxes = showHitBoxes;
 
@@ -250,6 +244,82 @@ export default class Game {
 
         // Start the game
         this.#start();
+    }
+
+    /**
+     * @returns {number} the x-coordinate of the camera.
+     */
+    get cameraX() {
+        if (this.followed) {
+            return Math.max(
+                this.followed.x - this.halfWindowWidth,
+                0
+            );
+        }
+
+        return 0;
+    }
+
+    /**
+     * @returns {number} the right line of camera.
+     */
+    get cameraRX() {
+        return Math.min(
+            this.cameraX + this.windowWidth,
+            this.width
+        );
+    }
+
+    /**
+     * @returns {number} the bottom line of camera.
+     */
+    get cameraBY() {
+        return Math.min(
+            this.cameraY + this.windowHeight,
+            this.height
+        );
+    }
+
+    /**
+     * @returns {number} the y-coordinate of the camera.
+     */
+    get cameraY() {
+        if (this.followed) {
+            return Math.max(
+                this.followed.y - this.halfWindowHeight,
+                0
+            );
+        }
+
+        return 0;
+    }
+
+    /**
+     * @returns {number} the browser window height.
+     */
+    get windowHeight() {
+        return Game.windowHeight;
+    }
+
+    /**
+     * @returns {number} the browser window width.
+     */
+    get windowWidth() {
+        return Game.windowWidth;
+    }
+
+    /**
+     * @returns {number} half the browser window height.
+     */
+    get halfWindowHeight() {
+        return this.windowHeight / 2;
+    }
+
+    /**
+     * @returns {number} half the browser window width.
+     */
+    get halfWindowWidth() {
+        return this.windowWidth / 2;
     }
 
     /**
@@ -279,13 +349,6 @@ export default class Game {
      */
     get followed() {
         return this.#followed;
-    }
-
-    /**
-     * @returns {[number, number]} the follow dead zone.
-     */
-    get deadZone() {
-        return this.#deadZone;
     }
 
     /**
@@ -627,7 +690,6 @@ export default class Game {
         this.#latestRenderTime = 0;
         this.#isRunning = false;
         this.#followed = null;
-        this.#deadZone = [0, 0];
 
         // Assigns the initial timestamp
         this.#initRenderTime = performance.now();
@@ -653,11 +715,9 @@ export default class Game {
 
     /**
      * @param sprite {Sprite} sprite to follow.
-     * @param deadZone {[number, number]} dimensions of the dead zone.
      */
-    follow(sprite, deadZone) {
+    follow(sprite) {
         this.#followed = sprite;
-        this.#deadZone = deadZone;
     }
 
     /**
@@ -961,26 +1021,36 @@ export default class Game {
      * @protected
      */
     translateCamera(multiplier) {
-        // TODO fix dead zone bounds
+        // TODO change the camera dims to a generic value other than half the window width
         if (this.followed) {
-            let x = multiplier * (this.halfWidth - this.followed.x);
-            let y = multiplier * (this.halfHeight - this.followed.y);
+            let x = this.halfWindowWidth - this.followed.x,
+                y = this.halfWindowHeight - this.followed.y;
 
-            // Apply dead zone x-margin
-            if (x < 0) {
+            if (this.cameraX === 0 || this.width < this.windowWidth) {
+                // Check if the camera reached the left bound
                 x = 0;
-            } else if (this.width < x) {
-                x = this.width;
+            } else if (this.cameraRX === this.width) {
+                // Check if the camera reached the right bound
+
+                // Flip the sign
+                x = this.windowWidth - this.width;
             }
 
-            // Apply dead zone y-margin
-            if (y < 0) {
+            if (this.cameraY === 0 || this.height < this.windowHeight) {
+                // Check if the camera reached the top bound
                 y = 0;
-            } else if (this.height < y) {
-                y = this.height;
+            } else if (this.cameraBY === this.height) {
+                // Check if the camera reached the bottom bound
+
+                // Flip the sign
+                y = this.windowHeight - this.height;
             }
 
-            this.context.translate(x, y);
+            // Apply the camera changes
+            this.context.translate(
+                multiplier * x,
+                multiplier * y
+            );
         }
     }
 
