@@ -961,11 +961,26 @@ export default class Game {
      * @protected
      */
     translateCamera(multiplier) {
+        // TODO fix dead zone bounds
         if (this.followed) {
-            this.context.translate(
-                multiplier * (this.halfWidth - this.followed.x),
-                multiplier * (this.halfHeight - this.followed.y)
-            );
+            let x = multiplier * (this.halfWidth - this.followed.x);
+            let y = multiplier * (this.halfHeight - this.followed.y);
+
+            // Apply dead zone x-margin
+            if (x < 0) {
+                x = 0;
+            } else if (this.width < x) {
+                x = this.width;
+            }
+
+            // Apply dead zone y-margin
+            if (y < 0) {
+                y = 0;
+            } else if (this.height < y) {
+                y = this.height;
+            }
+
+            this.context.translate(x, y);
         }
     }
 
@@ -1081,7 +1096,6 @@ export default class Game {
 
         // Close the path
         this.context.closePath();
-
         this.revertCamera();
     }
 
@@ -1115,9 +1129,6 @@ export default class Game {
      * @protected
      */
     markedRect(rect, brush) {
-        // Save the old context
-        this.context.save();
-
         this.adjustCamera();
 
         // Begin the path
@@ -1160,11 +1171,7 @@ export default class Game {
 
         // Close the path
         this.context.closePath();
-
         this.revertCamera();
-
-        // Restore the old context
-        this.context.restore();
 
         // Reset the brush
         this.setBrush(oldBrush);
@@ -1393,6 +1400,7 @@ export default class Game {
             sprite.metrics = this.measureText(sprite.text);
         }
 
+        // Adjust camera
         this.adjustCamera();
 
         // Begin new path
@@ -1410,6 +1418,7 @@ export default class Game {
         // End path
         this.context.closePath();
 
+        // Adjust camera
         this.revertCamera();
 
         // Restore the old context
