@@ -238,6 +238,10 @@ export default class Game {
         // Initialize the data fields
         this.clear();
 
+        this.addEventListener('resize', () => {
+            this.clearScreen();
+        }, true);
+
         // Hit-boxes value
         this.showHitBoxes = showHitBoxes;
 
