@@ -6,12 +6,8 @@ const g = new Game(
     "mainCanvas",
     2000,
     2000,
-    true,
-    {
-        'borderColor': 'green'
-    }
 );
-const speed = 20;
+const speed = 10;
 let blueMove = [0, 0];
 
 
@@ -32,14 +28,14 @@ const blue = new Circle({
 
 // Example for circular trajectory
 const black = new Circle({
-    radius: 90,
+    radius: 40,
     centerCoords: [300, 300]
 }, undefined, () => {
     const angle = g.degToRadians((speed * g.currentTick) % 361);
     const path = {x: 300, y: 400, r: 50};
 
-    // black.x = path.x + path.r * Math.cos(angle);
-    // black.y = path.y + path.r * Math.sin(angle);
+    black.x = path.x + path.r * Math.cos(angle);
+    black.y = path.y + path.r * Math.sin(angle);
 }, {
     fillColor: "black",
 });
@@ -79,16 +75,25 @@ const keyLiftHandler = (e) => {
             break;
     }
 }
-g.follow(blue)
 
+
+g.follow(blue);
+g.insertSprite(black); // Falls under blue on intersection
 g.insertSprite(blue);
 g.addEventListener('keydown', keyPressHandler);
 g.addEventListener('keyup', keyLiftHandler);
 
-g.insertSprite(black); // Falls under blue on intersection
+
+
 // g.insertSprite(blue);
 
 g.resume();
+
+let isBlue = true;
+g.setInterval(() => {
+    g.follow(isBlue ? black : blue);
+    isBlue = !isBlue;
+}, 1000);
 
 // g.setTimeout(() => {
 //     g.pause();

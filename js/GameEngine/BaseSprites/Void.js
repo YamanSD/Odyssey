@@ -32,8 +32,8 @@ export default class Void extends Sprite {
         insertAfter
     ) {
         super(
-            undefined,
-            undefined, insertAfter !== undefined
+            {},
+            [0, 0], insertAfter !== undefined
                 ? () => {
                     return {
                         tick: updateAfter,
