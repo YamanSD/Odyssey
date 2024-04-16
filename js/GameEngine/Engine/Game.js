@@ -714,10 +714,21 @@ export default class Game {
 
 
     /**
+     * Only one sprite can be followed at a time.
+     *
      * @param sprite {Sprite} sprite to follow.
      */
     follow(sprite) {
         this.#followed = sprite;
+
+        this.clearScreen();
+    }
+
+    /**
+     * Unfollows the current followed sprite.
+     */
+    unfollow() {
+        this.follow(null);
     }
 
     /**
@@ -969,6 +980,24 @@ export default class Game {
     }
 
     /**
+     * @param sprite {Sprite} sprite to tick.
+     * @param curTick {number} current tick.
+     * @private
+     */
+    #simpleTick(sprite, curTick) {
+        // Ignore the sprite if it is followed, ignorable, or removed.
+        if (sprite.ignorable || this.#removedSprites.has(sprite)) {
+            return;
+        }
+
+        // Get the sprite tick instructions
+        const sti = sprite.onTick(curTick);
+
+        // Insert the sprite tick
+        this.insertTick(sprite, sti.tick, sti.insertAfter);
+    }
+
+    /**
      * Ticks all the game objects, and updates the ones that can
      * be updated.
      * @protected
@@ -990,18 +1019,16 @@ export default class Game {
         // Current tick
         const curTick = this.#progressTick;
 
+        // Must tick the followed sprite first
+        if (this.followed) {
+            this.#simpleTick(this.followed, curTick);
+        }
+
         // Trigger the onTick for all sprites
         for (const sprite of this.#sprites) {
-            // Ignore the sprite
-            if (sprite.ignorable || this.#removedSprites.has(sprite)) {
-                continue;
+            if (sprite !== this.followed) {
+                this.#simpleTick(sprite, curTick);
             }
-
-            // Get the sprite tick instructions
-            const sti = sprite.onTick(curTick);
-
-            // Insert the sprite tick
-            this.insertTick(sprite, sti.tick, sti.insertAfter);
         }
 
         // Process the updates
@@ -1021,7 +1048,6 @@ export default class Game {
      * @protected
      */
     translateCamera(multiplier) {
-        // TODO change the camera dims to a generic value other than half the window width
         if (this.followed) {
             let x = this.halfWindowWidth - this.followed.x,
                 y = this.halfWindowHeight - this.followed.y;
@@ -1175,10 +1201,10 @@ export default class Game {
      */
     clearScreen() {
         this.clearRect({
-            x: 0,
-            y: 0,
-            width: this.width,
-            height: this.height
+            x: this.cameraX,
+            y: this.cameraY,
+            width: this.windowWidth,
+            height: this.windowHeight
         });
     }
 
