@@ -12,7 +12,7 @@ export default class Sound {
      * @type {Object<string, HTMLAudioElement>}
      * @private
      */
-    static #loaded;
+    static #loaded = {};
 
     /**
      * For documentation of Audio, see
