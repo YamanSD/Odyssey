@@ -1,3 +1,5 @@
+'use strict';
+
 import Vector from './Vector.js';
 import DLine from './DLine.js';
 

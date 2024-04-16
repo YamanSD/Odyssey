@@ -1,5 +1,8 @@
+'use strict';
+
 import {HitBox} from "../Tree";
 import {RelativePoint} from "../Engine";
+
 
 /**
  * @Abstract

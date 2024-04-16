@@ -1,3 +1,5 @@
+'use strict';
+
 import {Vector} from "./index.js";
 
 

@@ -1,5 +1,6 @@
 import {RelativePoint, Sprite} from "../../GameEngine";
 
+
 /**
  * @class Circle.
  *

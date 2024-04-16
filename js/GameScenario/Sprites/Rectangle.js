@@ -1,5 +1,6 @@
 import {Sprite} from "../../GameEngine";
 
+
 /**
  * @class Rectangle.
  *

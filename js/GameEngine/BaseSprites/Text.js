@@ -1,4 +1,7 @@
+'use strict';
+
 import Sprite from "./Sprite.js";
+
 
 /**
  * @class Text.

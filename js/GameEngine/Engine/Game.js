@@ -1,3 +1,5 @@
+'use strict';
+
 import {QuadTree} from "../Tree";
 import {Sprite, Timeout, Void} from "../BaseSprites";
 

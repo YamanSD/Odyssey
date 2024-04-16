@@ -1,4 +1,7 @@
+'use strict';
+
 import {Sprite} from "./index.js";
+
 
 /**
  * @class Void.
