@@ -2,6 +2,7 @@
 
 import {HitBox} from "../Tree";
 import {RelativePoint, Sound} from "../Engine";
+import SpriteSheet from "./SpriteSheet.js";
 
 
 /**
@@ -34,6 +35,58 @@ export default class Sprite {
      * @private
      */
     #desc;
+
+    /**
+     * @type {string[]} list of sprite sheet paths.
+     * @private
+     */
+    #sheet;
+
+    /**
+     * Current animation ID.
+     *
+     * @type {number}
+     * @private
+     */
+    #animationId;
+
+    /**
+     * Maps the animation IDs to animation objects.
+     *
+     * @type {
+     *  Object<number, {
+     *     sheetInd: number,
+     *     startX: number,
+     *     startY: number,
+     *     columns: number,
+     *     rows: number,
+     *     frameCnt: number,
+     *     singleWidth: number,
+     *     singleHeight: number,
+     *     nonLinked: boolean,
+     *     currentRow: number,
+     *     currentCol: number
+     *  }>
+     * }
+     * @private
+     */
+    #animations;
+
+    /**
+     * Set of non-linked animation IDs.
+     *
+     * @type {Set<number>}
+     * @private
+     */
+    #nonLinkedAnimations;
+
+    /**
+     * Proxy map holding the states of the instance.
+     *
+     * @type {Map<any, any>}
+     * @private
+     */
+    #states;
 
     /**
      * @type {[number, number]} the 2d coordinates of the sprite.
@@ -165,6 +218,7 @@ export default class Sprite {
 
     /**
      * @param description {any} sprite geometric description.
+     * @param sheets {string[]} list of sprite sheets.
      * @param coords {[number, number]} the coordinates of the sprite.
      * @param onTick {(function(number): {
      *     tick: number,
@@ -188,6 +242,7 @@ export default class Sprite {
      */
     constructor(
         description,
+        sheets,
         coords,
         onTick,
         onUpdate,
@@ -197,7 +252,12 @@ export default class Sprite {
     ) {
         this.#id = Sprite.#spriteId();
         this.#desc = description;
+        this.#sheet = sheets;
         this.#coords = coords;
+        this.#animations = {};
+        this.#nonLinkedAnimations = new Set();
+        this.#animationId = 0;
+        this.#states = new Map();
         this.brush = brush;
         this.hitBoxBrush = hitBoxBrush;
         this.onUpdate = onUpdate;
@@ -213,6 +273,13 @@ export default class Sprite {
      */
     get id() {
         return this.#id;
+    }
+
+    /**
+     * @returns {Object<any, any>} the states object.
+     */
+    get states() {
+        return this.#states;
     }
 
     /**
@@ -294,6 +361,13 @@ export default class Sprite {
     }
 
     /**
+     * @returns {string[]} list of sprite sheets of the Sprite.
+     */
+    get sheets() {
+        return this.#sheet;
+    }
+
+    /**
      * @Abstract
      * @returns {number} number representing the type of the sprite.
      */
@@ -348,6 +422,14 @@ export default class Sprite {
      * @Abstract
      */
     get clone() {}
+
+    /**
+     * @returns {number} a usable animation ID.
+     * @private
+     */
+    get animationId() {
+        return this.#animationId++;
+    }
 
     /**
      * @param onUpdate {(function(Set<HitBox>): any)?} new onUpdate function.
@@ -475,4 +557,120 @@ export default class Sprite {
      * @param context {CanvasRenderingContext2D} 2d canvas element context.
      */
     draw(context) {}
+
+    /**
+     * Creates a sprite animation that can be used.
+     *
+     * @param sheetInd {number} index of the sprite sheet from the sheets list.
+     * @param startX {number} x-coordinate of the top-left point of the starting rectangle.
+     * @param startY {number} y-coordinate of the top-left point of the starting rectangle.
+     * @param columns {number} maximum number of columns for the animation.
+     * @param rows {number} maximum number of rows for the animation.
+     * @param frameCnt {number} total number of frames in the animation.
+     * @param singleWidth {number} width of a single frame (in pixels).
+     * @param singleHeight {number} height of a single frame (in pixels).
+     * @param nonLinked {boolean} true if the animation is played with a call to non-linked play.
+     * @returns {number} the animation ID, used for moving it.
+     */
+    createAnimation(
+        sheetInd,
+        startX,
+        startY,
+        columns,
+        rows,
+        frameCnt,
+        singleWidth,
+        singleHeight,
+        nonLinked
+    ) {
+        // Generate an animation ID
+        const id = this.animationId;
+
+        // Add the animation to the animations object
+        this.#animations[id] = {
+            sheetInd,
+            startX,
+            startY,
+            columns,
+            rows,
+            frameCnt,
+            singleWidth,
+            singleHeight,
+            nonLinked,
+            currentRow: 0,
+            currentCol: 0
+        };
+
+        if (nonLinked) {
+            this.#nonLinkedAnimations.add(id);
+        }
+
+        return id;
+    }
+
+    /**
+     * @param id {number} ID of the animation to remove.
+     */
+    removeAnimation(id) {
+        if (this.#animations[id].nonLinked) {
+            this.#nonLinkedAnimations.delete(id);
+        }
+
+        delete this.#animations[id];
+    }
+
+    /**
+     * @param id {number} ID of the animation to move one frame.
+     */
+    moveAnimation(id) {
+        const anim = this.#animations[id];
+
+        // Increment the current column
+        anim.currentCol++;
+
+        // In case of overflow, jump to next row
+        if (
+            anim.currentCol >= anim.columns
+            || anim.currentCol + anim.currentRow * anim.columns > anim.frameCnt
+        ) {
+            anim.currentCol = 0;
+            anim.currentRow++;
+        }
+
+        // In case of overflow, jump back to start
+        if (anim.currentRow >= anim.rows) {
+            anim.currentRow = 0;
+        }
+    }
+
+    /**
+     * Moves all the non-linked animation one frame.
+     */
+    moveNonLinkedAnimations() {
+        this.#nonLinkedAnimations.forEach(id => {
+            this.moveAnimation(id);
+        });
+    }
+
+    /**
+     * @param x {number} x-coordinate of the top-left corner of the destination.
+     * @param y {number} y-coordinate of the top-left corner of the destination.
+     * @param id {number} ID of the animation to draw.
+     * @param ctx {CanvasRenderingContext2D} 2d canvas element context.
+     */
+    drawAnimation(x, y, id, ctx) {
+        const anim = this.#animations[id];
+
+        ctx.drawImage(
+            SpriteSheet.load(this.sheets[anim.sheetInd]),
+            anim.singleWidth * anim.currentCol + anim.startX,
+            anim.singleHeight * anim.currentRow + anim.startY,
+            anim.singleWidth,
+            anim.singleHeight,
+            x,
+            y,
+            anim.singleWidth,
+            anim.singleHeight,
+        );
+    }
 }

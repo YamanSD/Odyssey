@@ -39,6 +39,7 @@ export default class Circle extends Sprite {
     ) {
         super(
             description,
+            [],
             description.centerCoords,
             onTick,
             onUpdate,

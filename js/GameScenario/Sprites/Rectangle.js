@@ -40,6 +40,7 @@ export default class Rectangle extends Sprite {
     ) {
         super(
             description,
+            [],
             description.topLeftCoords,
             onTick,
             onUpdate,

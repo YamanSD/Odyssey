@@ -36,6 +36,7 @@ export default class Void extends Sprite {
     ) {
         super(
             {},
+            [],
             [0, 0], insertAfter !== undefined
                 ? () => {
                     return {

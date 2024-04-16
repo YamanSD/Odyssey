@@ -15,8 +15,6 @@ export default class Sound {
     static #loaded = {};
 
     /**
-     * For documentation of Audio, see
-     *
      * @param src {string} source of the sound file.
      * @param forceLoad {boolean} true to force load the file.
      * @returns {HTMLAudioElement} the loaded audio instance.

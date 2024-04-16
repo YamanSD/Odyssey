@@ -49,6 +49,7 @@ export default class Text extends Sprite {
     ) {
         super(
             description,
+            [],
             description.bottomLeftCoords,
             onTick,
             onUpdate,
