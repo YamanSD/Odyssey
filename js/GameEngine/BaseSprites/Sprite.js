@@ -1,7 +1,7 @@
 'use strict';
 
 import {HitBox} from "../Tree";
-import {RelativePoint} from "../Engine";
+import {RelativePoint, Sound} from "../Engine";
 
 
 /**
@@ -432,6 +432,15 @@ export default class Sprite {
      * @returns {boolean} true if point (x, y) is in the sprite.
      */
     hasPoint(x, y) {}
+
+    /**
+     * @param src {string} path to the sound file to play.
+     * @param reload {boolean} true to reload sound file.
+     * @returns {HTMLAudioElement} Audio instance for use.
+     */
+    getSound(src, reload = false) {
+        return Sound.load(src, reload);
+    }
 
     /**
      * @param rects {{

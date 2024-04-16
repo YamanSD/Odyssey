@@ -2,13 +2,13 @@
 
 import {QuadTree} from "../Tree";
 import {Sprite, Timeout, Void} from "../BaseSprites";
+import Sound from "./Sound.js";
 
 
 /**
  * @class Game
  *
  * Class encapsulating the Odyssey game engine.
- * // TODO implement sounds.
  * // TODO implement foreground and background rendering.
  */
 export default class Game {
@@ -645,6 +645,9 @@ export default class Game {
 
         // Reset the canvas and its data fields
         this.clearScreen();
+
+        // Clear the sounds cache
+        Sound.clear();
 
         // Create a new quadtree
         this.#quadTree = new QuadTree({
