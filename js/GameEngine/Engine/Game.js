@@ -9,7 +9,6 @@ import Sound from "./Sound.js";
  * @class Game
  *
  * Class encapsulating the Odyssey game engine.
- * // TODO implement foreground and background rendering.
  */
 export default class Game {
     /**
@@ -135,6 +134,14 @@ export default class Game {
     #followed;
 
     /**
+     * Object containing game settings.
+     *
+     * @type {Object<any, any>}
+     * @private
+     */
+    #settings;
+
+    /**
      * @type {function(number)} called before ticking the objects,
      *                          given current tick.
      *                          Called even if the game is paused.
@@ -250,6 +257,20 @@ export default class Game {
 
         // Start the game
         this.#start();
+    }
+
+    /**
+     * @returns {Object<*, *>} the settings of the game.
+     */
+    get settings() {
+        return this.#settings;
+    }
+
+    /**
+     * @param settings {Object<any, any>} new value of the settings.
+     */
+    set settings(settings) {
+        this.#settings = {...settings};
     }
 
     /**
@@ -994,8 +1015,8 @@ export default class Game {
      * @private
      */
     #simpleTick(sprite, curTick) {
-        // Ignore the sprite if it is followed, ignorable, or removed.
-        if (sprite.ignorable || this.#removedSprites.has(sprite)) {
+        // Ignore the sprite if it is followed, static, or removed.
+        if (sprite.static || this.#removedSprites.has(sprite)) {
             return;
         }
 
