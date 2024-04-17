@@ -45,9 +45,7 @@ export default class Rectangle extends Sprite {
             onTick,
             onUpdate,
             brush,
-            hitBoxBrush,
-            false,
-            false
+            hitBoxBrush
         );
     }
 

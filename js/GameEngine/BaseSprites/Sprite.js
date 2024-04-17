@@ -255,8 +255,8 @@ export default class Sprite {
      *  }?} object hit-box brush properties.
      *  @param relativePoint {RelativePoint?} relative point of the sprite.
      *  default is TopLeft.
-     *  @param ignorable {boolean} true if the instance does not have collisions.
-     *  @param isStatic {boolean} true indicates that the sprite does not tick.
+     *  @param ignorable {boolean?} true if the instance does not have collisions. Default false.
+     *  @param isStatic {boolean?} true indicates that the sprite does not tick. Default false.
      */
     constructor(
         description,
@@ -283,8 +283,8 @@ export default class Sprite {
         this.onUpdate = onUpdate;
         this.onTick = onTick;
         this.relativePoint = relativePoint;
-        this.ignorable = ignorable;
-        this.static = isStatic;
+        this.ignorable = ignorable ?? false;
+        this.static = isStatic ?? false;
 
         // Store the sprite reference into the sprites map
         Sprite.sprites[this.id] = this;
