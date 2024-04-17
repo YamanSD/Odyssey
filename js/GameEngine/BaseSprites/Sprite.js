@@ -51,6 +51,22 @@ export default class Sprite {
     #animationId;
 
     /**
+     * True indicates that the sprite must not be collided with.
+     *
+     * @type {boolean}
+     * @private
+     */
+    #ignorable;
+
+    /**
+     * True indicates that the sprite does not tick.
+     *
+     * @type {boolean}
+     * @private
+     */
+    #static;
+
+    /**
      * Maps the animation IDs to animation objects.
      *
      * @type {
@@ -239,6 +255,8 @@ export default class Sprite {
      *  }?} object hit-box brush properties.
      *  @param relativePoint {RelativePoint?} relative point of the sprite.
      *  default is TopLeft.
+     *  @param ignorable {boolean} true if the instance does not have collisions.
+     *  @param isStatic {boolean} true indicates that the sprite does not tick.
      */
     constructor(
         description,
@@ -248,7 +266,9 @@ export default class Sprite {
         onUpdate,
         brush,
         hitBoxBrush,
-        relativePoint
+        relativePoint,
+        ignorable,
+        isStatic
     ) {
         this.#id = Sprite.#spriteId();
         this.#desc = description;
@@ -263,6 +283,8 @@ export default class Sprite {
         this.onUpdate = onUpdate;
         this.onTick = onTick;
         this.relativePoint = relativePoint;
+        this.ignorable = ignorable;
+        this.static = isStatic;
 
         // Store the sprite reference into the sprites map
         Sprite.sprites[this.id] = this;
@@ -380,14 +402,20 @@ export default class Sprite {
     get type() {}
 
     /**
-     * @Note that if we have more attributes of this form, a flag system
-     *       can be implemented.
-     * Returns false by default.
-     *
      * @returns {boolean} true if the sprite does not tick.
      */
+    get static() {
+        return this.#static;
+    }
+
+    /**
+     * Override by child class to change to true.
+     * Returns false be default.
+     *
+     * @returns {boolean} true if the sprite does not have collision.
+     */
     get ignorable() {
-        return false;
+        return this.#ignorable;
     }
 
     /**
@@ -429,6 +457,20 @@ export default class Sprite {
      */
     get animationId() {
         return this.#animationId++;
+    }
+
+    /**
+     * @param value {boolean} true indicates that the sprite does not tick.
+     */
+    set static(value) {
+        this.#static = value;
+    }
+
+    /**
+     * @param value {boolean} true indicates that the sprite does not collide.
+     */
+    set ignorable(value) {
+        this.#ignorable = value;
     }
 
     /**
