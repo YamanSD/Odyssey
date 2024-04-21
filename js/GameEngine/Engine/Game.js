@@ -142,6 +142,21 @@ export default class Game {
     #settings;
 
     /**
+     * The perceived map dimensions by the player, not the actual.
+     * Where (x, y) are the perceived coordinates of the center,
+     * and (width, height) are the perceived dimensions.
+     *
+     * @type {{
+     *     x: number,
+     *     y: number,
+     *     width: number,
+     *     height: number
+     * }}
+     * @private
+     */
+    #perceivedDimensions;
+
+    /**
      * @type {function(number)} called before ticking the objects,
      *                          given current tick.
      *                          Called even if the game is paused.
@@ -267,10 +282,10 @@ export default class Game {
     }
 
     /**
-     * @param settings {Object<any, any>} new value of the settings.
+     * @returns {{x: number, y: number, width: number, height: number}} the perceived dimensions.
      */
-    set settings(settings) {
-        this.#settings = {...settings};
+    get perceivedDimensions() {
+        return this.#perceivedDimensions;
     }
 
     /**
@@ -280,7 +295,7 @@ export default class Game {
         if (this.followed) {
             return Math.max(
                 this.followed.x - this.halfWindowWidth,
-                0
+                this.perceivedDimensions.x
             );
         }
 
@@ -293,7 +308,7 @@ export default class Game {
     get cameraRX() {
         return Math.min(
             this.cameraX + this.windowWidth,
-            this.width
+            this.perceivedDimensions.width + this.perceivedDimensions.x
         );
     }
 
@@ -303,7 +318,7 @@ export default class Game {
     get cameraBY() {
         return Math.min(
             this.cameraY + this.windowHeight,
-            this.height
+            this.perceivedDimensions.height + this.perceivedDimensions.y
         );
     }
 
@@ -314,7 +329,7 @@ export default class Game {
         if (this.followed) {
             return Math.max(
                 this.followed.y - this.halfWindowHeight,
-                0
+                this.perceivedDimensions.y
             );
         }
 
@@ -473,6 +488,28 @@ export default class Game {
     }
 
     /**
+     * @param settings {Object<any, any>} new value of the settings.
+     */
+    set settings(settings) {
+        this.#settings = {...settings};
+    }
+
+    /**
+     * @param value {{
+     *     x?: number,
+     *     y?: number,
+     *     width?: number,
+     *     height?: number
+     * }} new perceived dimensions
+     */
+    set perceivedDimensions(value) {
+        this.#perceivedDimensions = {
+            ...this.#perceivedDimensions,
+            ...value
+        }
+    }
+
+    /**
      * @param brush {{
      *     borderWidth?: number,
      *     borderColor?: string,
@@ -485,10 +522,11 @@ export default class Game {
     }
 
     /**
-     * @param v {boolean} true to show the object hit-boxes.
+     * @param value {boolean} true to show the object hit-boxes.
      */
-    set showHitBoxes(v) {
-        this.#showHitBoxes = v;
+    set showHitBoxes(value) {
+        this.#showHitBoxes = value;
+        Sprite.showingHitBoxes = value;
     }
 
     /**
@@ -668,6 +706,14 @@ export default class Game {
         // Reset the brush
         this.setBrush(undefined);
 
+        // Set the perceived dimensions
+        this.perceivedDimensions = {
+            x: 0,
+            y: 0,
+            width: this.width,
+            height: this.height
+        };
+
         // Reset the canvas and its data fields
         this.clearScreen();
 
@@ -743,6 +789,14 @@ export default class Game {
         this.#sprites.add(sprite);
     }
 
+    /**
+     * Inserts the given sprites in order into the engine.
+     *
+     * @param sprites {Sprite} iterable of sprites to insert.
+     */
+    insertSprites(...sprites) {
+        sprites.forEach(s => this.insertSprite(s));
+    }
 
     /**
      * Only one sprite can be followed at a time.
@@ -1080,27 +1134,31 @@ export default class Game {
      */
     translateCamera(multiplier) {
         if (this.followed) {
+            const perceived = this.perceivedDimensions;
+
             let x = this.halfWindowWidth - this.followed.x,
                 y = this.halfWindowHeight - this.followed.y;
 
-            if (this.cameraX === 0 || this.width < this.windowWidth) {
+            const width = perceived.width, height = perceived.height;
+
+            if (this.cameraX === perceived.x || width < this.windowWidth) {
                 // Check if the camera reached the left bound
-                x = 0;
-            } else if (this.cameraRX === this.width) {
+                x = -perceived.x;
+            } else if (this.cameraRX === width + perceived.x) {
                 // Check if the camera reached the right bound
 
                 // Flip the sign
-                x = this.windowWidth - this.width;
+                x = this.windowWidth - width - perceived.x;
             }
 
-            if (this.cameraY === 0 || this.height < this.windowHeight) {
+            if (this.cameraY === perceived.y || height < this.windowHeight) {
                 // Check if the camera reached the top bound
-                y = 0;
-            } else if (this.cameraBY === this.height) {
+                y = -perceived.y;
+            } else if (this.cameraBY === height + perceived.y) {
                 // Check if the camera reached the bottom bound
 
                 // Flip the sign
-                y = this.windowHeight - this.height;
+                y = this.windowHeight - height - perceived.y;
             }
 
             // Apply the camera changes
