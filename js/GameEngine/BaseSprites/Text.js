@@ -22,7 +22,7 @@ export default class Text extends Sprite {
      * @param onTick {(function(number): {
      *     tick: number,
      *     insertAfter?: number
-     * }) | undefined} called on each tick cycle.
+     * })?} called on each tick cycle.
      * @param onUpdate {(function(Set<HitBox>): boolean)?} called on each update cycle
      * @param brush {{
      *    borderWidth?: number,
