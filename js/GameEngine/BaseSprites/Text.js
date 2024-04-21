@@ -129,7 +129,10 @@ export default class Text extends Sprite {
             this.onTick,
             this.onUpdate,
             this.brush,
-            this.hitBoxBrush
+            this.hitBoxBrush,
+            this.relativePoint,
+            this.ignorable,
+            this.static
         );
     }
 
@@ -204,17 +207,8 @@ export default class Text extends Sprite {
      * @param context {CanvasRenderingContext2D} 2d canvas element context.
      */
     draw(context) {
-        // Store old font
-        const oldFont = context.font;
-
-        // Override context font
-        context.font = this.font;
-
         // Draw the text fill
         context.fillText(this.text, this.x, this.y);
-
-        // Restore old font
-        context.font = oldFont;
     }
 
     /**
