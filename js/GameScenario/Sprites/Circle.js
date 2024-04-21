@@ -2,7 +2,7 @@ import {RelativePoint, Sprite} from "../../GameEngine";
 
 
 /**
- * @class Circle.
+ * @class Circle
  *
  * Class representing circles in canvas.
  */

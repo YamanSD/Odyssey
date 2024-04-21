@@ -4,7 +4,7 @@ import Sprite from "./Sprite.js";
 
 
 /**
- * @class Text.
+ * @class Text
  *
  * Class representing texts in canvas.
  */
@@ -38,6 +38,8 @@ export default class Text extends Sprite {
      *  }?} object hit-box brush properties.
      *  @param relativePoint {RelativePoint?} relative point of the sprite.
      *  default is TopLeft.
+     *  @param ignorable {boolean?} true if the instance does not have collisions. Default false.
+     *  @param isStatic {boolean?} true indicates that the sprite does not tick. Default false.
      */
     constructor(
         description,
@@ -45,7 +47,9 @@ export default class Text extends Sprite {
         onUpdate,
         brush,
         hitBoxBrush,
-        relativePoint
+        relativePoint,
+        ignorable,
+        isStatic
     ) {
         super(
             description,
@@ -55,7 +59,9 @@ export default class Text extends Sprite {
             onUpdate,
             brush,
             hitBoxBrush,
-            relativePoint
+            relativePoint,
+            ignorable,
+            isStatic
         );
     }
 

@@ -89,11 +89,11 @@ g.addEventListener('keyup', keyLiftHandler);
 
 g.resume();
 
-let isBlue = true;
-g.setInterval(() => {
-    g.follow(isBlue ? black : blue);
-    isBlue = !isBlue;
-}, 1000);
+// let isBlue = true;
+// g.setInterval(() => {
+//     g.follow(isBlue ? black : blue);
+//     isBlue = !isBlue;
+// }, 1000);
 
 // g.setTimeout(() => {
 //     g.pause();

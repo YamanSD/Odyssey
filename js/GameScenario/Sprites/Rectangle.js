@@ -2,7 +2,7 @@ import {Sprite} from "../../GameEngine";
 
 
 /**
- * @class Rectangle.
+ * @class Rectangle
  *
  * Class representing rectangles in canvas.
  */

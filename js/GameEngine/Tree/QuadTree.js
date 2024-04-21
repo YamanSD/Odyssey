@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * @class QuadTree.
+ * @class QuadTree
  * Class used by a 2d canvas to divide the screen into sub-quadrants recursively.
  * Provides better performance for handling collisions.
  */

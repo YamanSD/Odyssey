@@ -4,7 +4,7 @@ import {Sprite} from "./index.js";
 
 
 /**
- * @class Void.
+ * @class Void
  *
  * Class used to schedule independent timeout events.
  */
