@@ -1,7 +1,7 @@
 'use strict';
 
 import {QuadTree} from "../Tree";
-import {Sprite, Timeout, Void} from "../BaseSprites";
+import {Sprite, Timeout, Void, SpriteSheet} from "../BaseSprites";
 import Sound from "./Sound.js";
 
 
@@ -671,8 +671,9 @@ export default class Game {
         // Reset the canvas and its data fields
         this.clearScreen();
 
-        // Clear the sounds cache
+        // Clear the sounds and sprite sheets cache
         Sound.clear();
+        SpriteSheet.clear();
 
         // Create a new quadtree
         this.#quadTree = new QuadTree({
@@ -994,10 +995,10 @@ export default class Game {
     /**
      * Used to animate the game.
      *
-     * @param timestamp {DOMHighResTimeStamp} current animation timestamp.
+     * @param ignore {DOMHighResTimeStamp} current animation timestamp.
      * @protected
      */
-    loop(timestamp) {
+    loop(ignore) {
         // Calculate the time difference. Currently not used
         // const deltaTime = timestamp - this.#latestRenderTime;
         // this.#latestRenderTime = timestamp;
