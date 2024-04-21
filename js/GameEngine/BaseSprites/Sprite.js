@@ -59,6 +59,14 @@ export default class Sprite {
     #ignorable;
 
     /**
+     * ID of the current dominant animation to draw.
+     *
+     * @type {number | undefined}
+     * @private
+     */
+    #currentAnimation;
+
+    /**
      * True indicates that the sprite does not tick.
      *
      * @type {boolean}
@@ -79,7 +87,7 @@ export default class Sprite {
      *     frameCnt: number,
      *     singleWidth: number,
      *     singleHeight: number,
-     *     nonLinked: boolean,
+     *     dominant: boolean,
      *     currentRow: number,
      *     currentCol: number
      *  }>
@@ -89,12 +97,12 @@ export default class Sprite {
     #animations;
 
     /**
-     * Set of non-linked animation IDs.
+     * Set of non-dominant animation IDs.
      *
      * @type {Set<number>}
      * @private
      */
-    #nonLinkedAnimations;
+    #nonDominantAnimations;
 
     /**
      * Proxy map holding the states of the instance.
@@ -275,7 +283,7 @@ export default class Sprite {
         this.#sheet = sheets;
         this.#coords = coords;
         this.#animations = {};
-        this.#nonLinkedAnimations = new Set();
+        this.#nonDominantAnimations = new Set();
         this.#animationId = 0;
         this.#states = new Map();
         this.brush = brush;
@@ -288,6 +296,13 @@ export default class Sprite {
 
         // Store the sprite reference into the sprites map
         Sprite.sprites[this.id] = this;
+    }
+
+    /**
+     * @returns {number|undefined} ID of the current animation to draw.
+     */
+    get currentAnimation() {
+        return this.#currentAnimation;
     }
 
     /**
@@ -467,6 +482,18 @@ export default class Sprite {
     }
 
     /**
+     * @param value {number} new ID of the next animation to play.
+     */
+    set currentAnimation(value) {
+        // Reset the current animation
+        if (this.#currentAnimation !== undefined) {
+            this.resetAnimation(this.#currentAnimation);
+        }
+
+        this.#currentAnimation = value;
+    }
+
+    /**
      * @param value {boolean} true indicates that the sprite does not collide.
      */
     set ignorable(value) {
@@ -550,6 +577,13 @@ export default class Sprite {
     }
 
     /**
+     * Stops the current dominant animation.
+     */
+    stopAnimation() {
+        this.currentAnimation = undefined;
+    }
+
+    /**
      * @Abstract
      * @param x {number} x-coordinate of a point.
      * @param y {number} y-coordinate of a point.
@@ -611,7 +645,7 @@ export default class Sprite {
      * @param frameCnt {number} total number of frames in the animation.
      * @param singleWidth {number} width of a single frame (in pixels).
      * @param singleHeight {number} height of a single frame (in pixels).
-     * @param nonLinked {boolean} true if the animation is played with a call to non-linked play.
+     * @param dominant {boolean} true if the animation can be played concurrently with other non-dominant animations.
      * @returns {number} the animation ID, used for moving it.
      */
     createAnimation(
@@ -623,7 +657,7 @@ export default class Sprite {
         frameCnt,
         singleWidth,
         singleHeight,
-        nonLinked
+        dominant
     ) {
         // Generate an animation ID
         const id = this.animationId;
@@ -638,14 +672,17 @@ export default class Sprite {
             frameCnt,
             singleWidth,
             singleHeight,
-            nonLinked,
+            dominant,
             currentRow: 0,
             currentCol: 0
         };
 
-        if (nonLinked) {
-            this.#nonLinkedAnimations.add(id);
+        if (!dominant) {
+            this.#nonDominantAnimations.add(id);
         }
+
+        // Reset the animation before returning for any recalibrations
+        this.resetAnimation(id);
 
         return id;
     }
@@ -654,15 +691,45 @@ export default class Sprite {
      * @param id {number} ID of the animation to remove.
      */
     removeAnimation(id) {
-        if (this.#animations[id].nonLinked) {
-            this.#nonLinkedAnimations.delete(id);
+        if (!this.#animations[id].dominant) {
+            this.#nonDominantAnimations.delete(id);
         }
 
         delete this.#animations[id];
     }
 
     /**
+     * Draws the current dominant animation.
+     *
+     * @param x {number} x-coordinate of the top-left corner of the destination.
+     * @param y {number} y-coordinate of the top-left corner of the destination.
+     * @param ctx {CanvasRenderingContext2D} 2d canvas element context.
+     * @protected
+     */
+    drawCurrentAnimation(x, y, ctx) {
+        if (this.currentAnimation !== undefined) {
+            this.drawAnimation(x, y, this.currentAnimation, ctx);
+        }
+    }
+
+    /**
+     * Resets the animation to its original state.
+     *
+     * @param id {number} ID of the animation to reset.
+     * @protected
+     */
+    resetAnimation(id) {
+        // Reference to the animation
+        const anim = this.#animations[id];
+
+        anim.currentRow = anim.currentCol = 0;
+    }
+
+    /**
+     * Must be used inside the update function.
+     *
      * @param id {number} ID of the animation to move one frame.
+     * @protected
      */
     moveAnimation(id) {
         const anim = this.#animations[id];
@@ -679,32 +746,46 @@ export default class Sprite {
             anim.currentRow++;
         }
 
-        // In case of overflow, jump back to start
+        // In case of overflow, reset the animation
         if (anim.currentRow >= anim.rows) {
-            anim.currentRow = 0;
+            this.resetAnimation(id);
         }
     }
 
     /**
-     * Moves all the non-linked animation one frame.
+     * Moves all the non-dominant animation one frame.
      */
-    moveNonLinkedAnimations() {
-        this.#nonLinkedAnimations.forEach(id => {
+    moveNonDominantAnimations() {
+        this.#nonDominantAnimations.forEach(id => {
             this.moveAnimation(id);
         });
     }
 
     /**
+     * Must be used inside the draw function & must be used manually only with non-dominant animations.
+     *
      * @param x {number} x-coordinate of the top-left corner of the destination.
      * @param y {number} y-coordinate of the top-left corner of the destination.
      * @param id {number} ID of the animation to draw.
      * @param ctx {CanvasRenderingContext2D} 2d canvas element context.
+     * @param forceLoad {boolean?} true to force load the file.
+     * @param width {number?} width to map the image to.
+     * @param height {number?} height to map the image to.
+     * @protected
      */
-    drawAnimation(x, y, id, ctx) {
+    drawAnimation(
+        x,
+        y,
+        id,
+        ctx,
+        forceLoad,
+        width,
+        height
+    ) {
         const anim = this.#animations[id];
 
         ctx.drawImage(
-            SpriteSheet.load(this.sheets[anim.sheetInd]),
+            SpriteSheet.load(this.sheets[anim.sheetInd], forceLoad, width, height),
             anim.singleWidth * anim.currentCol + anim.startX,
             anim.singleHeight * anim.currentRow + anim.startY,
             anim.singleWidth,

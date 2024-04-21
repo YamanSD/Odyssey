@@ -15,15 +15,17 @@ export default class SpriteSheet {
     /**
      * @param src {string} source of the image file.
      * @param forceLoad {boolean} true to force load the file.
+     * @param width {number?} width to map the image to.
+     * @param height {number?} height to map the image to.
      * @returns {HTMLImageElement} the loaded image instance.
      */
-    static load(src, forceLoad = false) {
+    static load(src, forceLoad = false, width, height) {
         if (!forceLoad && src in this.#loaded) {
             return this.#loaded[src];
         }
 
         // Load the image
-        this.#loaded[src] = new Image();
+        this.#loaded[src] = new Image(width, height);
         this.#loaded[src].src = src;
 
         return this.#loaded[src];
