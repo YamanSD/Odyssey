@@ -9,7 +9,7 @@ import SpriteSheet from "./SpriteSheet.js";
  * @Abstract
  * @class Sprite
  *
- * Should be as an abstract class.
+ * Should be treated as an abstract class.
  */
 export default class Sprite {
     /**
@@ -29,6 +29,14 @@ export default class Sprite {
      * @private
      */
     static #sprites = {};
+
+    /**
+     * True if the Game instance is showing hit boxes.
+     *
+     * @type {boolean}
+     * @private
+     */
+    static #showingHitBoxes = false;
 
     /**
      * @type {any} sprite geometric description.
@@ -206,6 +214,23 @@ export default class Sprite {
      */
     static get sprites() {
         return Sprite.#sprites;
+    }
+
+    /**
+     * @returns {boolean} true if the Game instance is showing hit-boxes.
+     * @protected
+     */
+    static get showingHitBoxes() {
+        return this.#showingHitBoxes;
+    }
+
+    /**
+     * Note: DO NOT use outside Game class.
+     *
+     * @param value {boolean} true if showing, else false.
+     */
+    static set showingHitBoxes(value) {
+        this.#showingHitBoxes = value;
     }
 
     /**

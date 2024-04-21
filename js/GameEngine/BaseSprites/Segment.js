@@ -8,7 +8,7 @@ import Sprite from "./Sprite.js";
  *
  * Class representing line segments in canvas.
  * Used for detecting when a sprite passes a certain coordinate.
- * They should be usually invisible, as they do not get erased by default.
+ * Shown only when hit boxes are enabled in the Game instance.
  */
 export default class Segment extends Sprite {
     /**
@@ -129,7 +129,7 @@ export default class Segment extends Sprite {
             onUpdate,
             {
                 borderColor: color,
-                borderWidth: 1
+                borderWidth: 1,
             },
             undefined,
             relativePoint,
@@ -177,14 +177,14 @@ export default class Segment extends Sprite {
     }
 
     /**
-     * @returns {[number,number]} the start point on the segment.
+     * @returns {[number,number]} reference to the start point on the segment.
      */
     get p0() {
         return this.desc.p0;
     }
 
     /**
-     * @returns {[number,number]} the end point on the segment
+     * @returns {[number,number]} reference to the end point on the segment
      */
     get p1() {
         return this.desc.p1;
@@ -303,7 +303,7 @@ export default class Segment extends Sprite {
      * @param v {number} new y-coordinate of the line.
      */
     set y(v) {
-        this.desc.p1[1] = v;
+        this.desc.p0[1] = v;
     }
 
     /**
@@ -313,9 +313,11 @@ export default class Segment extends Sprite {
      * @param context {CanvasRenderingContext2D} 2d canvas element context.
      */
     draw(context) {
-        // Draw line from point 'p0' to 'p1'
-        context.moveTo(...this.p0);
-        context.lineTo(...this.p1);
+        // Draw line from point 'p0' to 'p1' iff the Game is showing hit boxes
+        if (Sprite.showingHitBoxes) {
+            context.moveTo(...this.p0);
+            context.lineTo(...this.p1);
+        }
     }
 
     /**
