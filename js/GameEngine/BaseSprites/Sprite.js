@@ -626,6 +626,15 @@ export default class Sprite {
     }
 
     /**
+     * Plays the given audio properly.
+     *
+     * @param audio {HTMLAudioElement} to play.
+     */
+    playAudio(audio) {
+        audio.cloneNode().play();
+    }
+
+    /**
      * @param rects {{
      *   x: number,
      *   y: number,
