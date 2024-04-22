@@ -144,15 +144,6 @@ export default class Text extends Sprite {
     }
 
     /**
-     * Overrides the DynamicCanvas brush font.
-     *
-     * @returns {string} the text font.
-     */
-    get font() {
-        return this.desc.font;
-    }
-
-    /**
      * @returns {boolean} true for text.
      */
     get textual() {
