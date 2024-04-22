@@ -31,6 +31,13 @@ export default class Sound {
     }
 
     /**
+     * @param audio {HTMLAudioElement} audio instance to play.
+     */
+    static playAudio(audio) {
+        audio.cloneNode().play();
+    }
+
+    /**
      * Clears the loaded sounds.
      */
     static clear() {

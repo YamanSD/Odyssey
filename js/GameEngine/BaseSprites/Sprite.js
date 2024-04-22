@@ -631,7 +631,7 @@ export default class Sprite {
      * @param audio {HTMLAudioElement} to play.
      */
     playAudio(audio) {
-        audio.cloneNode().play();
+        Sound.playAudio(audio);
     }
 
     /**
