@@ -172,6 +172,13 @@ export default class Game {
     #postTick;
 
     /**
+     * @returns {boolean} true if assets are loading.
+     */
+    static get loading() {
+        return Sound.loading !== 0 && SpriteSheet.loading !== 0;
+    }
+
+    /**
      * @returns {number} the browser window height.
      */
     static get windowHeight() {
@@ -577,6 +584,15 @@ export default class Game {
         }
 
         return false;
+    }
+
+    /**
+     * Waits for the game to finish loading the assets.
+     */
+    waitForLoading() {
+        while (Game.loading) {
+            // Wait for the game to finish loading
+        }
     }
 
     /**

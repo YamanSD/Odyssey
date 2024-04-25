@@ -13,6 +13,21 @@ export default class SpriteSheet {
     static #loaded = {};
 
     /**
+     * Number of currently loading assets.
+     *
+     * @type {number}
+     * @private
+     */
+    static #loading;
+
+    /**
+     * @returns {number} number of loading assets.
+     */
+    static get loading() {
+        return this.#loading;
+    }
+
+    /**
      * @param src {string} source of the image file.
      * @param forceLoad {boolean} true to force load the file.
      * @param width {number?} width to map the image to.
@@ -26,7 +41,12 @@ export default class SpriteSheet {
 
         // Load the image
         this.#loaded[src] = new Image(width, height);
+
+        this.#loading++;
         this.#loaded[src].src = src;
+        this.#loaded[src].onload = () => {
+            this.#loading--;
+        };
 
         return this.#loaded[src];
     }
