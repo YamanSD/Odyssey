@@ -40,7 +40,7 @@ export default class SpriteSheet {
      * @returns {string} the full path to the file.
      */
     static source(name) {
-        return `${this.#pathContinuation}/${name}`;
+        return `${this.#pathContinuation}${name}`;
     }
 
     /**
