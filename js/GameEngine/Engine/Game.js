@@ -134,9 +134,11 @@ export default class Game {
     #followed;
 
     /**
+     * @typedef Settings {{}}
+     *
      * Object containing game settings.
      *
-     * @type {Object<any, any>}
+     * @type {Settings}
      * @private
      */
     #settings;
@@ -282,7 +284,7 @@ export default class Game {
     }
 
     /**
-     * @returns {Object<*, *>} the settings of the game.
+     * @returns {Settings} the settings of the game.
      */
     get settings() {
         return this.#settings;
@@ -495,7 +497,7 @@ export default class Game {
     }
 
     /**
-     * @param settings {Object<any, any>} new value of the settings.
+     * @param settings {Settings} new value of the settings.
      */
     set settings(settings) {
         this.#settings = {...settings};
