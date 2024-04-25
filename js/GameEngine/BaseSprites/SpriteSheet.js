@@ -5,6 +5,14 @@
  */
 export default class SpriteSheet {
     /**
+     * Continuation of the path, add to the beginning of each name.
+     *
+     * @type {string}
+     * @private
+     */
+    static #pathContinuation = '/assets/images/';
+
+    /**
      * Maps loaded file names to their respective loaded images.
      *
      * @type {Object<string, HTMLImageElement>}
@@ -28,27 +36,35 @@ export default class SpriteSheet {
     }
 
     /**
-     * @param src {string} source of the image file.
+     * @param name {string} name of the file.
+     * @returns {string} the full path to the file.
+     */
+    static source(name) {
+        return `${this.#pathContinuation}/${name}`;
+    }
+
+    /**
+     * @param name {string} name of the image file to load.
      * @param forceLoad {boolean} true to force load the file.
      * @param width {number?} width to map the image to.
      * @param height {number?} height to map the image to.
      * @returns {HTMLImageElement} the loaded image instance.
      */
-    static load(src, forceLoad = false, width, height) {
-        if (!forceLoad && src in this.#loaded) {
-            return this.#loaded[src];
+    static load(name, forceLoad = false, width, height) {
+        if (!forceLoad && name in this.#loaded) {
+            return this.#loaded[name];
         }
 
         // Load the image
-        this.#loaded[src] = new Image(width, height);
+        this.#loaded[name] = new Image(width, height);
 
         this.#loading++;
-        this.#loaded[src].src = src;
-        this.#loaded[src].onload = () => {
+        this.#loaded[name].src = this.source(name);
+        this.#loaded[name].onload = () => {
             this.#loading--;
         };
 
-        return this.#loaded[src];
+        return this.#loaded[name];
     }
 
     /**
