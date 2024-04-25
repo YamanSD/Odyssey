@@ -95,7 +95,6 @@ export default class Sprite {
      *     frameCnt: number,
      *     singleWidth: number,
      *     singleHeight: number,
-     *     dominant: boolean,
      *     currentRow: number,
      *     currentCol: number
      *  }>
@@ -103,14 +102,6 @@ export default class Sprite {
      * @private
      */
     #animations;
-
-    /**
-     * Set of non-dominant animation IDs.
-     *
-     * @type {Set<number>}
-     * @private
-     */
-    #nonDominantAnimations;
 
     /**
      * Proxy map holding the states of the instance.
@@ -308,7 +299,6 @@ export default class Sprite {
         this.#sheet = sheets;
         this.#coords = coords;
         this.#animations = {};
-        this.#nonDominantAnimations = new Set();
         this.#animationId = 0;
         this.#states = new Map();
         this.brush = brush;
@@ -679,7 +669,6 @@ export default class Sprite {
      * @param frameCnt {number} total number of frames in the animation.
      * @param singleWidth {number} width of a single frame (in pixels).
      * @param singleHeight {number} height of a single frame (in pixels).
-     * @param dominant {boolean} true if the animation can be played concurrently with other non-dominant animations.
      * @returns {number} the animation ID, used for moving it.
      */
     createAnimation(
@@ -690,8 +679,7 @@ export default class Sprite {
         rows,
         frameCnt,
         singleWidth,
-        singleHeight,
-        dominant
+        singleHeight
     ) {
         // Generate an animation ID
         const id = this.animationId;
@@ -706,14 +694,9 @@ export default class Sprite {
             frameCnt,
             singleWidth,
             singleHeight,
-            dominant,
             currentRow: 0,
             currentCol: 0
         };
-
-        if (!dominant) {
-            this.#nonDominantAnimations.add(id);
-        }
 
         // Reset the animation before returning for any recalibrations
         this.resetAnimation(id);
@@ -725,8 +708,8 @@ export default class Sprite {
      * @param id {number} ID of the animation to remove.
      */
     removeAnimation(id) {
-        if (!this.#animations[id].dominant) {
-            this.#nonDominantAnimations.delete(id);
+        if (id === this.currentAnimation) {
+            this.currentAnimation = undefined;
         }
 
         delete this.#animations[id];
@@ -784,15 +767,6 @@ export default class Sprite {
         if (anim.currentRow >= anim.rows) {
             this.resetAnimation(id);
         }
-    }
-
-    /**
-     * Moves all the non-dominant animation one frame.
-     */
-    moveNonDominantAnimations() {
-        this.#nonDominantAnimations.forEach(id => {
-            this.moveAnimation(id);
-        });
     }
 
     /**
