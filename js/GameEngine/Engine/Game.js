@@ -72,12 +72,6 @@ export default class Game {
     #insertedSpriteSet;
 
     /**
-     * @type {Set<number>} set of sprite IDs that have been erased from the canvas.
-     * @protected
-     */
-    #erasedSpriteSet;
-
-    /**
      * @type {Set<Sprite>} set of Sprites removed from the Game.
      * @protected
      */
@@ -769,14 +763,8 @@ export default class Game {
             this.#removedSprites = new Set();
         }
 
-        // Check if there is an erased sprite set
-        if (!this.#erasedSpriteSet) {
-            this.#erasedSpriteSet = new Set();
-        }
-
         this.#removedSprites.clear();
         this.#insertedSpriteSet.clear();
-        this.#erasedSpriteSet.clear();
 
         // Initialize the rest of the fields
         this.#spriteWaitQueue = {};
@@ -1106,6 +1094,9 @@ export default class Game {
      * @protected
      */
     tick() {
+        // Clear the screen before ticking the game
+        this.clearScreen();
+
         // Show the quadrants
         if (this.showHitBoxes) {
             this.showQuadrants();
@@ -1218,41 +1209,10 @@ export default class Game {
             hitBoxes
         );
 
-        // Clear the hit-box rectangles
-        for (let hitBox of hitBoxes) {
-            let borderWidth = 0;
-
-            // Erase the marked hit-box if needed
-            if (this.showHitBoxes) {
-                // Border width
-                borderWidth = sprite.hitBoxBrush?.borderWidth ?? 1;
-            } else {
-                // Border width
-                borderWidth = sprite.brush?.borderWidth ?? 1;
-            }
-
-            // Clear the sprite
-            this.clearRect({
-                x: hitBox.x - borderWidth + (this.showHitBoxes ? 1 : 0),
-                y: hitBox.y - borderWidth,
-                width: hitBox.width + 2 * borderWidth,
-                height: hitBox.height + 2 * borderWidth,
-                rotation: hitBox.rotation
-            });
-        }
-
-        // Add to the erased sprite set
-        this.#erasedSpriteSet.add(sprite.id);
-
         // Iterate over the sprites in the collision rectangles and redraw
         for (const interRect of interRects) {
-            const rectSprite = interRect.sprite;
-
-            // Redraw all the sprites except the ones erased
-            if (!this.#erasedSpriteSet.has(rectSprite.id)) {
-                this.draw(rectSprite);
-            } else if (rectSprite.id === sprite.id) {
-                // Remove from QuadTree
+            // Remove from QuadTree
+            if (interRect.sprite.id === sprite.id) {
                 this.#quadTree.remove(interRect);
             }
         }
@@ -1626,9 +1586,6 @@ export default class Game {
 
         // Restore the old context
         this.context.restore();
-
-        // Remove from the erased sprite set
-        this.#erasedSpriteSet.delete(sprite.id);
 
         // Draw the hit-box if needed
         if (this.showHitBoxes) {

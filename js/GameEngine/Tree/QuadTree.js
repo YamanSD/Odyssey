@@ -4,10 +4,11 @@
  * @class QuadTree
  * Class used by a 2d canvas to divide the screen into sub-quadrants recursively.
  * Provides better performance for handling collisions.
+ * In the simplified branch, the nodes do not split.
  */
 export default class QuadTree {
     /**
-     * @type {number} max objects a node can hold before splitting into 4 sub-nodes (default: 5).
+     * @type {number} max objects a node can hold before splitting into 4 sub-nodes (default: Unlimited).
      * @private
      */
     #maxObjects;
@@ -64,7 +65,7 @@ export default class QuadTree {
      * @param {number?} [level=0] depth level, required for sub-nodes (default: 0).
      */
     constructor(bounds, maxObjects, maxLevels, level) {
-        this.#maxObjects = maxObjects || 5;
+        this.#maxObjects = maxObjects || Infinity;
         this.#maxLevels = maxLevels || 5;
         this.#level = level || 0;
         this.#bounds = bounds;
@@ -157,7 +158,7 @@ export default class QuadTree {
             indices.push(...this.#getIndices(hitBox));
         }
 
-        // List of objects to return
+        // Set of objects to return; copies the original set
         let returnObjects = new Set(this.#hitBoxes);
 
         // If we have sub-nodes, retrieve their objects

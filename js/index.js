@@ -31,10 +31,10 @@ const blue = new Circle({
 // Example for circular trajectory
 const black = new Circle({
     radius: 40,
-    centerCoords: [100, 100]
+    centerCoords: [1600, 400]
 }, undefined, () => {
     const angle = g.degToRadians((speed * g.currentTick) % 361);
-    const path = {x: 300, y: 400, r: 50};
+    const path = {x: 1600, y: 400, r: 50};
 
     black.x = path.x + path.r * Math.cos(angle);
     black.y = path.y + path.r * Math.sin(angle);
