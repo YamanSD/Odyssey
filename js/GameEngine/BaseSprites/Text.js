@@ -19,11 +19,7 @@ export default class Text extends Sprite {
      *   bottomLeftCoords: [number, number],
      *   text: string,
      * }} sprite geometric description.
-     * @param onTick {(function(number): {
-     *     tick: number,
-     *     insertAfter?: number
-     * })?} called on each tick cycle.
-     * @param onUpdate {(function(Set<HitBox>): boolean)?} called on each update cycle
+     * @param onUpdate {(function(Set<HitBox>, number): boolean)?} called on each update cycle, with the current tick.
      * @param brush {{
      *    borderWidth?: number,
      *    borderColor?: string,
@@ -39,11 +35,10 @@ export default class Text extends Sprite {
      *  @param relativePoint {RelativePoint?} relative point of the sprite.
      *  default is TopLeft.
      *  @param ignorable {boolean?} true if the instance does not have collisions. Default false.
-     *  @param isStatic {boolean?} true indicates that the sprite does not tick. Default false.
+     *  @param isStatic {boolean?} true indicates that the sprite does not update. Default false.
      */
     constructor(
         description,
-        onTick,
         onUpdate,
         brush,
         hitBoxBrush,
@@ -55,7 +50,6 @@ export default class Text extends Sprite {
             description,
             [],
             description.bottomLeftCoords,
-            onTick,
             onUpdate,
             brush,
             hitBoxBrush,
@@ -126,7 +120,6 @@ export default class Text extends Sprite {
     get clone() {
         return new Text(
             this.desc,
-            this.onTick,
             this.onUpdate,
             this.brush,
             this.hitBoxBrush,

@@ -47,31 +47,6 @@ export default class Game {
     #quadTree;
 
     /**
-     * Stores the ticks that have Sprites to update.
-     * Note that here the order of updates will be LIFO.
-     * We can create a priority queue to handle this issue if we wish
-     * for a specific order of updates for the sprites.
-     *
-     * @type {Object<number, Sprite[]>} maps tick value to sprite updates.
-     * @protected
-     */
-    #updateQueue;
-
-    /**
-     * @type {Object<number, Object<number, number>>} maps the object ID into a
-     * map (SpriteId: tick) of Sprites waiting for the sprite with the ID to be inserted, and
-     * the ticks after insertAfter ticks to insert the object at.
-     * @protected
-     */
-    #spriteWaitQueue;
-
-    /**
-     * @type {Set<number>} set of sprite IDs that have been inserted into the updateQueue.
-     * @protected
-     */
-    #insertedSpriteSet;
-
-    /**
      * @type {Set<Sprite>} set of Sprites removed from the Game.
      * @protected
      */
@@ -146,7 +121,8 @@ export default class Game {
      *     x: number,
      *     y: number,
      *     width: number,
-     *     height: number
+     *     height: number,
+     *     zoom: number
      * }}
      * @private
      */
@@ -285,7 +261,7 @@ export default class Game {
     }
 
     /**
-     * @returns {{x: number, y: number, width: number, height: number}} the perceived dimensions.
+     * @returns {{x: number, y: number, width: number, height: number, zoom: number}} the perceived dimensions.
      */
     get perceivedDimensions() {
         return this.#perceivedDimensions;
@@ -502,7 +478,8 @@ export default class Game {
      *     x?: number,
      *     y?: number,
      *     width?: number,
-     *     height?: number
+     *     height?: number,
+     *     zoom?: number
      * }} new perceived dimensions
      */
     set perceivedDimensions(value) {
@@ -723,7 +700,8 @@ export default class Game {
             x: 0,
             y: 0,
             width: this.width,
-            height: this.height
+            height: this.height,
+            zoom: 1
         };
 
         // Reset the canvas and its data fields
@@ -750,13 +728,7 @@ export default class Game {
 
         // Initialize these basic fields
         this.#sprites = new Set();
-        this.#updateQueue = {};
         this.#events = {};
-
-        // Check if there is an inserted sprite set
-        if (!this.#insertedSpriteSet) {
-            this.#insertedSpriteSet = new Set();
-        }
 
         // Check if there is a removed sprite set
         if (!this.#removedSprites) {
@@ -764,10 +736,8 @@ export default class Game {
         }
 
         this.#removedSprites.clear();
-        this.#insertedSpriteSet.clear();
 
         // Initialize the rest of the fields
-        this.#spriteWaitQueue = {};
         this.#tick = 0;
         this.#handlerId = 0;
         this.#latestRenderTime = 0;
@@ -786,7 +756,7 @@ export default class Game {
         this.adjustRelativity(sprite, this.width, this.height);
 
         // Draw the sprite
-        this.draw(sprite);
+        this.drawSprite(sprite);
 
         // Insert the sprite to the quadtree
         this.insertToTree(sprite);
@@ -904,59 +874,6 @@ export default class Game {
     }
 
     /**
-     * @param handler {function()} called on every time the ticks pass.
-     * @param ticks {number} number of ticks to wait each cycle.
-     * @returns {Timeout} a Timeout instance to control the event.
-     */
-    setInterval(handler, ticks) {
-        // Create the void sprite
-        const v = new Void(
-            ticks,
-            this.currentTick,
-            () => {
-                handler();
-
-                if (!v.canceled) {
-                    // Reinsert the tick update
-                    this.insertTick(
-                        v,
-                        this.currentTick + ticks,
-                        undefined
-                    );
-                }
-            }
-        );
-
-        // Add to the sprites
-        this.insertSprite(v);
-
-        // Return the timeout instance
-        return new Timeout(v);
-    }
-
-    /**
-     * @param handler {function()} called after the given ticks pass.
-     * @param ticks {number} number of ticks to wait after the sprite is inserted.
-     * @param sprite {Sprite} sprite to wait for.
-     * @returns {Timeout} a Timeout instance to control the event.
-     */
-    setTimeoutAfter(handler, ticks, sprite) {
-        // Create the void sprite
-        const v = new Void(
-            ticks,
-            this.currentTick,
-            handler,
-            sprite.id
-        );
-
-        // Add to the sprites
-        this.insertSprite(v);
-
-        // Return the timeout instance
-        return new Timeout(v);
-    }
-
-    /**
      * Attempts to free memory.
      */
     cleanUp() {
@@ -1048,7 +965,7 @@ export default class Game {
             );
 
             this.insertToTree(sprite);
-            this.draw(sprite);
+            this.drawSprite(sprite);
         }
     }
 
@@ -1063,37 +980,21 @@ export default class Game {
         // const deltaTime = timestamp - this.#latestRenderTime;
         // this.#latestRenderTime = timestamp;
 
-        // Tick the game
-        this.tick();
+        // Update the game
+        this.update();
+
+        // Redraw the sprites
+        this.draw();
 
         // Go to next tick
         this.#requestAnimationFrame();
     }
 
     /**
-     * @param sprite {Sprite} sprite to tick.
-     * @param curTick {number} current tick.
-     * @private
-     */
-    #simpleTick(sprite, curTick) {
-        // Ignore the sprite if it is followed, static, or removed.
-        if (sprite.static || this.#removedSprites.has(sprite)) {
-            return;
-        }
-
-        // Get the sprite tick instructions
-        const sti = sprite.onTick(curTick);
-
-        // Insert the sprite tick
-        this.insertTick(sprite, sti.tick, sti.insertAfter);
-    }
-
-    /**
-     * Ticks all the game objects, and updates the ones that can
-     * be updated.
+     * Updates all the game objects.
      * @protected
      */
-    tick() {
+    update() {
         // Clear the screen before ticking the game
         this.clearScreen();
 
@@ -1115,24 +1016,41 @@ export default class Game {
 
         // Must tick the followed sprite first
         if (this.followed) {
-            this.#simpleTick(this.followed, curTick);
+            this.updateSprite(this.followed, curTick);
         }
 
         // Trigger the onTick for all sprites
         for (const sprite of this.#sprites) {
-            if (sprite !== this.followed) {
-                this.#simpleTick(sprite, curTick);
+            if (
+                sprite !== this.followed
+                && !(sprite.static || this.#removedSprites.has(sprite))
+            ) {
+                this.updateSprite(sprite, curTick);
             }
         }
-
-        // Process the updates
-        this.tickUpdate(curTick);
 
         // Call the post-tick
         this.postTick(this.currentTick);
 
         // Clear the removed sprites
         this.#removedSprites.clear();
+    }
+
+    /**
+     * Redraws all the sprites.
+     * @protected
+     */
+    draw() {
+        // Iterate over the Sprite objects in reverse and redraw
+        for (const sprite of this.sprites) {
+            // Do not update a removed sprite
+            if (this.#removedSprites.has(sprite)) {
+                continue;
+            }
+
+            // Process the Sprite update
+            this.drawSprite(sprite);
+        }
     }
 
     /**
@@ -1368,115 +1286,6 @@ export default class Game {
     }
 
     /**
-     * Does not insert dead ticks.
-     *
-     * @param sprite {Sprite} to be inserted into the given tick.
-     * @param tick {number} the tick to insert at.
-     * @param insertAfter {number | undefined} the ID of the Sprite to check if
-     *        present before inserting. If not, this sprite is added to a queue waiting for
-     *        a Sprite with the given ID to be inserted.
-     * @protected
-     */
-    insertTick(sprite, tick, insertAfter) {
-        // Check if the tick is dead
-        if (tick !== Sprite.deadTick) {
-            // Handle insertAfter
-            if (
-                insertAfter !== undefined
-                && !this.#insertedSpriteSet.has(insertAfter)
-            ) {
-                // Check if there is not a wait queue
-                if (!(insertAfter in this.#spriteWaitQueue)) {
-                    // Create an empty array
-                    this.#spriteWaitQueue[insertAfter] = {};
-                }
-
-                this.#spriteWaitQueue[insertAfter][sprite.id] = tick;
-                return;
-            }
-
-            // Check if the there is not a queue for the tick
-            if (!(tick in this.#updateQueue)) {
-                // Create empty stack
-                this.#updateQueue[tick] = [];
-            }
-
-            // Sprite ID
-            const sid = sprite.id;
-
-            // Push the sprite into the stack & inserted set
-            this.#updateQueue[tick].push(sprite);
-            this.#insertedSpriteSet.add(sid);
-
-            // Check if the sprite has waiting sprites
-            if (sid in this.#spriteWaitQueue) {
-                for (const [waitingSpriteId, waitTicks]
-                    of Object.entries(this.#spriteWaitQueue[sid])) {
-                    // Insert the waiting sprite
-                    this.insertTick(
-                        Sprite.getSprite(Number(waitingSpriteId)),
-                        tick + waitTicks,
-                        undefined
-                    );
-                }
-
-                // Delete the sprite wait queue
-                delete this.#spriteWaitQueue[sid];
-            }
-        }
-    }
-
-    /**
-     * @param tick {number} whose Sprites to be triggered.
-     * @protected
-     */
-    tickUpdate(tick) {
-        const tickList = this.#updateQueue[tick];
-
-        /**
-         * @type {Sprite}
-         */
-        let sprite;
-
-        // Check if the list is undefined
-        if (tickList) {
-            let i = tickList.length;
-
-            // Iterate over the Sprite objects in reverse
-            while (i--) {
-                sprite = tickList[i];
-
-                // Do not update a removed sprite
-                if (this.#removedSprites.has(sprite)) {
-                    continue;
-                }
-
-                // Trigger the Sprite update
-                this.update(sprite);
-            }
-
-            // Reset i
-            i = tickList.length;
-
-            // Iterate over the Sprite objects in reverse and redraw
-            while (i--) {
-                sprite = tickList[i];
-
-                // Do not update a removed sprite
-                if (this.#removedSprites.has(sprite)) {
-                    continue;
-                }
-
-                // Process the Sprite update
-                this.draw(sprite);
-            }
-        }
-
-        // Delete the tick list to save memory
-        delete this.#updateQueue[tick];
-    }
-
-    /**
      * @param text {string} to be measured.
      * @returns {TextMetrics} of the string after measuring.
      */
@@ -1551,7 +1360,7 @@ export default class Game {
      * }?} overrides the sprite brush.
      * @protected
      */
-    draw(sprite, brush) {
+    drawSprite(sprite, brush) {
         // Save the context
         this.context.save();
 
@@ -1603,14 +1412,15 @@ export default class Game {
      *
      * {@link Sprite} links the Sprite class.
      * @param sprite {Sprite} sprite to be updated.
+     * @param curTick {number} the current game tick.
      * @protected
      */
-    update(sprite) {
+    updateSprite(sprite, curTick) {
         // Erase the sprite
         const interRects = this.eraseSprite(sprite);
 
         // Call the sprite update function
-        sprite.onUpdate(interRects);
+        sprite.onUpdate(interRects, curTick);
 
         // Re-insert to the QuadTree
         this.insertToTree(sprite);

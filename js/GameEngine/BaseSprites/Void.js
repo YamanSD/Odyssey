@@ -22,36 +22,26 @@ export default class Void extends Sprite {
     #done;
 
     /**
+     * Here a tick is defined to be an update call.
+     *
      * @param updateAfter {number} number of ticks to wait before updating.
      * @param currentTick {number} current game tick.
      * @param onUpdate {function()} update function to trigger after the ticks pass.
-     * @param insertAfter {number?} ID of the sprite to insert after.
-     *                             Overrides the current tick.
      */
     constructor(
         updateAfter,
         currentTick,
         onUpdate,
-        insertAfter
     ) {
         super(
             {},
             [],
-            [0, 0], insertAfter !== undefined
-                ? () => {
-                    return {
-                        tick: updateAfter,
-                        insertAfter: insertAfter
-                    };
+            [0, 0],
+            (ignored, tick) => {
+                if (tick === currentTick + updateAfter) {
+                    onUpdate();
                 }
-                : (tick) => {
-                    if (tick === currentTick + updateAfter) {
-                        return {tick};
-                    }
-
-                    return Sprite.noTick;
-                },
-            onUpdate,
+            },
             undefined,
             undefined,
             undefined
@@ -73,7 +63,7 @@ export default class Void extends Sprite {
      * Marks the Void as done.
      *
      * @returns {
-     *  function(Set<HitBox>): *
+     *  function(Set<HitBox>, number): *
      * } the update function.
      */
     get onUpdate() {
@@ -96,7 +86,7 @@ export default class Void extends Sprite {
      * Needed because we must override both getter and setter.
      *
      * @param onUpdate {
-     *  function(Set<HitBox>): *
+     *  function(Set<HitBox>, number): *
      * } the new update function.
      */
     set onUpdate(onUpdate) {
@@ -129,15 +119,6 @@ export default class Void extends Sprite {
      */
     set done(value) {
         this.#done = value;
-    }
-
-    /**
-     * @param x {number} x-coordinate of a point.
-     * @param y {number} y-coordinate of a point.
-     * @returns {boolean} true if point (x, y) is in the void.
-     */
-    hasPoint(x, y) {
-        return false;
     }
 
     /**

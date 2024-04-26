@@ -39,7 +39,6 @@ export default class Segment extends Sprite {
             undefined,
             undefined,
             undefined,
-            undefined,
             true
         );
     }
@@ -103,19 +102,14 @@ export default class Segment extends Sprite {
      *     p0: [number, number],
      *     p1: [number, number],
      * }} sprite geometric description.
-     * @param onTick {(function(number): {
-     *     tick: number,
-     *     insertAfter?: number
-     * })?} called on each tick cycle.
      * @param onUpdate {(function(Set<HitBox>): boolean)?} called on each update cycle
      * @param color {string?} color of the line to be drawn. Use for testing only.
      *  @param relativePoint {RelativePoint?} relative point of the sprite.
      *  default is TopLeft.
-     *  @param isStatic {boolean?} true indicates that the sprite does not tick. Default false.
+     *  @param isStatic {boolean?} true indicates that the sprite does not update. Default false.
      */
     constructor(
         description,
-        onTick,
         onUpdate,
         color,
         relativePoint,
@@ -125,7 +119,6 @@ export default class Segment extends Sprite {
             description,
             [],
             description.p0,
-            onTick,
             onUpdate,
             {
                 borderColor: color,
@@ -210,7 +203,6 @@ export default class Segment extends Sprite {
     get clone() {
         return new Segment(
             this.desc,
-            this.onTick,
             this.onUpdate,
             this.brush,
             this.relativePoint,

@@ -12,11 +12,7 @@ export default class Circle extends Sprite {
      *   centerCoords: [number, number],
      *   radius: number,
      * }} sprite geometric description.
-     * @param onTick {(function(number): {
-     *     tick: number,
-     *     insertAfter?: number
-     * }) | undefined} called on each tick cycle.
-     * @param onUpdate {(function(Set<HitBox>): boolean)?} called on each update cycle
+     * @param onUpdate {(function(Set<HitBox>, number): boolean)?} called on each update cycle
      * @param brush {{
      *    borderWidth?: number,
      *    borderColor?: string,
@@ -32,7 +28,6 @@ export default class Circle extends Sprite {
      */
     constructor(
         description,
-        onTick,
         onUpdate,
         brush,
         hitBoxBrush
@@ -41,7 +36,6 @@ export default class Circle extends Sprite {
             description,
             [],
             description.centerCoords,
-            onTick,
             onUpdate,
             brush,
             hitBoxBrush
@@ -71,7 +65,6 @@ export default class Circle extends Sprite {
     get clone() {
         return new Circle(
             this.desc,
-            this.onTick,
             this.onUpdate,
             this.brush,
             this.hitBoxBrush

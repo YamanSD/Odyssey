@@ -1,13 +1,13 @@
 'use strict';
 
 import {Game, Text, Segment} from './GameEngine';
-import {Circle, Rectangle} from "./GameScenario/Sprites";
+import {Circle, Rectangle, X} from "./GameScenario/Sprites";
 
 const g = new Game(
     "mainCanvas",
     2000,
     2000,
-    false
+    true
 );
 const speed = 10;
 let blueMove = [0, 0];
@@ -17,7 +17,7 @@ let blueMove = [0, 0];
 const blue = new Circle({
     radius: 30,
     centerCoords: [30, 30]
-}, undefined, () => {
+}, () => {
     blue.x += blueMove[0];
     blue.y += blueMove[1];
 
@@ -28,11 +28,17 @@ const blue = new Circle({
     borderColor: "black"
 });
 
+const x = new X(100, 100, (ignored, tick) => {
+    if (tick % 15 === 0) {
+        x.moveBreathingAnimation();
+    }
+});
+
 // Example for circular trajectory
 const black = new Circle({
     radius: 40,
     centerCoords: [1600, 400]
-}, undefined, () => {
+}, () => {
     const angle = g.degToRadians((speed * g.currentTick) % 361);
     const path = {x: 1600, y: 400, r: 50};
 
@@ -80,6 +86,7 @@ const keyLiftHandler = (e) => {
 
 g.follow(blue);
 g.insertSprite(black); // Falls under blue on intersection
+g.insertSprite(x);
 g.insertSprite(blue);
 g.addEventListener('keydown', keyPressHandler);
 g.addEventListener('keyup', keyLiftHandler);
@@ -87,6 +94,9 @@ g.addEventListener('keyup', keyLiftHandler);
 
 
 // g.insertSprite(blue);
+g.perceivedDimensions = {
+    zoom: 2
+};
 
 g.resume();
 

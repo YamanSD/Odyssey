@@ -8,13 +8,17 @@ import {Sprite} from "../../GameEngine";
  */
 export default class X extends Sprite {
     /**
+     * ID of the breathing animation of X.
+     *
+     * @type {number}
+     * @private
+     */
+    #breathingAnimation;
+
+    /**
      * @param x {number} x-coordinate of the hero.
      * @param y {number} y-coordinate of the hero.
-     * @param onTick {(function(number): {
-     *     tick: number,
-     *     insertAfter?: number
-     * }) | undefined} called on each tick cycle.
-     * @param onUpdate {(function(Set<HitBox>): boolean)?} called on each update cycle
+     * @param onUpdate {(function(Set<HitBox>, number): boolean)?} called on each update cycle, with the current tick.
      *  @param hitBoxBrush {{
      *    borderWidth?: number,
      *    borderColor?: string,
@@ -25,74 +29,73 @@ export default class X extends Sprite {
     constructor(
         x,
         y,
-        onTick,
         onUpdate,
         hitBoxBrush
     ) {
         super(
-            description,
-            [],
-            description.topLeftCoords,
-            onTick,
+            {},
+            ['x.gif'],
+            [x, y],
             onUpdate,
-            brush,
+            undefined,
             hitBoxBrush
         );
+
+        this.#breathingAnimation = this.createAnimation(
+            0,
+            189,
+            174,
+            5,
+            1,
+            5,
+            35,
+            46,
+            1,
+            0
+        );
+
+        this.currentAnimation = this.#breathingAnimation;
     }
 
     /**
      * @returns {{
-     *   topLeftCoords: [number, number],
-     *   height: number,
-     *   width: number
-     * }} description of the rectangle.
+     *   topLeftCoords: [number, number]
+     * }} description of X.
      */
     get desc() {
         return super.desc;
     }
 
     /**
-     * @returns {number} the width of the rectangle.
-     */
-    get width() {
-        return this.desc.width;
-    }
-
-    /**
-     * @returns {number} the height of the rectangle.
-     */
-    get height() {
-        return this.desc.height;
-    }
-
-    get centerX() {
-        return this.x + this.width / 2;
-    }
-
-    get centerY() {
-        return this.y + this.height / 2;
-    }
-
-    /**
-     * @param x {number} x-coordinate of a point.
-     * @param y {number} y-coordinate of a point.
-     * @returns {boolean} true if point (x, y) is in the rectangle.
-     */
-    hasPoint(x, y) {
-        return this.x <= x && x <= this.x + this.width
-            && this.y <= y && y <= this.y + this.height;
-    }
-
-    /**
      * @returns {HitBox[]} the smallest rectangle that surrounds the shape.
      */
     get hitBox() {
-        return this.convertHitBoxes([{
-            x: this.x,
-            y: this.y,
-            width: this.width,
-            height: this.height
-        }]);
+        return this.convertHitBoxes([
+            {
+                x: this.x + 16,
+                y: this.y,
+                width: 14,
+                height: 11
+            },
+            {
+                x: this.x + 12,
+                y: this.y + 11,
+                width: 23,
+                height: 35
+            },
+            {
+                x: this.x + 8,
+                y: this.y + 16,
+                width: 4,
+                height: 13
+            },
+            {
+                x: this.x,
+                y: this.y + 29,
+                width: 12,
+                height: 17
+            },
+        ]);
     }
 
     /**
@@ -100,10 +103,9 @@ export default class X extends Sprite {
      */
     get clone() {
         return new X(
-            this.desc,
-            this.onTick,
+            this.x,
+            this.y,
             this.onUpdate,
-            this.brush,
             this.hitBoxBrush
         );
     }
@@ -115,21 +117,11 @@ export default class X extends Sprite {
      * @param context {CanvasRenderingContext2D} 2d canvas element context.
      */
     draw(context) {
-        // Draw fill rectangle
-        context.fillRect(
-            this.x,
-            this.y,
-            this.width,
-            this.height
-        );
+        this.drawCurrentAnimation(this.x, this.y, context);
+    }
 
-        // Draw the border rectangle
-        context.rect(
-            this.x,
-            this.y,
-            this.width,
-            this.height
-        );
+    moveBreathingAnimation() {
+        this.moveAnimation(this.#breathingAnimation);
     }
 
     /**

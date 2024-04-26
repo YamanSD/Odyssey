@@ -19,12 +19,6 @@ export default class Sprite {
     static #idCounter = 0;
 
     /**
-     * @type {number} the tick used to indicate dead ticks.
-     * @private
-     */
-    static #deadTick = -1;
-
-    /**
      * @type {Object<number, Sprite>} maps sprite IDs to Sprite objects.
      * @private
      */
@@ -75,7 +69,7 @@ export default class Sprite {
     #currentAnimation;
 
     /**
-     * True indicates that the sprite does not tick.
+     * True indicates that the sprite does not update.
      *
      * @type {boolean}
      * @private
@@ -95,6 +89,8 @@ export default class Sprite {
      *     frameCnt: number,
      *     singleWidth: number,
      *     singleHeight: number,
+     *     rSpace: number,
+     *     cSpace: number,
      *     currentRow: number,
      *     currentCol: number
      *  }>
@@ -164,26 +160,10 @@ export default class Sprite {
      *     height: number,
      *     width: number,
      *     sprite: Sprite
-     * }>): any) | undefined} called on each update cycle.
+     * }>, number): any) | undefined} called on each update cycle, with the current tick.
      * @private
      */
     #onUpdate;
-
-    /**
-     * The function returns the tick on which to trigger the update.
-     * Use dead tick to not trigger an update.
-     * Insert after inserts the Sprite after the given sprite ID,
-     * was inserted into the queue at any tick (except dead tick).
-     * This has the effect of inserting the object tick-ticks after the insertAfter
-     * is performed.
-     *
-     * @type {(function(number): {
-     *     tick: number,
-     *     insertAfter?: number
-     * }) | undefined} called on each tick.
-     * @private
-     */
-    #onTick;
 
     /**
      * @returns {number} a usable sprite ID.
@@ -191,13 +171,6 @@ export default class Sprite {
      */
     static #spriteId() {
         return Sprite.#idCounter++;
-    }
-
-    /**
-     * @returns {number} the dead tick value.
-     */
-    static get deadTick() {
-        return Sprite.#deadTick;
     }
 
     /**
@@ -222,15 +195,6 @@ export default class Sprite {
      */
     static set showingHitBoxes(value) {
         this.#showingHitBoxes = value;
-    }
-
-    /**
-     * @returns {{tick: number}} used whenever no ticking is required.
-     */
-    static get noTick() {
-        return {
-            tick: Sprite.deadTick
-        };
     }
 
     /**
@@ -260,11 +224,8 @@ export default class Sprite {
      * @param description {any} sprite geometric description.
      * @param sheets {string[]} list of sprite sheets.
      * @param coords {[number, number]} the coordinates of the sprite.
-     * @param onTick {(function(number): {
-     *     tick: number,
-     *     insertAfter?: number
-     * })?} called on each tick.
-     * @param onUpdate {(function(Set<HitBox>): any)?} called on each update cycle.
+     * @param onUpdate {(function(Set<HitBox>, number): any)?} called on each update cycle,
+     *                                                         given all hit-boxes and current tick.
      * @param brush {{
      *    borderWidth?: number,
      *    borderColor?: string,
@@ -280,13 +241,12 @@ export default class Sprite {
      *  @param relativePoint {RelativePoint?} relative point of the sprite.
      *  default is TopLeft.
      *  @param ignorable {boolean?} true if the instance does not have collisions. Default false.
-     *  @param isStatic {boolean?} true indicates that the sprite does not tick. Default false.
+     *  @param isStatic {boolean?} true indicates that the sprite does not update. Default false.
      */
     constructor(
         description,
         sheets,
         coords,
-        onTick,
         onUpdate,
         brush,
         hitBoxBrush,
@@ -304,7 +264,6 @@ export default class Sprite {
         this.brush = brush;
         this.hitBoxBrush = hitBoxBrush;
         this.onUpdate = onUpdate;
-        this.onTick = onTick;
         this.relativePoint = relativePoint;
         this.ignorable = ignorable ?? false;
         this.static = isStatic ?? false;
@@ -386,20 +345,10 @@ export default class Sprite {
     }
 
     /**
-     * @returns {(function(Set<HitBox>): any)} the onUpdate function.
+     * @returns {(function(Set<HitBox>, number): any)} the onUpdate function.
      */
     get onUpdate() {
         return this.#onUpdate ?? (() => undefined);
-    }
-
-    /**
-     * @returns {(function(number): {
-     *     tick: number,
-     *     insertAfter?: number
-     * })} the onTick function.
-     */
-    get onTick() {
-        return this.#onTick ?? ((tick) => ({tick}));
     }
 
     /**
@@ -432,7 +381,7 @@ export default class Sprite {
     get type() {}
 
     /**
-     * @returns {boolean} true if the sprite does not tick.
+     * @returns {boolean} true if the sprite does not update.
      */
     get static() {
         return this.#static;
@@ -490,7 +439,7 @@ export default class Sprite {
     }
 
     /**
-     * @param value {boolean} true indicates that the sprite does not tick.
+     * @param value {boolean} true indicates that the sprite does not update.
      */
     set static(value) {
         this.#static = value;
@@ -516,7 +465,7 @@ export default class Sprite {
     }
 
     /**
-     * @param onUpdate {(function(Set<HitBox>): any)?} new onUpdate function.
+     * @param onUpdate {(function(Set<HitBox>, number): any)?} new onUpdate function.
      */
     set onUpdate(onUpdate) {
         this.#onUpdate = onUpdate;
@@ -536,22 +485,6 @@ export default class Sprite {
      * @param metrics {TextMetrics} new metrics.
      */
     set metrics(metrics) {}
-
-    /**
-     * @param onTick {(function(number): {
-     *     tick: number,
-     *     insertAfter?: number
-     * })?} new onTick function.
-     * The function returns the tick on which to trigger the update.
-     * Use dead tick to not trigger an update.
-     * Insert after inserts the Sprite after the given sprite ID,
-     * was inserted into the queue at any tick (except dead tick).
-     * This has the effect of inserting the object tick-ticks after the insertAfter
-     * is performed.
-     */
-    set onTick(onTick) {
-        this.#onTick = onTick;
-    }
 
     /**
      * @param brush {{
@@ -597,14 +530,6 @@ export default class Sprite {
     stopAnimation() {
         this.currentAnimation = undefined;
     }
-
-    /**
-     * @Abstract
-     * @param x {number} x-coordinate of a point.
-     * @param y {number} y-coordinate of a point.
-     * @returns {boolean} true if point (x, y) is in the sprite.
-     */
-    hasPoint(x, y) {}
 
     /**
      * @param src {string} path to the sound file to play.
@@ -669,6 +594,8 @@ export default class Sprite {
      * @param frameCnt {number} total number of frames in the animation.
      * @param singleWidth {number} width of a single frame (in pixels).
      * @param singleHeight {number} height of a single frame (in pixels).
+     * @param cSpace {number} space between each column.
+     * @param rSpace {number} space between each row.
      * @returns {number} the animation ID, used for moving it.
      */
     createAnimation(
@@ -679,7 +606,9 @@ export default class Sprite {
         rows,
         frameCnt,
         singleWidth,
-        singleHeight
+        singleHeight,
+        cSpace,
+        rSpace
     ) {
         // Generate an animation ID
         const id = this.animationId;
@@ -694,6 +623,8 @@ export default class Sprite {
             frameCnt,
             singleWidth,
             singleHeight,
+            cSpace,
+            rSpace,
             currentRow: 0,
             currentCol: 0
         };
@@ -721,11 +652,21 @@ export default class Sprite {
      * @param x {number} x-coordinate of the top-left corner of the destination.
      * @param y {number} y-coordinate of the top-left corner of the destination.
      * @param ctx {CanvasRenderingContext2D} 2d canvas element context.
+     * @param scale {number?} scale of the final image.
      * @protected
      */
-    drawCurrentAnimation(x, y, ctx) {
+    drawCurrentAnimation(x, y, ctx, scale) {
         if (this.currentAnimation !== undefined) {
-            this.drawAnimation(x, y, this.currentAnimation, ctx);
+            this.drawAnimation(
+                x,
+                y,
+                this.currentAnimation,
+                ctx,
+                undefined,
+                undefined,
+                undefined,
+                scale
+            );
         }
     }
 
@@ -779,6 +720,7 @@ export default class Sprite {
      * @param forceLoad {boolean?} true to force load the file.
      * @param width {number?} width to map the image to.
      * @param height {number?} height to map the image to.
+     * @param scale {number?} scale of the final image.
      * @protected
      */
     drawAnimation(
@@ -788,20 +730,25 @@ export default class Sprite {
         ctx,
         forceLoad,
         width,
-        height
+        height,
+        scale
     ) {
         const anim = this.#animations[id];
 
+        if (scale === undefined) {
+            scale = 1;
+        }
+
         ctx.drawImage(
             SpriteSheet.load(this.sheets[anim.sheetInd], forceLoad, width, height),
-            anim.singleWidth * anim.currentCol + anim.startX,
-            anim.singleHeight * anim.currentRow + anim.startY,
+            (anim.singleWidth + anim.cSpace) * anim.currentCol + anim.startX,
+            (anim.singleHeight + anim.rSpace) * anim.currentRow + anim.startY,
             anim.singleWidth,
             anim.singleHeight,
             x,
             y,
-            anim.singleWidth,
-            anim.singleHeight,
+            scale * anim.singleWidth,
+            scale * anim.singleHeight,
         );
     }
 }
