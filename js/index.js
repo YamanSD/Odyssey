@@ -2,14 +2,12 @@
 
 import {Game, Text, Segment} from './GameEngine';
 import {Circle, Rectangle} from "./GameScenario/Sprites";
-let p = 600;
 
-let camera = undefined;
 const g = new Game(
     "mainCanvas",
     2000,
     2000,
-    true
+    false
 );
 const speed = 10;
 let blueMove = [0, 0];
@@ -80,57 +78,7 @@ const keyLiftHandler = (e) => {
     }
 }
 
-
-const q = 50;
-const s2 = new Segment(
-    {
-        p0: [200, 200],
-        p1: [200, 1000],
-    },
-    undefined,
-    undefined,
-    "#00FF00"
-);
-const s3 = new Segment(
-    {
-        p0: [200, 200],
-        p1: [1000, 200],
-    },
-    undefined,
-    undefined,
-    "#00FF00"
-);
-const s = new Segment(
-    {
-        p0: [p, q],
-        p1: [p, p],
-    },
-    undefined,
-    undefined,
-    "#FF0000"
-);
-const s1 = new Segment(
-    {
-        p0: [q, p],
-        p1: [p, p],
-    },
-    undefined,
-    undefined,
-    "#FF0000"
-);
-
-
-g.insertSprite(s);
-g.insertSprite(s1);
-g.insertSprite(s2);
-g.insertSprite(s3);
 g.follow(blue);
-// g.perceivedDimensions = {
-//     width: p,
-//     height: p,
-//     x: q,
-//     y: q
-// }
 g.insertSprite(black); // Falls under blue on intersection
 g.insertSprite(blue);
 g.addEventListener('keydown', keyPressHandler);
