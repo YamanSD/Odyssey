@@ -122,7 +122,6 @@ export default class Game {
      *     y: number,
      *     width: number,
      *     height: number,
-     *     zoom: number
      * }}
      * @private
      */
@@ -249,6 +248,9 @@ export default class Game {
         // Set quadrant brush
         this.quadrantBrush = quadrantBrush;
 
+        // This allows us to upscale images without them being blurry
+        this.context.imageSmoothingEnabled = false;
+
         // Start the game
         this.#start();
     }
@@ -261,7 +263,7 @@ export default class Game {
     }
 
     /**
-     * @returns {{x: number, y: number, width: number, height: number, zoom: number}} the perceived dimensions.
+     * @returns {{x: number, y: number, width: number, height: number}} the perceived dimensions.
      */
     get perceivedDimensions() {
         return this.#perceivedDimensions;
@@ -470,7 +472,10 @@ export default class Game {
      * @param settings {Settings} new value of the settings.
      */
     set settings(settings) {
-        this.#settings = {...settings};
+        this.#settings = {
+            ...this.#settings,
+            ...settings
+        };
     }
 
     /**
@@ -479,7 +484,6 @@ export default class Game {
      *     y?: number,
      *     width?: number,
      *     height?: number,
-     *     zoom?: number
      * }} new perceived dimensions
      */
     set perceivedDimensions(value) {
@@ -701,7 +705,6 @@ export default class Game {
             y: 0,
             width: this.width,
             height: this.height,
-            zoom: 1
         };
 
         // Reset the canvas and its data fields

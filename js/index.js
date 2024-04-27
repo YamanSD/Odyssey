@@ -28,7 +28,7 @@ const blue = new Circle({
     borderColor: "black"
 });
 
-const x = new X(100, 100, (ignored, tick) => {
+const x = new X(100, 100, 2, (ignored, tick) => {
     if (tick % 15 === 0) {
         x.moveBreathingAnimation();
     }
@@ -95,7 +95,6 @@ g.addEventListener('keyup', keyLiftHandler);
 
 // g.insertSprite(blue);
 g.perceivedDimensions = {
-    zoom: 2
 };
 
 g.resume();

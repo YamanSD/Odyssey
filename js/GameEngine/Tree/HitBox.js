@@ -155,6 +155,48 @@ export default class HitBox {
     }
 
     /**
+     * @param value {number} new value.
+     */
+    set width(value) {
+        this.desc.width = value;
+    }
+
+    /**
+     * @param value {number} new value.
+     */
+    set height(value) {
+        this.desc.height = value;
+    }
+
+    /**
+     * @param value {number} new value.
+     */
+    set x(value) {
+        this.desc.topLeftCoords[0] = value;
+    }
+
+    /**
+     * @param value {number} new value.
+     */
+    set y(value) {
+        this.desc.topLeftCoords[1] = value;
+    }
+
+    /**
+     * @param value {number} scale value.
+     * @param width {number} width of the sprite.
+     * @param height {number} height of the sprite.
+     * @returns {HitBox} reference to this hit box.
+     */
+    scale(value, width, height) {
+        this.x += width;
+        this.y += height;
+        this.width *= value;
+        this.height *= value;
+        return this;
+    }
+
+    /**
      * @param x {number} x-coordinate of a point.
      * @param y {number} y-coordinate of a point.
      * @returns {boolean} true if point (x, y) is in the hit box.

@@ -711,6 +711,17 @@ export default class Sprite {
     }
 
     /**
+     * @param id {number} ID of the animation.
+     * @returns {{currentCol: number, columns: number, cSpace: number, currentRow: number, startY: number, rSpace: number, startX: number, rows: number, singleWidth: number, singleHeight: number, sheetInd: number, frameCnt: number}} copy of the animation object.
+     * @protected
+     */
+    getAnimation(id) {
+       return {
+           ...this.#animations[id]
+       } ;
+    }
+
+    /**
      * Must be used inside the draw function & must be used manually only with non-dominant animations.
      *
      * @param x {number} x-coordinate of the top-left corner of the destination.

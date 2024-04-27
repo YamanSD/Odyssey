@@ -16,10 +16,19 @@ export default class X extends Sprite {
     #breathingAnimation;
 
     /**
+     * Scale of the images and hit boxes.
+     *
+     * @type {number}
+     * @private
+     */
+    #scale;
+
+    /**
      * @param x {number} x-coordinate of the hero.
      * @param y {number} y-coordinate of the hero.
+     * @param scale {number} scale of X.
      * @param onUpdate {(function(Set<HitBox>, number): boolean)?} called on each update cycle, with the current tick.
-     *  @param hitBoxBrush {{
+     * @param hitBoxBrush {{
      *    borderWidth?: number,
      *    borderColor?: string,
      *    fillColor?: string,
@@ -29,6 +38,7 @@ export default class X extends Sprite {
     constructor(
         x,
         y,
+        scale,
         onUpdate,
         hitBoxBrush
     ) {
@@ -40,6 +50,8 @@ export default class X extends Sprite {
             undefined,
             hitBoxBrush
         );
+
+        this.#scale = scale;
 
         this.#breathingAnimation = this.createAnimation(
             0,
@@ -58,6 +70,13 @@ export default class X extends Sprite {
     }
 
     /**
+     * @returns {number} the scale of the hero.
+     */
+    get scale() {
+        return this.#scale;
+    }
+
+    /**
      * @returns {{
      *   topLeftCoords: [number, number]
      * }} description of X.
@@ -70,6 +89,8 @@ export default class X extends Sprite {
      * @returns {HitBox[]} the smallest rectangle that surrounds the shape.
      */
     get hitBox() {
+        const anim = this.getAnimation(this.#breathingAnimation);
+
         return this.convertHitBoxes([
             {
                 x: this.x + 16,
@@ -95,7 +116,9 @@ export default class X extends Sprite {
                 width: 12,
                 height: 17
             },
-        ]);
+        ]).map(h => {
+            return h.scale(this.scale, anim.singleWidth, anim.singleHeight);
+        });
     }
 
     /**
@@ -105,6 +128,7 @@ export default class X extends Sprite {
         return new X(
             this.x,
             this.y,
+            this.scale,
             this.onUpdate,
             this.hitBoxBrush
         );
@@ -117,7 +141,7 @@ export default class X extends Sprite {
      * @param context {CanvasRenderingContext2D} 2d canvas element context.
      */
     draw(context) {
-        this.drawCurrentAnimation(this.x, this.y, context);
+        this.drawCurrentAnimation(this.x, this.y, context, 2);
     }
 
     moveBreathingAnimation() {
