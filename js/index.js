@@ -29,9 +29,7 @@ const blue = new Circle({
 });
 
 const x = new X(100, 100, 2, (ignored, tick) => {
-    if (tick % 15 === 0) {
-        x.moveBreathingAnimation();
-    }
+    x.moveCurrentAnimation();
 });
 
 // Example for circular trajectory

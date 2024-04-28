@@ -16,6 +16,55 @@ export default class X extends Sprite {
     #breathingAnimation;
 
     /**
+     * ID of the walking animation of X.
+     *
+     * @type {number}
+     * @private
+     */
+    #moveFromIdleAnimation;
+
+    /**
+     * ID of the walking animation of X.
+     *
+     * @type {number}
+     * @private
+     */
+    #keepMovingAnimation;
+
+    /**
+     * ID of an animation of X.
+     *
+     * @type {number}
+     * @private
+     */
+    #jumpAnimation;
+
+    /**
+     * ID of an animation of X.
+     *
+     * @type {number}
+     * @private
+     */
+    #landAnimation;
+
+    /**
+     * ID of an animation of X.
+     *
+     * @type {number}
+     * @private
+     */
+    #spawnAnimationP1;
+
+    /**
+     * ID of an animation of X.
+     *
+     * @type {number}
+     * @private
+     */
+    #spawnAnimationP2;
+
+
+    /**
      * Scale of the images and hit boxes.
      *
      * @type {number}
@@ -66,7 +115,76 @@ export default class X extends Sprite {
             0
         );
 
-        this.currentAnimation = this.#breathingAnimation;
+        this.#moveFromIdleAnimation = this.createAnimation(
+            0,
+            68,
+            428,
+            8,
+            1,
+            8,
+            48,
+            48,
+            1,
+            0,
+        );
+
+        this.#keepMovingAnimation = this.createAnimation(
+            0,
+            68,
+            477,
+            8,
+            1,
+            8,
+            48,
+            48,
+            1,
+            0,
+            4
+        );
+
+        this.#jumpAnimation = this.createAnimation(
+            0,
+            90,
+            228,
+            8,
+            1,
+            8,
+            34,
+            57,
+            1,
+            0,
+            5
+        );
+
+        this.#landAnimation = this.createAnimation(
+            0,
+            376,
+            234,
+            3,
+            1,
+            3,
+            32,
+            51,
+            1,
+            0,
+            5
+        );
+
+        this.#spawnAnimationP1 = this.createAnimation(
+            0,
+            31,
+            26,
+            2,
+            1,
+            2,
+            20,
+            92,
+            1,
+            0,
+            5
+        );
+
+        this.currentAnimation = this.#spawnAnimationP1;
     }
 
     /**
@@ -89,8 +207,6 @@ export default class X extends Sprite {
      * @returns {HitBox[]} the smallest rectangle that surrounds the shape.
      */
     get hitBox() {
-        const anim = this.getAnimation(this.#breathingAnimation);
-
         return this.convertHitBoxes([
             {
                 x: this.x + 16,
@@ -117,7 +233,7 @@ export default class X extends Sprite {
                 height: 17
             },
         ]).map(h => {
-            return h.scale(this.scale, anim.singleWidth, anim.singleHeight);
+            return h.scale(this.scale, this.x, this.y);
         });
     }
 
@@ -142,10 +258,6 @@ export default class X extends Sprite {
      */
     draw(context) {
         this.drawCurrentAnimation(this.x, this.y, context, 2);
-    }
-
-    moveBreathingAnimation() {
-        this.moveAnimation(this.#breathingAnimation);
     }
 
     /**
