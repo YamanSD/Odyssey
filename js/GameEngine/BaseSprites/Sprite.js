@@ -92,7 +92,9 @@ export default class Sprite {
      *     rSpace: number,
      *     cSpace: number,
      *     currentRow: number,
-     *     currentCol: number
+     *     currentCol: number,
+     *     moveDur: number,
+     *     currentCycle: number
      *  }>
      * }
      * @private
@@ -596,6 +598,7 @@ export default class Sprite {
      * @param singleHeight {number} height of a single frame (in pixels).
      * @param cSpace {number} space between each column.
      * @param rSpace {number} space between each row.
+     * @param moveDur {number} number of updates that trigger a move.
      * @returns {number} the animation ID, used for moving it.
      */
     createAnimation(
@@ -608,7 +611,8 @@ export default class Sprite {
         singleWidth,
         singleHeight,
         cSpace,
-        rSpace
+        rSpace,
+        moveDur=  1
     ) {
         // Generate an animation ID
         const id = this.animationId;
@@ -625,6 +629,8 @@ export default class Sprite {
             singleHeight,
             cSpace,
             rSpace,
+            moveDur,
+            currentCycle: 0,
             currentRow: 0,
             currentCol: 0
         };
@@ -633,6 +639,15 @@ export default class Sprite {
         this.resetAnimation(id);
 
         return id;
+    }
+
+    /**
+     * Moves the current animation.
+     */
+    moveCurrentAnimation() {
+        if (this.currentAnimation !== undefined) {
+            this.moveAnimation(this.currentAnimation);
+        }
     }
 
     /**
@@ -692,22 +707,27 @@ export default class Sprite {
     moveAnimation(id) {
         const anim = this.#animations[id];
 
-        // Increment the current column
-        anim.currentCol++;
+        // Move iff the animation has completed its cycle
+        if ((anim.currentCycle %= anim.moveDur) === 0) {
+            // Increment the current column
+            anim.currentCol++;
 
-        // In case of overflow, jump to next row
-        if (
-            anim.currentCol >= anim.columns
-            || anim.currentCol + anim.currentRow * anim.columns > anim.frameCnt
-        ) {
-            anim.currentCol = 0;
-            anim.currentRow++;
+            // In case of overflow, jump to next row
+            if (
+                anim.currentCol >= anim.columns
+                || anim.currentCol + anim.currentRow * anim.columns > anim.frameCnt
+            ) {
+                anim.currentCol = 0;
+                anim.currentRow++;
+            }
+
+            // In case of overflow, reset the animation
+            if (anim.currentRow >= anim.rows) {
+                this.resetAnimation(id);
+            }
         }
 
-        // In case of overflow, reset the animation
-        if (anim.currentRow >= anim.rows) {
-            this.resetAnimation(id);
-        }
+        anim.currentCycle++;
     }
 
     /**
