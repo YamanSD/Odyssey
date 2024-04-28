@@ -183,16 +183,16 @@ export default class HitBox {
     }
 
     /**
-     * @param value {number} scale value.
-     * @param width {number} width of the sprite.
-     * @param height {number} height of the sprite.
+     * @param s {number} scale value.
+     * @param x {number} x-coordinate of the sprite.
+     * @param y {number} y-coordinate of the sprite
      * @returns {HitBox} reference to this hit box.
      */
-    scale(value, width, height) {
-        this.x += width;
-        this.y += height;
-        this.width *= value;
-        this.height *= value;
+    scale(s, x, y) {
+        this.width *= s;
+        this.height *= s;
+        this.x = s * (this.x - x) + x;
+        this.y = s * (this.y - y) + y;
         return this;
     }
 
