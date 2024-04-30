@@ -1,12 +1,14 @@
 'use strict';
 
 /**
- * @class QuadTree
+ * @class Plane
+ *
+ * @Note This class is deprecated, and will be removed in the second part.
  * Class used by a 2d canvas to divide the screen into sub-quadrants recursively.
  * Provides better performance for handling collisions.
  * In the simplified branch, the nodes do not split.
  */
-export default class QuadTree {
+export default class Plane {
     /**
      * @type {number} max objects a node can hold before splitting into 4 sub-nodes (default: Unlimited).
      * @private
@@ -14,7 +16,7 @@ export default class QuadTree {
     #maxObjects;
 
     /**
-     * @type {number} total max levels inside root QuadTree (default: 5).
+     * @type {number} total max levels inside root Plane (default: 5).
      * @private
      */
     #maxLevels;
@@ -38,7 +40,7 @@ export default class QuadTree {
 
     /**
      * Using an array instead of a set, since not many sprites will be held
-     * in the same QuadTree.
+     * in the same Plane.
      *
      * {@link Sprite} links the Sprite class.
      * @type {Set<HitBox>} set of HitBox objects inside the node's boundaries.
@@ -47,13 +49,13 @@ export default class QuadTree {
     #hitBoxes;
 
     /**
-     * @type {QuadTree[]} list of child nodes.
+     * @type {Plane[]} list of child nodes.
      * @private
      */
     #childrenNodes;
 
     /**
-     * QuadTree Constructor.
+     * Plane Constructor.
      * @param {{
      *   width: number,
      *   height: number,
@@ -61,7 +63,7 @@ export default class QuadTree {
      *   y: number
      * }} bounds bounds of the node.
      * @param {number?} [maxObjects=5] max objects a node can hold before splitting into 4 sub-nodes (default: 10).
-     * @param {number?} [maxLevels=5] total max levels inside root QuadTree (default: 4).
+     * @param {number?} [maxLevels=5] total max levels inside root Plane (default: 4).
      * @param {number?} [level=0] depth level, required for sub-nodes (default: 0).
      */
     constructor(bounds, maxObjects, maxLevels, level) {
@@ -74,7 +76,7 @@ export default class QuadTree {
     }
 
     /**
-     * @return {boolean} true if this QuadTree is the root.
+     * @return {boolean} true if this Plane is the root.
      */
     get isRoot() {
         return this.#level === 0;
@@ -262,7 +264,7 @@ export default class QuadTree {
 
         // Iterate over the four children
         for (let i = 0; i < 4; i++) {
-            this.#childrenNodes[i] = new QuadTree({
+            this.#childrenNodes[i] = new Plane({
                 x: coords[i].x,
                 y: coords[i].y,
                 width,

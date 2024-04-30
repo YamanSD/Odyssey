@@ -94,7 +94,9 @@ export default class Sprite {
      *     currentRow: number,
      *     currentCol: number,
      *     moveDur: number,
-     *     currentCycle: number
+     *     currentCycle: number,
+     *     onEnd?: function(),
+     *     onStart?: function()
      *  }>
      * }
      * @private
@@ -570,6 +572,15 @@ export default class Sprite {
     }
 
     /**
+     * @param width {number} width of the image to flip.
+     * @param ctx {CanvasRenderingContext2D} 2d canvas element context.
+     */
+    flipContextHorizontally(width, ctx) {
+        ctx.translate(width, 0);
+        ctx.scale(-1, 1);
+    }
+
+    /**
      * The returned hit box is used in collision detection and quadtree.
      *
      * @Abstract
@@ -598,7 +609,9 @@ export default class Sprite {
      * @param singleHeight {number} height of a single frame (in pixels).
      * @param cSpace {number} space between each column.
      * @param rSpace {number} space between each row.
-     * @param moveDur {number} number of updates that trigger a move.
+     * @param moveDur {number?} number of updates that trigger a move.
+     * @param onStart {function()?} callback function used before the animation starts a cycle.
+     * @param onEnd {function()?} callback function used after the animation ends a cycle.
      * @returns {number} the animation ID, used for moving it.
      */
     createAnimation(
@@ -612,7 +625,9 @@ export default class Sprite {
         singleHeight,
         cSpace,
         rSpace,
-        moveDur=  1
+        moveDur=  1,
+        onStart,
+        onEnd
     ) {
         // Generate an animation ID
         const id = this.animationId;
@@ -630,6 +645,8 @@ export default class Sprite {
             cSpace,
             rSpace,
             moveDur,
+            onStart,
+            onEnd,
             currentCycle: 0,
             currentRow: 0,
             currentCol: 0
@@ -707,7 +724,12 @@ export default class Sprite {
     moveAnimation(id) {
         const anim = this.#animations[id];
 
-        // Move iff the animation has completed its cycle
+        // If this is the first frame, run onStart
+        if (anim.currentCol === 0 && anim.currentRow === 0) {
+            anim?.onStart();
+        }
+
+        // Move iff the animation has completed its waiting cycle
         if ((anim.currentCycle %= anim.moveDur) === 0) {
             // Increment the current column
             anim.currentCol++;
@@ -724,6 +746,7 @@ export default class Sprite {
             // In case of overflow, reset the animation
             if (anim.currentRow >= anim.rows) {
                 this.resetAnimation(id);
+                anim?.onEnd();
             }
         }
 

@@ -41,7 +41,7 @@ export default class Game {
     /**
      * Stores the sprites.
      *
-     * @type {QuadTree} partitions the grid into smaller quadrants.
+     * @type {Plane} partitions the grid into smaller quadrants.
      * @protected
      */
     #quadTree;
@@ -1132,7 +1132,7 @@ export default class Game {
 
         // Iterate over the sprites in the collision rectangles and redraw
         for (const interRect of interRects) {
-            // Remove from QuadTree
+            // Remove from Plane
             if (interRect.sprite.id === sprite.id) {
                 this.#quadTree.remove(interRect);
             }
@@ -1425,7 +1425,7 @@ export default class Game {
         // Call the sprite update function
         sprite.onUpdate(interRects, curTick);
 
-        // Re-insert to the QuadTree
+        // Re-insert to the Plane
         this.insertToTree(sprite);
     }
 
