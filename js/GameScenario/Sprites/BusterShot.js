@@ -1,13 +1,46 @@
 import {Sprite} from "../../GameEngine";
 
 export default class BusterShot extends Sprite {
+    constructor(x, y, left, power, onUpdate, hitBoxBrush) {
+        super(
+            {},
+            ['Buster.gif'],
+            [x, y],
+            onUpdate,
+            undefined,
+            hitBoxBrush
+        );
+
+        this.currentAnimation = this.createAnimation(
+            0,
+            389,
+            15,
+            5,
+            1,
+            5,
+            15,
+            8,
+            1,
+            0,
+            3
+        );
+
+        this.flip = left;
+    }
 
     get clone() {
         return undefined;
     }
 
     get defaultHitBox() {
-        return [];
+        return this.convertHitBoxes([
+            {
+                x: this.x,
+                y: this.y,
+                width: this.width,
+                height: this.height
+            }
+        ]);
     }
 
     get desc() {
@@ -15,17 +48,18 @@ export default class BusterShot extends Sprite {
     }
 
     draw(context) {
+        this.drawCurrentAnimation(this.x, this.y, context, 2);
     }
 
     get height() {
-        return 0;
+        return this.getAnimation(this.currentAnimation).singleHeight;
     }
 
     get type() {
-        return 0;
+        return "projectile";
     }
 
     get width() {
-        return 0;
+        return this.getAnimation(this.currentAnimation).singleWidth;
     }
 }

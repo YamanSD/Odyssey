@@ -53,6 +53,8 @@ export default class X extends Sprite {
 
         this.#scale = scale;
 
+        // Implement a shoot loop
+
         // Create the animations
         this.#animations = {
             idle: this.createAnimation(
@@ -79,7 +81,7 @@ export default class X extends Sprite {
                 48,
                 1,
                 0,
-                4,
+                3,
                 undefined,
                 () => {
                     this.currentAnimation = this.animations.moveLoop
@@ -96,7 +98,7 @@ export default class X extends Sprite {
                 52,
                 1,
                 1,
-                4
+                3
             ),
             idleLowHp: this.createAnimation(
                 0,
@@ -207,7 +209,11 @@ export default class X extends Sprite {
                 47,
                 1,
                 0,
-                4
+                4,
+                undefined,
+                () => {
+                    this.currentAnimation = this.animations.idle;
+                }
             ),
             superShoot: this.createAnimation(
                 0,
