@@ -63,7 +63,7 @@ export default class Void extends Sprite {
      * Marks the Void as done.
      *
      * @returns {
-     *  function(Set<HitBox>, number): *
+     *  function(number): *
      * } the update function.
      */
     get onUpdate() {
@@ -86,7 +86,7 @@ export default class Void extends Sprite {
      * Needed because we must override both getter and setter.
      *
      * @param onUpdate {
-     *  function(Set<HitBox>, number): *
+     *  function(number): *
      * } the new update function.
      */
     set onUpdate(onUpdate) {

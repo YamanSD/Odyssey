@@ -12,7 +12,7 @@ export default class Circle extends Sprite {
      *   centerCoords: [number, number],
      *   radius: number,
      * }} sprite geometric description.
-     * @param onUpdate {(function(Set<HitBox>, number): boolean)?} called on each update cycle
+     * @param onUpdate {(function(number): boolean)?} called on each update cycle
      * @param brush {{
      *    borderWidth?: number,
      *    borderColor?: string,

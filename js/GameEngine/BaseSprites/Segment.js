@@ -102,7 +102,7 @@ export default class Segment extends Sprite {
      *     p0: [number, number],
      *     p1: [number, number],
      * }} sprite geometric description.
-     * @param onUpdate {(function(Set<HitBox>, number): boolean)?} called on each update cycle
+     * @param onUpdate {(function(number): boolean)?} called on each update cycle
      * @param color {string?} color of the line to be drawn. Use for testing only.
      *  @param relativePoint {RelativePoint?} relative point of the sprite.
      *  default is TopLeft.

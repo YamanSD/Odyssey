@@ -27,7 +27,7 @@ export default class X extends Sprite {
      * @param x {number} x-coordinate of the hero.
      * @param y {number} y-coordinate of the hero.
      * @param scale {number} scale of X.
-     * @param onUpdate {(function(Set<HitBox>, number): boolean)?} called on each update cycle, with the current tick.
+     * @param onUpdate {(function(number): boolean)?} called on each update cycle, with the current tick.
      * @param hitBoxBrush {{
      *    borderWidth?: number,
      *    borderColor?: string,
@@ -161,7 +161,10 @@ export default class X extends Sprite {
                 60,
                 1,
                 0,
-                2
+                4,
+                () => {
+                    this.currentAnimation = this.animations.jumpLoop;
+                }
             ),
             jumpLoop: this.createAnimation(
                 0,
@@ -174,7 +177,7 @@ export default class X extends Sprite {
                 60,
                 0,
                 0,
-                2
+                15
             ),
             jumpEnd: this.createAnimation(
                 0,
@@ -184,10 +187,14 @@ export default class X extends Sprite {
                 1,
                 3,
                 34,
-                60,
+                54,
                 1,
                 0,
-                2
+                4,
+                undefined,
+                () => {
+                    this.currentAnimation = this.animations.idle;
+                }
             ),
             shoot: this.createAnimation(
                 0,
@@ -487,7 +494,7 @@ export default class X extends Sprite {
      * @returns {number} current width of the animation.
      */
     get width() {
-        if (this.currentAnimation !== undefined) {
+        if (this.currentAnimation === undefined) {
             return 0;
         }
 
@@ -498,7 +505,7 @@ export default class X extends Sprite {
      * @returns {number} current height of the animation.
      */
     get height() {
-        if (this.currentAnimation !== undefined) {
+        if (this.currentAnimation === undefined) {
             return 0;
         }
 

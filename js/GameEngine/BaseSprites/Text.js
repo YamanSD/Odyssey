@@ -19,7 +19,7 @@ export default class Text extends Sprite {
      *   bottomLeftCoords: [number, number],
      *   text: string,
      * }} sprite geometric description.
-     * @param onUpdate {(function(Set<HitBox>, number): boolean)?} called on each update cycle, with the current tick.
+     * @param onUpdate {(function(number): boolean)?} called on each update cycle, with the current tick.
      * @param brush {{
      *    borderWidth?: number,
      *    borderColor?: string,

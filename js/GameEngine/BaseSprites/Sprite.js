@@ -183,7 +183,7 @@ export default class Sprite {
     #id;
 
     /**
-     * @type {(function(Set<HitBox>, number): any) | undefined} called on each update cycle, with the current tick.
+     * @type {(function(number): any) | undefined} called on each update cycle, with the current tick.
      * @private
      */
     #onUpdate;
@@ -259,7 +259,7 @@ export default class Sprite {
      * @param description {any} sprite geometric description.
      * @param sheets {string[]} list of sprite sheets.
      * @param coords {[number, number]} the coordinates of the sprite.
-     * @param onUpdate {(function(Set<HitBox>, number): any)?} called on each update cycle,
+     * @param onUpdate {(function(number): any)?} called on each update cycle,
      *                                                         given all hit-boxes and current tick.
      * @param brush {{
      *    borderWidth?: number,
@@ -337,7 +337,7 @@ export default class Sprite {
     }
 
     /**
-     * @returns {Object<any, any>} the states object.
+     * @returns {Map<any, any>} the states object.
      */
     get states() {
         return this.#states;
@@ -409,7 +409,7 @@ export default class Sprite {
     }
 
     /**
-     * @returns {(function(Set<HitBox>, number): any)} the onUpdate function.
+     * @returns {(function(number): any)} the onUpdate function.
      */
     get onUpdate() {
         return this.#onUpdate ?? (() => undefined);
@@ -564,7 +564,7 @@ export default class Sprite {
     }
 
     /**
-     * @param onUpdate {(function(Set<HitBox>, number): any)?} new onUpdate function.
+     * @param onUpdate {(function(number): any)?} new onUpdate function.
      */
     set onUpdate(onUpdate) {
         this.#onUpdate = onUpdate;

@@ -1,6 +1,5 @@
 'use strict';
 
-import {QuadTree} from "../Tree";
 import {Sprite, Timeout, Void, SpriteSheet} from "../BaseSprites";
 import Sound from "./Sound.js";
 
@@ -37,14 +36,6 @@ export default class Game {
      * @protected
      */
     #tick;
-
-    /**
-     * Stores the sprites.
-     *
-     * @type {Plane} partitions the grid into smaller quadrants.
-     * @protected
-     */
-    #quadTree;
 
     /**
      * @type {Set<Sprite>} set of Sprites removed from the Game.
@@ -196,6 +187,7 @@ export default class Game {
      * @param showHitBoxes {boolean?} true to show sprite hit-boxes.
      * @param quadrantBrush {{
      *     borderWidth?: number,
+     *     borderColor?: string,
      *     borderColor?: string,
      *     fillColor?: string,
      *     font?: string
@@ -357,14 +349,6 @@ export default class Game {
      */
     get sprites() {
         return this.#sprites;
-    }
-
-    /**
-     * @returns {{borderWidth?: number, borderColor?: string, fillColor?: string, font?: string}|unescape}
-     *          the quadrant brush.
-     */
-    get quadrantBrush() {
-        return this.#quadrantBrush;
     }
 
     /**
@@ -714,14 +698,6 @@ export default class Game {
         Sound.clear();
         SpriteSheet.clear();
 
-        // Create a new quadtree
-        this.#quadTree = new QuadTree({
-            x: 0,
-            y: 0,
-            width: this.width,
-            height: this.height
-        });
-
         // Remove all sprites from the Sprite class
         if (this.#sprites) {
             for (const sprite of this.#sprites) {
@@ -762,9 +738,6 @@ export default class Game {
 
         // Draw the sprite
         this.drawSprite(sprite);
-
-        // Insert the sprite to the quadtree
-        this.insertToTree(sprite);
 
         // Add the sprite to the sprites set
         this.#sprites.add(sprite);
@@ -881,13 +854,6 @@ export default class Game {
     }
 
     /**
-     * Attempts to free memory.
-     */
-    cleanUp() {
-        this.#quadTree.cleanUp();
-    }
-
-    /**
      * Resumes the game if paused.
      */
     resume() {
@@ -902,16 +868,6 @@ export default class Game {
     }
 
     /**
-     * @param sprite {Sprite} to be inserted to the quadtree.
-     * @protected
-     */
-    insertToTree(sprite) {
-        for (const hitBox of sprite.hitBox) {
-            this.#quadTree.insert(hitBox);
-        }
-    }
-
-    /**
      * @param sprite {Sprite} Sprite whose coordinates adjusted.
      * @param x {number} x-component of the adjustment.
      * @param y {number} y-component of the adjustment.
@@ -921,59 +877,6 @@ export default class Game {
         const rp = sprite.relativePoint;
         sprite.x += rp.x * x;
         sprite.y += rp.y * y;
-    }
-
-    /**
-     * Draws the quadrant outlines.
-     * @protected
-     */
-    showQuadrants() {
-        // Check if the game is running
-        if (!this.#isRunning) {
-            return;
-        }
-
-        const brush = this.quadrantBrush;
-
-        // Set the new brush
-        const oldBrush = this.setBrush(brush);
-
-        // Display the quadrants
-        for (const bound of this.#quadTree.displayBounds) {
-            this.clearRect(bound);
-            this.markedRect(bound, brush);
-        }
-
-        // Reset the old brush
-        this.setBrush(oldBrush);
-    }
-
-    /**
-     * Redraws all the sprites, without triggering their updates.
-     * Resets the quad tree.
-     *
-     * @param oldWidth {number} old width of the canvas.
-     * @param oldHeight {number} old height of the canvas.
-     * @protected
-     */
-    resetTree(oldWidth, oldHeight) {
-        // Clear the screen
-        this.clearScreen();
-
-        // Clear the tree
-        this.#quadTree.clear();
-
-        // Redraw and re-insert the sprites
-        for (const sprite of this.#sprites) {
-            this.adjustRelativity(
-                sprite,
-                this.width - oldWidth,
-                this.height - oldHeight
-            );
-
-            this.insertToTree(sprite);
-            this.drawSprite(sprite);
-        }
     }
 
     /**
@@ -1004,11 +907,6 @@ export default class Game {
     update() {
         // Clear the screen before ticking the game
         this.clearScreen();
-
-        // Show the quadrants
-        if (this.showHitBoxes) {
-            this.showQuadrants();
-        }
 
         // Call the pre-tick
         this.preTick(this.currentTick);
@@ -1127,22 +1025,22 @@ export default class Game {
      * @protected
      */
     eraseSprite(sprite) {
-        const hitBoxes = sprite.hitBox;
-
-        // Get the intersection rectangles
-        const interRects = this.#quadTree.retrieve(
-            hitBoxes
-        );
-
-        // Iterate over the sprites in the collision rectangles and redraw
-        for (const interRect of interRects) {
-            // Remove from Plane
-            if (interRect.sprite.id === sprite.id) {
-                this.#quadTree.remove(interRect);
-            }
-        }
-
-        return interRects;
+        // const hitBoxes = sprite.hitBox;
+        //
+        // // Get the intersection rectangles
+        // const interRects = this.#quadTree.retrieve(
+        //     hitBoxes
+        // );
+        //
+        // // Iterate over the sprites in the collision rectangles and redraw
+        // for (const interRect of interRects) {
+        //     // Remove from Plane
+        //     if (interRect.sprite.id === sprite.id) {
+        //         this.#quadTree.remove(interRect);
+        //     }
+        // }
+        //
+        // return interRects;
     }
 
     /**
@@ -1423,14 +1321,7 @@ export default class Game {
      * @protected
      */
     updateSprite(sprite, curTick) {
-        // Erase the sprite
-        const interRects = this.eraseSprite(sprite);
-
-        // Call the sprite update function
-        sprite.onUpdate(interRects, curTick);
-
-        // Re-insert to the Plane
-        this.insertToTree(sprite);
+        sprite.onUpdate(curTick);
     }
 
     /**

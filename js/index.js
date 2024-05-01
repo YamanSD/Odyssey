@@ -17,22 +17,29 @@ let blueMove = [0, 0];
 const blue = new Circle({
     radius: 30,
     centerCoords: [30, 30]
-}, () => {
-    // blue.x += blueMove[0];
-    // blue.y += blueMove[1];
-    //
-    // blue.x = Math.max(0, Math.min(blue.x, g.width));
-    // blue.y = Math.max(0, Math.min(blue.y, g.height));
-}, {
+}, undefined, {
     fillColor: "blue",
     borderColor: "black"
 });
 
+const JumpState = {
+    idle: 0,
+    floating: 1,
+}
+
 const x = new X(200, 200, 2, (ignored, tick) => {
     x.moveCurrentAnimation();
-    const gravity = 1.5;
+    const gravity = 2;
+    const floorY = 400;
 
-    x.y = Math.min(x.y + blueMove[1] + gravity, 200);
+    if (blueMove[1] < 0
+        && (x.currentAnimation !== x.animations.jumpStart
+            || x.currentAnimation !== x.animations.jumpLoop)) {
+        x.currentAnimation = x.animations.jumpStart;
+        x.states.set(JumpState, JumpState.floating);
+    }
+
+    x.y = Math.min(x.y + blueMove[1] + gravity, floorY - x.height);
     blueMove[1] += gravity;
 
     if (blueMove[1] >= 0) {
@@ -48,11 +55,20 @@ const x = new X(200, 200, 2, (ignored, tick) => {
             x.flip = false;
         }
 
-        if (x.currentAnimation === x.animations.idle) {
-            x.currentAnimation = x.animations.startMove;
+        if (x.y + x.height >= floorY) {
+            console.log("HERE");
+            if (x.currentAnimation !== x.animations.moveLoop) {
+                x.currentAnimation = x.animations.startMove;
+            }
         }
-    } else {
-        x.currentAnimation = x.animations.idle;
+    } else if (x.y + x.height >= floorY) {
+        if (x.states.get(JumpState) === JumpState.floating) {
+            x.currentAnimation = x.animations.jumpEnd;
+        } else {
+            x.currentAnimation = x.animations.idle;
+        }
+
+        x.states.set(JumpState, JumpState.idle);
     }
 });
 
