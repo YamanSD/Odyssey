@@ -8,61 +8,12 @@ import {Sprite} from "../../GameEngine";
  */
 export default class X extends Sprite {
     /**
-     * ID of the breathing animation of X.
+     * Object containing the animations of X.
      *
-     * @type {number}
+     * @type {Object<string, number>}
      * @private
      */
-    #breathingAnimation;
-
-    /**
-     * ID of the walking animation of X.
-     *
-     * @type {number}
-     * @private
-     */
-    #moveFromIdleAnimation;
-
-    /**
-     * ID of the walking animation of X.
-     *
-     * @type {number}
-     * @private
-     */
-    #keepMovingAnimation;
-
-    /**
-     * ID of an animation of X.
-     *
-     * @type {number}
-     * @private
-     */
-    #jumpAnimation;
-
-    /**
-     * ID of an animation of X.
-     *
-     * @type {number}
-     * @private
-     */
-    #landAnimation;
-
-    /**
-     * ID of an animation of X.
-     *
-     * @type {number}
-     * @private
-     */
-    #spawnAnimationP1;
-
-    /**
-     * ID of an animation of X.
-     *
-     * @type {number}
-     * @private
-     */
-    #spawnAnimationP2;
-
+    #animations;
 
     /**
      * Scale of the images and hit boxes.
@@ -93,7 +44,7 @@ export default class X extends Sprite {
     ) {
         super(
             {},
-            ['x.gif'],
+            ['x.png'],
             [x, y],
             onUpdate,
             undefined,
@@ -102,89 +53,379 @@ export default class X extends Sprite {
 
         this.#scale = scale;
 
-        this.#breathingAnimation = this.createAnimation(
-            0,
-            189,
-            174,
-            5,
-            1,
-            5,
-            35,
-            46,
-            1,
-            0
-        );
+        // Create the animations
+        this.#animations = {
+            idle: this.createAnimation(
+                0,
+                6,
+                170,
+                5,
+                1,
+                5,
+                35,
+                49,
+                1,
+                0,
+                15,
+            ),
+            startMove: this.createAnimation(
+                0,
+                463,
+                252,
+                2,
+                1,
+                2,
+                33,
+                48,
+                1,
+                0,
+                4,
+                undefined,
+                () => {
+                    this.currentAnimation = this.animations.moveLoop
+                }
+            ),
+            moveLoop: this.createAnimation(
+                0,
+                676,
+                61,
+                4,
+                4,
+                14,
+                54,
+                52,
+                1,
+                1,
+                4
+            ),
+            idleLowHp: this.createAnimation(
+                0,
+                12,
+                547,
+                6,
+                1,
+                6,
+                33,
+                48,
+                1,
+                0,
+                30
+            ),
+            dashStart: this.createAnimation(
+                0,
+                71,
+                310,
+                3,
+                1,
+                3,
+                53,
+                45,
+                1,
+                0,
+                2
+            ),
+            dashLoop: this.createAnimation(
+                0,
+                252,
+                310,
+                1,
+                1,
+                1,
+                53,
+                45,
+                0,
+                0,
+                2
+            ),
+            dashEnd: this.createAnimation(
+                0,
+                374,
+                310,
+                4,
+                1,
+                4,
+                41,
+                47,
+                1,
+                0,
+                2
+            ),
+            jumpStart: this.createAnimation(
+                0,
+                64,
+                244,
+                7,
+                1,
+                7,
+                34,
+                60,
+                1,
+                0,
+                2
+            ),
+            jumpLoop: this.createAnimation(
+                0,
+                309,
+                244,
+                1,
+                1,
+                1,
+                34,
+                60,
+                0,
+                0,
+                2
+            ),
+            jumpEnd: this.createAnimation(
+                0,
+                344,
+                244,
+                3,
+                1,
+                3,
+                34,
+                60,
+                1,
+                0,
+                2
+            ),
+            shoot: this.createAnimation(
+                0,
+                2,
+                431,
+                8,
+                1,
+                8,
+                51,
+                47,
+                1,
+                0,
+                4
+            ),
+            superShoot: this.createAnimation(
+                0,
+                359,
+                763,
+                8,
+                1,
+                8,
+                56,
+                77,
+                1,
+                0,
+                4
+            ),
+            damagedStart: this.createAnimation(
+                0,
+                55,
+                487,
+                3,
+                1,
+                3,
+                51,
+                55,
+                1,
+                0,
+                2
+            ),
+            damagedEnd: this.createAnimation(
+                0,
+                211,
+                487,
+                2,
+                1,
+                2,
+                51,
+                55,
+                1,
+                0,
+                5
+            ),
+            crouchStart: this.createAnimation(
+                0,
+                8,
+                600,
+                1,
+                1,
+                1,
+                42,
+                42,
+                0,
+                0,
+                5
+            ),
+            crouchLoop: this.createAnimation(
+                0,
+                62,
+                600,
+                1,
+                1,
+                1,
+                42,
+                42,
+                0,
+                0,
+                5
+            ),
+            crouchShoot: this.createAnimation(
+                0,
+                80,
+                925,
+                2,
+                1,
+                2,
+                69,
+                79,
+                1,
+                0,
+                5
+            ),
+            crouchSuperShoot: this.createAnimation(
+                0,
+                220,
+                925,
+                10,
+                1,
+                10,
+                69,
+                79,
+                1,
+                0,
+                5
+            ),
+            flyIdle: this.createAnimation(
+                0,
+                12,
+                649,
+                3,
+                1,
+                3,
+                33,
+                64,
+                1,
+                0,
+                5
+            ),
+            flyForward: this.createAnimation(
+                0,
+                5,
+                717,
+                6,
+                1,
+                6,
+                41,
+                56,
+                1,
+                0,
+                5
+            ),
+            flyBackward: this.createAnimation(
+                0,
+                7,
+                779,
+                5,
+                1,
+                5,
+                33,
+                61,
+                1,
+                0,
+                5
+            ),
+            novaJump: this.createAnimation(
+                0,
+                13,
+                1173,
+                4,
+                1,
+                4,
+                38,
+                56,
+                1,
+                0,
+                5
+            ),
+            novaStart: this.createAnimation(
+                0,
+                188,
+                1164,
+                4,
+                1,
+                4,
+                123,
+                64,
+                1,
+                0,
+                2
+            ),
+            novaLoop: this.createAnimation(
+                0,
+                684,
+                1164,
+                1,
+                1,
+                1,
+                123,
+                64,
+                0,
+                0,
+                2
+            ),
+            spawnBeam: this.createAnimation(
+                0,
+                54,
+                25,
+                2,
+                1,
+                2,
+                22,
+                77,
+                1,
+                0,
+                2
+            ),
+            spawnExplosion: this.createAnimation(
+                0,
+                146,
+                35,
+                8,
+                2,
+                15,
+                64,
+                64,
+                1,
+                1,
+                5
+            ),
+            victoryDance: this.createAnimation(
+                0,
+                4,
+                1098,
+                4,
+                1,
+                4,
+                38,
+                54,
+                1,
+                0,
+                5
+            ),
+            leave: this.createAnimation(
+                0,
+                328,
+                1063,
+                6,
+                1,
+                6,
+                58,
+                88,
+                1,
+                0,
+                5
+            ),
+        };
 
-        this.#moveFromIdleAnimation = this.createAnimation(
-            0,
-            68,
-            428,
-            8,
-            1,
-            8,
-            48,
-            48,
-            1,
-            0,
-        );
-
-        this.#keepMovingAnimation = this.createAnimation(
-            0,
-            68,
-            477,
-            8,
-            1,
-            8,
-            48,
-            48,
-            1,
-            0,
-            4
-        );
-
-        this.#jumpAnimation = this.createAnimation(
-            0,
-            90,
-            228,
-            8,
-            1,
-            8,
-            34,
-            57,
-            1,
-            0,
-            5
-        );
-
-        this.#landAnimation = this.createAnimation(
-            0,
-            376,
-            234,
-            3,
-            1,
-            3,
-            32,
-            51,
-            1,
-            0,
-            5
-        );
-
-        this.#spawnAnimationP1 = this.createAnimation(
-            0,
-            31,
-            26,
-            2,
-            1,
-            2,
-            20,
-            92,
-            1,
-            0,
-            5
-        );
-
-        this.currentAnimation = this.#spawnAnimationP1;
+        this.currentAnimation = this.#animations.idle;
     }
 
     /**
@@ -192,6 +433,13 @@ export default class X extends Sprite {
      */
     get scale() {
         return this.#scale;
+    }
+
+    /**
+     * @returns {Object<string, number>} animations object.
+     */
+    get animations() {
+        return this.#animations;
     }
 
     /**
@@ -206,35 +454,55 @@ export default class X extends Sprite {
     /**
      * @returns {HitBox[]} the smallest rectangle that surrounds the shape.
      */
-    get hitBox() {
+    get defaultHitBox() {
         return this.convertHitBoxes([
             {
                 x: this.x + 16,
-                y: this.y,
+                y: this.y + 3,
                 width: 14,
                 height: 11
             },
             {
                 x: this.x + 12,
-                y: this.y + 11,
+                y: this.y + 14,
                 width: 23,
                 height: 35
             },
             {
                 x: this.x + 8,
-                y: this.y + 16,
+                y: this.y + 19,
                 width: 4,
                 height: 13
             },
             {
                 x: this.x,
-                y: this.y + 29,
+                y: this.y + 32,
                 width: 12,
                 height: 17
             },
-        ]).map(h => {
-            return h.scale(this.scale, this.x, this.y);
-        });
+        ]);
+    }
+
+    /**
+     * @returns {number} current width of the animation.
+     */
+    get width() {
+        if (this.currentAnimation !== undefined) {
+            return 0;
+        }
+
+        return this.getAnimation(this.currentAnimation).singleWidth;
+    }
+
+    /**
+     * @returns {number} current height of the animation.
+     */
+    get height() {
+        if (this.currentAnimation !== undefined) {
+            return 0;
+        }
+
+        return this.getAnimation(this.currentAnimation).singleHeight;
     }
 
     /**

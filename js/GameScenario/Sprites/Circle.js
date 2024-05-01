@@ -117,7 +117,7 @@ export default class Circle extends Sprite {
         return Circle.type;
     }
 
-    get hitBox() {
+    get defaultHitBox() {
         // Alias for the desc parameters
         const r = this.radius + (this.brush.borderWidth ?? 1);
 

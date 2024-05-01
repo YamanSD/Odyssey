@@ -335,14 +335,14 @@ export default class Game {
      * @returns {number} half the browser window height.
      */
     get halfWindowHeight() {
-        return this.windowHeight / 2;
+        return Math.floor(this.windowHeight / 2);
     }
 
     /**
      * @returns {number} half the browser window width.
      */
     get halfWindowWidth() {
-        return this.windowWidth / 2;
+        return Math.floor(this.windowWidth / 2);
     }
 
     /**
@@ -755,6 +755,8 @@ export default class Game {
      * @param sprite {Sprite} to be inserted into the canvas.
      */
     insertSprite(sprite) {
+        sprite.game = this;
+
         // Adjust the coordinates of the sprite on insertion
         this.adjustRelativity(sprite, this.width, this.height);
 
@@ -807,6 +809,8 @@ export default class Game {
 
         // Add to the removed set
         this.#removedSprites.add(sprite);
+
+        sprite.game = undefined;
     }
 
     /**

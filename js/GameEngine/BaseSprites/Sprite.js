@@ -40,7 +40,7 @@ export default class Sprite {
      *     currentCycle: number,
      *     onEnd?: function(),
      *     onStart?: function(),
-     *     hitBox?: BasicHitBox[]
+     *     hitBox?: (function(number, number): BasicHitBox[]) | undefined
      *  }} Animation
      */
 
@@ -69,6 +69,18 @@ export default class Sprite {
      * @private
      */
     #desc;
+
+    /**
+     * @type {number} scale of the sprite.
+     * @private
+     */
+    #scale;
+
+    /**
+     * @type {boolean} if true, the sprite is mirrored vertically.
+     * @private
+     */
+    #flip;
 
     /**
      * @type {string[]} list of sprite sheet paths.
@@ -183,6 +195,12 @@ export default class Sprite {
     #currentHitBox;
 
     /**
+     * @type {Game} game engine instance.
+     * @private
+     */
+    #game;
+
+    /**
      * @returns {number} a usable sprite ID.
      * @private
      */
@@ -259,6 +277,7 @@ export default class Sprite {
      *  default is TopLeft.
      *  @param ignorable {boolean?} true if the instance does not have collisions. Default false.
      *  @param isStatic {boolean?} true indicates that the sprite does not update. Default false.
+     *  @param scale {number?} scale of the sprite.
      */
     constructor(
         description,
@@ -269,9 +288,11 @@ export default class Sprite {
         hitBoxBrush,
         relativePoint,
         ignorable,
-        isStatic
+        isStatic,
+        scale
     ) {
         this.#id = Sprite.#spriteId();
+        this.#scale = scale ?? 1;
         this.#desc = description;
         this.#sheet = sheets;
         this.#coords = coords;
@@ -284,6 +305,7 @@ export default class Sprite {
         this.relativePoint = relativePoint;
         this.ignorable = ignorable ?? false;
         this.static = isStatic ?? false;
+        this.flip = false;
 
         // Dummy value
         // Do not use the setter, since defaultHitBox is abstract
@@ -308,10 +330,31 @@ export default class Sprite {
     }
 
     /**
+     * @returns {boolean} true if the sprite is flipped vertically.
+     */
+    get flip() {
+        return this.#flip;
+    }
+
+    /**
      * @returns {Object<any, any>} the states object.
      */
     get states() {
         return this.#states;
+    }
+
+    /**
+     * @returns {number} the scale of the sprite.
+     */
+    get scale() {
+        return this.#scale;
+    }
+
+    /**
+     * @returns {Game} the parent game instance of this sprite.
+     */
+    get game() {
+        return this.#game;
     }
 
     /**
@@ -402,6 +445,18 @@ export default class Sprite {
     get type() {}
 
     /**
+     * @Abstract
+     * @returns {number} width of the sprite.
+     */
+    get width() {}
+
+    /**
+     * @Abstract
+     * @returns {number} height of the sprite.
+     */
+    get height() {}
+
+    /**
      * @returns {boolean} true if the sprite does not update.
      */
     get static() {
@@ -467,16 +522,38 @@ export default class Sprite {
     }
 
     /**
+     * @param value {boolean} true to flip the image, false to restore to original.
+     */
+    set flip(value) {
+        this.#flip = value;
+    }
+
+    /**
+     * @param game {Game} parent game instance of the sprite.
+     */
+    set game(game) {
+        this.#game = game;
+    }
+
+    /**
      * @param id {number} new ID of the next animation to play.
      */
     set currentAnimation(id) {
+        if (this.currentAnimation === id) {
+            return; // Do not do anything if is current
+        }
+
         // Reset the current animation
-        if (this.#currentAnimation !== undefined) {
-            this.resetAnimation(this.#currentAnimation);
+        if (this.currentAnimation !== undefined) {
+            this.resetAnimation(this.currentAnimation);
         }
 
         this.#currentAnimation = id;
-        this.hitBox = this.getAnimation(id).hitBox;
+        const anim = this.getAnimation(id);
+
+        if (anim.hitBox) {
+            this.hitBox = anim.hitBox(this.x, this.y);
+        }
     }
 
     /**
@@ -591,20 +668,16 @@ export default class Sprite {
      */
     convertHitBoxes(rects) {
         return rects.map(r => new HitBox({
-            topLeftCoords: [r.x, r.y],
-            rotation: r.rotation,
-            height: r.height,
-            width: r.width
-        }, this));
-    }
-
-    /**
-     * @param width {number} width of the image to flip.
-     * @param ctx {CanvasRenderingContext2D} 2d canvas element context.
-     */
-    flipContextHorizontally(width, ctx) {
-        ctx.translate(width, 0);
-        ctx.scale(-1, 1);
+                topLeftCoords: [r.x, r.y],
+                rotation: r.rotation,
+                height: r.height,
+                width: r.width
+            }, this).scale(
+                this.scale,
+                this.x,
+                this.y
+            )
+        );
     }
 
     /**
@@ -648,7 +721,8 @@ export default class Sprite {
      * @param moveDur {number?} number of updates that trigger a move.
      * @param onStart {function()?} callback function used before the animation starts a cycle.
      * @param onEnd {function()?} callback function used after the animation ends a cycle.
-     * @param hitBox {BasicHitBox[]} list of hit-boxes specifically for the animation. If not provided, uses the default one.
+     * @param hitBox {(function(number, number): BasicHitBox[])?} list of hit-boxes specifically for the animation.
+     * If not provided, uses the default one.
      * @returns {number} the animation ID, used for moving it.
      */
     createAnimation(
@@ -764,8 +838,8 @@ export default class Sprite {
         const anim = this.#animations[id];
 
         // If this is the first frame, run onStart
-        if (anim.currentCol === 0 && anim.currentRow === 0) {
-            anim?.onStart();
+        if (anim.onStart && anim.currentCol === 0 && anim.currentRow === 0) {
+            anim.onStart();
         }
 
         // Move iff the animation has completed its waiting cycle
@@ -776,7 +850,7 @@ export default class Sprite {
             // In case of overflow, jump to next row
             if (
                 anim.currentCol >= anim.columns
-                || anim.currentCol + anim.currentRow * anim.columns > anim.frameCnt
+                || anim.currentCol + anim.currentRow * anim.columns >= anim.frameCnt
             ) {
                 anim.currentCol = 0;
                 anim.currentRow++;
@@ -785,7 +859,10 @@ export default class Sprite {
             // In case of overflow, reset the animation
             if (anim.currentRow >= anim.rows) {
                 this.resetAnimation(id);
-                anim?.onEnd();
+
+                if (anim.onEnd) {
+                    anim?.onEnd();
+                }
             }
         }
 
@@ -832,13 +909,18 @@ export default class Sprite {
             scale = 1;
         }
 
+        // Flip the sprite
+        if (this.flip) {
+            ctx.scale(-1, 1);
+        }
+
         ctx.drawImage(
             SpriteSheet.load(this.sheets[anim.sheetInd], forceLoad, width, height),
             (anim.singleWidth + anim.cSpace) * anim.currentCol + anim.startX,
             (anim.singleHeight + anim.rSpace) * anim.currentRow + anim.startY,
             anim.singleWidth,
             anim.singleHeight,
-            x,
+            (this.flip ? -scale * anim.singleWidth - x: x),
             y,
             scale * anim.singleWidth,
             scale * anim.singleHeight,

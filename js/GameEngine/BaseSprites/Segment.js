@@ -332,4 +332,18 @@ export default class Segment extends Sprite {
     get defaultHitBox() {
         return [];
     }
+
+    /**
+     * @returns {number} segment has no width.
+     */
+    get width() {
+        return 0;
+    }
+
+    /**
+     * @returns {number} segment has no height.
+     */
+    get height() {
+        return 0;
+    }
 }

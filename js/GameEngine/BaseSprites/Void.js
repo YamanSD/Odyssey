@@ -148,4 +148,18 @@ export default class Void extends Sprite {
     get defaultHitBox() {
         return [];
     }
+
+    /**
+     * @returns {number} void has no width.
+     */
+    get width() {
+        return 0;
+    }
+
+    /**
+     * @returns {number} void has no height.
+     */
+    get height() {
+        return 0;
+    }
 }
