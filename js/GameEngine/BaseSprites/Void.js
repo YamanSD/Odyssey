@@ -145,7 +145,7 @@ export default class Void extends Sprite {
      *
      * @returns {[]}
      */
-    get hitBox() {
+    get defaultHitBox() {
         return [];
     }
 }

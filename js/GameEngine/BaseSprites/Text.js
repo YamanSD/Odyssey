@@ -214,7 +214,7 @@ export default class Text extends Sprite {
      *
      * @returns {HitBox[]} a list of hit boxes that represent the hit-boxes of the sprite.
      */
-    get hitBox() {
+    get defaultHitBox() {
         const metrics = this.metrics;
 
         // Check for metrics existence

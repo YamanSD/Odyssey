@@ -13,6 +13,38 @@ import SpriteSheet from "./SpriteSheet.js";
  */
 export default class Sprite {
     /**
+     * @typedef {{
+     *     x: number,
+     *     y: number,
+     *     height: number,
+     *     width: number,
+     *     rotation?: number
+     * }} BasicHitBox
+     */
+
+    /**
+     * @typedef {{
+     *     sheetInd: number,
+     *     startX: number,
+     *     startY: number,
+     *     columns: number,
+     *     rows: number,
+     *     frameCnt: number,
+     *     singleWidth: number,
+     *     singleHeight: number,
+     *     rSpace: number,
+     *     cSpace: number,
+     *     currentRow: number,
+     *     currentCol: number,
+     *     moveDur: number,
+     *     currentCycle: number,
+     *     onEnd?: function(),
+     *     onStart?: function(),
+     *     hitBox?: BasicHitBox[]
+     *  }} Animation
+     */
+
+    /**
      * @type {number} ID counter for the sprites.
      * @private
      */
@@ -79,26 +111,7 @@ export default class Sprite {
     /**
      * Maps the animation IDs to animation objects.
      *
-     * @type {
-     *  Object<number, {
-     *     sheetInd: number,
-     *     startX: number,
-     *     startY: number,
-     *     columns: number,
-     *     rows: number,
-     *     frameCnt: number,
-     *     singleWidth: number,
-     *     singleHeight: number,
-     *     rSpace: number,
-     *     cSpace: number,
-     *     currentRow: number,
-     *     currentCol: number,
-     *     moveDur: number,
-     *     currentCycle: number,
-     *     onEnd?: function(),
-     *     onStart?: function()
-     *  }>
-     * }
+     * @type {Object<number, Animation>}
      * @private
      */
     #animations;
@@ -158,16 +171,16 @@ export default class Sprite {
     #id;
 
     /**
-     * @type {(function(Set<{
-     *     x: number,
-     *     y: number,
-     *     height: number,
-     *     width: number,
-     *     sprite: Sprite
-     * }>, number): any) | undefined} called on each update cycle, with the current tick.
+     * @type {(function(Set<HitBox>, number): any) | undefined} called on each update cycle, with the current tick.
      * @private
      */
     #onUpdate;
+
+    /**
+     * @type {HitBox[] | undefined} current sprite hit box.
+     * @private
+     */
+    #currentHitBox;
 
     /**
      * @returns {number} a usable sprite ID.
@@ -271,6 +284,10 @@ export default class Sprite {
         this.relativePoint = relativePoint;
         this.ignorable = ignorable ?? false;
         this.static = isStatic ?? false;
+
+        // Dummy value
+        // Do not use the setter, since defaultHitBox is abstract
+        this.#currentHitBox = undefined;
 
         // Store the sprite reference into the sprites map
         Sprite.sprites[this.id] = this;
@@ -450,15 +467,16 @@ export default class Sprite {
     }
 
     /**
-     * @param value {number} new ID of the next animation to play.
+     * @param id {number} new ID of the next animation to play.
      */
-    set currentAnimation(value) {
+    set currentAnimation(id) {
         // Reset the current animation
         if (this.#currentAnimation !== undefined) {
             this.resetAnimation(this.#currentAnimation);
         }
 
-        this.#currentAnimation = value;
+        this.#currentAnimation = id;
+        this.hitBox = this.getAnimation(id).hitBox;
     }
 
     /**
@@ -515,6 +533,21 @@ export default class Sprite {
     }
 
     /**
+     * @param value {BasicHitBox[] | HitBox[] | undefined} new list of hit-boxes.
+     */
+    set hitBox(value) {
+        if (value) {
+            if (value instanceof HitBox) {
+                this.#currentHitBox = value;
+            } else {
+                this.#currentHitBox = this.convertHitBoxes(value);
+            }
+        } else {
+            this.#currentHitBox = this.defaultHitBox;
+        }
+    }
+
+    /**
      * @param x {number} new x-coordinate of the sprite.
      */
     set x(x) {
@@ -554,13 +587,7 @@ export default class Sprite {
     }
 
     /**
-     * @param rects {{
-     *   x: number,
-     *   y: number,
-     *   height: number,
-     *   width: number,
-     *   rotation?: number
-     *  }[]} list of rectangles to convert to HitBox instances.
+     * @param rects {BasicHitBox[]} list of rectangles to convert to HitBox instances.
      */
     convertHitBoxes(rects) {
         return rects.map(r => new HitBox({
@@ -581,12 +608,21 @@ export default class Sprite {
     }
 
     /**
-     * The returned hit box is used in collision detection and quadtree.
+     * The returned hit box is used in collision detection.
+     *
+     * @returns {HitBox[]} a list of hit boxes that represent the current hit-boxes of the sprite.
+     */
+    get hitBox() {
+        return this.#currentHitBox ?? this.defaultHitBox;
+    }
+
+    /**
+     * The returned hit box is used in collision detection.
      *
      * @Abstract
-     * @returns {HitBox[]} a list of hit boxes that represent the hit-boxes of the sprite.
+     * @returns {HitBox[]} a list of hit boxes that represent the default hit-boxes of the sprite.
      */
-    get hitBox() {}
+    get defaultHitBox() {}
 
     /**
      * Draws the sprite in the 2d context.
@@ -612,6 +648,7 @@ export default class Sprite {
      * @param moveDur {number?} number of updates that trigger a move.
      * @param onStart {function()?} callback function used before the animation starts a cycle.
      * @param onEnd {function()?} callback function used after the animation ends a cycle.
+     * @param hitBox {BasicHitBox[]} list of hit-boxes specifically for the animation. If not provided, uses the default one.
      * @returns {number} the animation ID, used for moving it.
      */
     createAnimation(
@@ -627,7 +664,8 @@ export default class Sprite {
         rSpace,
         moveDur=  1,
         onStart,
-        onEnd
+        onEnd,
+        hitBox
     ) {
         // Generate an animation ID
         const id = this.animationId;
@@ -647,6 +685,7 @@ export default class Sprite {
             moveDur,
             onStart,
             onEnd,
+            hitBox,
             currentCycle: 0,
             currentRow: 0,
             currentCol: 0
@@ -755,7 +794,7 @@ export default class Sprite {
 
     /**
      * @param id {number} ID of the animation.
-     * @returns {{currentCol: number, columns: number, cSpace: number, currentRow: number, startY: number, rSpace: number, startX: number, rows: number, singleWidth: number, singleHeight: number, sheetInd: number, frameCnt: number}} copy of the animation object.
+     * @returns {Animation} copy of the animation object.
      * @protected
      */
     getAnimation(id) {
