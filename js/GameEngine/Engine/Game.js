@@ -774,7 +774,7 @@ export default class Game {
      * @param sprite {Sprite} to be removed.
      */
     removeSprite(sprite) {
-        // Erase the sprite and remove it from the Tree
+        // Erase the sprite and remove it from the HitBox
         this.eraseSprite(sprite);
 
         // Remove the sprite from the sprites set

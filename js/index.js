@@ -1,7 +1,7 @@
 'use strict';
 
-import {Game, Text, Segment} from './GameEngine';
-import {BusterShot, Circle, Rectangle, X} from "./GameScenario/Sprites";
+import {Game} from './GameEngine';
+import {BusterShot, X} from "./GameScenario/Sprites";
 
 const g = new Game(
     "mainCanvas",
@@ -22,9 +22,7 @@ const ShootingState = {
     shoot: 1,
 }
 
-const x = new X(200, 200, 2, (ignored, tick) => {
-    x.moveCurrentAnimation();
-
+const x = new X(200, 200, 2, (ignored) => {
     if (x.states.get(ShootingState) === ShootingState.shoot) {
         x.currentAnimation = x.animations.shoot;
         const m = new BusterShot(
@@ -86,6 +84,8 @@ const x = new X(200, 200, 2, (ignored, tick) => {
 
         x.states.set(JumpState, JumpState.idle);
     }
+
+    x.moveCurrentAnimation();
 });
 
 

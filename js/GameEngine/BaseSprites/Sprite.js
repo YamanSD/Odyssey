@@ -1,6 +1,6 @@
 'use strict';
 
-import {HitBox} from "../Tree";
+import {HitBox} from "../HitBox";
 import {RelativePoint, Sound} from "../Engine";
 import SpriteSheet from "./SpriteSheet.js";
 
@@ -434,13 +434,13 @@ export default class Sprite {
 
     /**
      * @Abstract
-     * @returns {number} number representing the type of the sprite.
+     * @returns {string} string representing the type of the sprite.
      */
     static get type() {}
 
     /**
      * @Abstract
-     * @returns {number} number representing the type of the sprite.
+     * @returns {string} string representing the type of the sprite.
      */
     get type() {}
 
