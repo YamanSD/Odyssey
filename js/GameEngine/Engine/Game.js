@@ -197,6 +197,18 @@ export default class Game {
     }
 
     /**
+     * @param canvas {HTMLCanvasElement} canvas to resize to fullscreen.
+     */
+    static resizeCanvas(canvas) {
+        // Set the width and height of the canvas.
+        canvas.width = Game.windowWidth;
+        canvas.height = Game.windowHeight;
+
+        // This allows us to upscale images without them being blurry
+        canvas.getContext('2d').imageSmoothingEnabled = false;
+    }
+
+    /**
      * @param canvasId {string} HTML5 ID of the canvas element.
      * @param width {number} width of the game map.
      * @param height {number} height of the game map.
@@ -237,9 +249,8 @@ export default class Game {
         this.#width = width;
         this.#height = height;
 
-        // Set the width and height of the canvas.
-        canvas.width = Game.windowWidth;
-        canvas.height = Game.windowHeight;
+        // Resize the canvas to fill the screen
+        Game.resizeCanvas(canvas);
 
         // Remove margins and padding
         Game.zeroMarginElements();
@@ -251,6 +262,7 @@ export default class Game {
         this.clear();
 
         this.addEventListener('resize', () => {
+            Game.resizeCanvas(this.canvas);
             this.clearScreen();
         }, true);
 
@@ -259,9 +271,6 @@ export default class Game {
 
         // Set quadrant brush
         this.quadrantBrush = quadrantBrush;
-
-        // This allows us to upscale images without them being blurry
-        this.context.imageSmoothingEnabled = false;
 
         // Start the game
         this.#start();
