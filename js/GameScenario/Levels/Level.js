@@ -5,11 +5,22 @@ import {Sprite} from "../../GameEngine";
 
 /**
  * @class Level
+ * @Abstract
  *
  * Class for level creation.
  */
 export default class Level extends Sprite {
     /**
+     * List of sprites inside the level.
+     *
+     * @type {Sprite[]}
+     * @protected
+     */
+    sprites;
+
+
+    /**
+     * @param sprites {Sprite[]} sprite array.
      * @param width {number} width of the map.
      * @param height {number} height of the map.
      * @param sheets {string[]} list of sprite sheets.
@@ -19,9 +30,16 @@ export default class Level extends Sprite {
      *    fillColor?: string,
      *    font?: string
      *  }?} object hit-box brush properties.
-     *  @param scale {number?} scale of the sprite.
+     *  @param scale {number?} scale of the sprite. Default is [2.67].
      */
-    constructor(height, width, sheets, hitBoxBrush, scale) {
+    constructor(
+        sprites,
+        width,
+        height,
+        sheets,
+        hitBoxBrush,
+        scale
+    ) {
         super(
             {
                 height,
@@ -35,24 +53,24 @@ export default class Level extends Sprite {
             undefined,
             false,
             true,
-            scale
+            scale ?? 2.67
         );
-    }
 
-    /**
-     * @returns {Sprite} a clone of this sprite.
-     */
-    get clone() {
-        return undefined;
-    }
+        // Sprite array
+        this.sprites = sprites;
 
-    /**
-     * The returned hit box is used in collision detection.
-     *
-     * @returns {HitBox[]} a list of hit boxes that represent the default hit-boxes of the sprite.
-     */
-    get defaultHitBox() {
-        return [];
+        this.currentAnimation = this.createAnimation(
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            width,
+            height,
+            0,
+            0,
+        );
     }
 
     /**
@@ -65,20 +83,6 @@ export default class Level extends Sprite {
      */
     get desc() {
         return super.desc;
-    }
-
-    /**
-     * Draws the sprite in the 2d context.
-     *
-     * @param context {CanvasRenderingContext2D} 2d canvas element context.
-     */
-    draw(context) {}
-
-    /**
-     * @returns {number} height of the sprite.
-     */
-    get height() {
-        return this.desc.height;
     }
 
     /**
@@ -99,6 +103,37 @@ export default class Level extends Sprite {
      * @returns {number} width of the sprite.
      */
     get width() {
-        return this.desc.width;
+        return Math.floor(this.desc.width * this.scale);
+    }
+
+    /**
+     * @returns {number} height of the sprite.
+     */
+    get height() {
+        return Math.floor(this.desc.height * this.scale);
+    }
+
+    /**
+     * Load the level sprites.
+     */
+    load() {
+        if (this.game) {
+            this.sprites.forEach(s => {
+               this.game.insertSprite(s);
+            });
+        }
+    }
+
+    /**
+     * Unloads the level sprites.
+     */
+    offload() {
+        if (this.game) {
+            this.sprites.forEach(s => {
+                this.game.removeSprite(s);
+            });
+
+            this.game.removeSprite(this);
+        }
     }
 }

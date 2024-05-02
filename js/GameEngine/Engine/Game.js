@@ -119,6 +119,22 @@ export default class Game {
     #perceivedDimensions;
 
     /**
+     * Logical width of the game
+     *
+     * @type {number}
+     * @private
+     */
+    #width;
+
+    /**
+     * Logical height of the game
+     *
+     * @type {number}
+     * @private
+     */
+    #height;
+
+    /**
      * @type {function(number)} called before ticking the objects,
      *                          given current tick.
      *                          Called even if the game is paused.
@@ -217,9 +233,13 @@ export default class Game {
         this.preTick = preTick;
         this.postTick = postTick;
 
+        // Logical width and height of the map
+        this.#width = width;
+        this.#height = height;
+
         // Set the width and height of the canvas.
-        canvas.width = width;
-        canvas.height = height;
+        canvas.width = Game.windowWidth;
+        canvas.height = Game.windowHeight;
 
         // Remove margins and padding
         Game.zeroMarginElements();
@@ -359,28 +379,28 @@ export default class Game {
     }
 
     /**
-     * @returns {number} width of the canvas.
+     * @returns {number} the logical width of the canvas.
      */
     get width() {
-        return this.canvas.width;
+        return this.#width;
     }
 
     /**
-     * @returns {number} half the width of the canvas.
+     * @returns {number} half the logical width of the canvas.
      */
     get halfWidth() {
         return this.width / 2;
     }
 
     /**
-     * @returns {number} height of the canvas.
+     * @returns {number} the logical height of the canvas.
      */
     get height() {
-        return this.canvas.height;
+        return this.#height;
     }
 
     /**
-     * @returns {number} half the height of the canvas.
+     * @returns {number} half the logical height of the canvas.
      */
     get halfHeight() {
         return this.height / 2;

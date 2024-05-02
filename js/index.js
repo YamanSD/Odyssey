@@ -1,13 +1,12 @@
 'use strict';
 
 import {Game} from './GameEngine';
+// import {BusterShot, X} from "./GameScenario/Sprites";
+import {Level_1} from "./GameScenario/Levels";
 import {BusterShot, X} from "./GameScenario/Sprites";
 
-const g = new Game(
-    "mainCanvas",
-    2000,
-    2000,
-);
+
+
 const speed = 10;
 let moveVector = [0, 0];
 
@@ -22,7 +21,7 @@ const ShootingState = {
     shoot: 1,
 }
 
-const x = new X(200, 200, 2, (ignored) => {
+const x = new X(200, 300, 2, (ignored) => {
     if (x.states.get(ShootingState) === ShootingState.shoot) {
         x.currentAnimation = x.animations.shoot;
         const m = new BusterShot(
@@ -87,6 +86,14 @@ const x = new X(200, 200, 2, (ignored) => {
 
     x.moveCurrentAnimation();
 });
+const l1 = new Level_1([x]);
+
+
+const g = new Game(
+    "mainCanvas",
+    17000,
+    800,
+);
 
 
 /**
@@ -133,8 +140,10 @@ const keyLiftHandler = (e) => {
 }
 
 g.follow(x);
-g.insertSprite(x);
 g.addEventListener('keydown', keyPressHandler);
 g.addEventListener('keyup', keyLiftHandler);
 
+
+g.insertSprite(l1);
+l1.load();
 g.resume();

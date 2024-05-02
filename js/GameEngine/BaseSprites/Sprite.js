@@ -347,7 +347,7 @@ export default class Sprite {
      * @returns {number} the scale of the sprite.
      */
     get scale() {
-        return this.#scale;
+        return this.#scale ?? 1;
     }
 
     /**
