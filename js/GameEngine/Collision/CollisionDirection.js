@@ -17,10 +17,11 @@ export default class CollisionDirection {
      * @private
      */
     static directions = {
-        N: 0b1000,
-        S: 0b0100,
-        E: 0b0010,
-        W: 0b0001
+        N:      0b1000,
+        S:      0b0100,
+        E:      0b0010,
+        W:      0b0001,
+        NONE:   0b0000
     };
 
     /**
@@ -38,6 +39,14 @@ export default class CollisionDirection {
      */
     readBit(dir) {
         return Boolean(this.#dir & dir);
+    }
+
+    /**
+     * @returns {CollisionDirection} no collision.
+     * @constructor
+     */
+    static get None() {
+        return new CollisionDirection(this.directions.NONE);
     }
 
     /**
@@ -142,5 +151,12 @@ export default class CollisionDirection {
      */
     get isWest() {
         return this.readBit(CollisionDirection.directions.W);
+    }
+
+    /**
+     * @returns {boolean} true if no collision.
+     */
+    get isNone() {
+        return this.#dir === CollisionDirection.directions.NONE;
     }
 }
