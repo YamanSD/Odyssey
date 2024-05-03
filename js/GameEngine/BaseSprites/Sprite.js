@@ -20,6 +20,8 @@ export default class Sprite {
      *     width: number,
      *     rotation?: number
      * }} BasicHitBox
+     *
+     * Rotation is in degrees.
      */
 
     /**
@@ -664,12 +666,40 @@ export default class Sprite {
     }
 
     /**
+     * @param p0 {[number, number]} coordinates of first point.
+     * @param p1 {[number, number]} coordinates of second point.
+     * @returns {number} the Euclidean distance between p0 and p1.
+     */
+    euclideanDistance(p0, p1) {
+        return Math.sqrt(
+            (p0[0] - p1[0]) ** 2 + (p0[1] - p1[1]) ** 2
+        );
+    }
+
+    /**
+     * @param p0 {[number, number]} coordinates of first point.
+     * @param p1 {[number, number]} coordinates of second point.
+     * @returns {number} the Manhattan distance between p0 and p1.
+     */
+    manhattanDistance(p0, p1) {
+        return Math.abs(p0[0] - p1[0]) + Math.abs(p0[1] - p1[1]);
+    }
+
+    /**
+     * @param angle {number} angle in degrees.
+     * @returns {number} the angle in radians.
+     */
+    degToRadians(angle) {
+        return angle * Math.PI / 180;
+    }
+
+    /**
      * @param rects {BasicHitBox[]} list of rectangles to convert to HitBox instances.
      */
     convertHitBoxes(rects) {
         return rects.map(r => new HitBox({
                 topLeftCoords: [r.x, r.y],
-                rotation: r.rotation,
+                rotation: this.degToRadians(r.rotation),
                 height: r.height,
                 width: r.width
             }, this).scale(
@@ -736,7 +766,7 @@ export default class Sprite {
         singleHeight,
         cSpace,
         rSpace,
-        moveDur=  1,
+        moveDur = 1,
         onStart,
         onEnd,
         hitBox

@@ -133,6 +133,14 @@ export default class Game {
     #height;
 
     /**
+     * State map for the game.
+     *
+     * @type {Map<any, any>}
+     * @private
+     */
+    #state;
+
+    /**
      * @type {function(number)} called before ticking the objects,
      *                          given current tick.
      *                          Called even if the game is paused.
@@ -450,6 +458,13 @@ export default class Game {
     }
 
     /**
+     * @returns {Map<*, *>} game state.
+     */
+    get state() {
+        return this.#state;
+    }
+
+    /**
      * @returns {number} a usable handler ID.
      * @protected
      */
@@ -754,6 +769,7 @@ export default class Game {
         this.#latestRenderTime = 0;
         this.#isRunning = false;
         this.#followed = null;
+        this.#state = new Map();
 
         // Assigns the initial timestamp
         this.#initRenderTime = performance.now();
@@ -816,34 +832,6 @@ export default class Game {
         this.#removedSprites.add(sprite);
 
         sprite.game = undefined;
-    }
-
-    /**
-     * @param p0 {[number, number]} coordinates of first point.
-     * @param p1 {[number, number]} coordinates of second point.
-     * @returns {number} the Euclidean distance between p0 and p1.
-     */
-    euclideanDistance(p0, p1) {
-        return Math.sqrt(
-            (p0[0] - p1[0]) ** 2 + (p0[1] - p1[1]) ** 2
-        );
-    }
-
-    /**
-     * @param p0 {[number, number]} coordinates of first point.
-     * @param p1 {[number, number]} coordinates of second point.
-     * @returns {number} the Manhattan distance between p0 and p1.
-     */
-    manhattanDistance(p0, p1) {
-        return Math.abs(p0[0] - p1[0]) + Math.abs(p0[1] - p1[1]);
-    }
-
-    /**
-     * @param angle {number} angle in degrees.
-     * @returns {number} the angle in radians.
-     */
-    degToRadians(angle) {
-        return angle * Math.PI / 180;
     }
 
     /**

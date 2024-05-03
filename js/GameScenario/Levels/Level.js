@@ -23,7 +23,7 @@ export default class Level extends Sprite {
      * @param sprites {Sprite[]} sprite array.
      * @param width {number} width of the map.
      * @param height {number} height of the map.
-     * @param sheets {string[]} list of sprite sheets.
+     * @param sheets {string[]} list of sprite sheets. First one must be the background.
      *  @param hitBoxBrush {{
      *    borderWidth?: number,
      *    borderColor?: string,
@@ -69,7 +69,7 @@ export default class Level extends Sprite {
             width,
             height,
             0,
-            0,
+            0
         );
     }
 
