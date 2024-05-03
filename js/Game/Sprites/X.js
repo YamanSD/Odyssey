@@ -470,6 +470,12 @@ export default class X extends Sprite {
     get defaultHitBox() {
         return this.convertHitBoxes([
             {
+                x: this.x,
+                y: this.y + 32,
+                width: 12,
+                height: 17
+            },
+            {
                 x: this.x + 16,
                 y: this.y + 3,
                 width: 14,
@@ -486,12 +492,6 @@ export default class X extends Sprite {
                 y: this.y + 19,
                 width: 4,
                 height: 13
-            },
-            {
-                x: this.x,
-                y: this.y + 32,
-                width: 12,
-                height: 17
             },
         ]);
     }

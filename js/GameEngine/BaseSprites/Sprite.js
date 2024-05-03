@@ -1,6 +1,6 @@
 'use strict';
 
-import {HitBox} from "../HitBox";
+import {HitBox} from "../Collision";
 import {RelativePoint, Sound} from "../Engine";
 import SpriteSheet from "./SpriteSheet.js";
 
@@ -686,6 +686,18 @@ export default class Sprite {
     }
 
     /**
+     * @param s {Sprite} to check the collision with.
+     * @returns {boolean} true if this sprite and the given sprite are colliding.
+     */
+    colliding(s) {
+        if (this.game) {
+            return this.game.areColliding(this, s);
+        }
+
+        return false;
+    }
+
+    /**
      * @param angle {number} angle in degrees.
      * @returns {number} the angle in radians.
      */
@@ -694,12 +706,12 @@ export default class Sprite {
     }
 
     /**
-     * @param rects {BasicHitBox[]} list of rectangles to convert to HitBox instances.
+     * @param rects {BasicHitBox[]} list of rectangles to convert to Collision instances.
      */
     convertHitBoxes(rects) {
         return rects.map(r => new HitBox({
                 topLeftCoords: [r.x, r.y],
-                rotation: this.degToRadians(r.rotation),
+                rotation: this.degToRadians(r.rotation ?? 0),
                 height: r.height,
                 width: r.width
             }, this).scale(
