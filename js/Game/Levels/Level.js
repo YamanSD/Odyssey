@@ -1,6 +1,6 @@
 'use strict';
 
-import {Sprite} from "../../GameEngine";
+import {Game, Sprite} from "../../GameEngine";
 
 
 /**
@@ -53,7 +53,7 @@ export default class Level extends Sprite {
             undefined,
             false,
             true,
-            scale ?? 2.67
+            scale ?? Game.windowHeight / (height * 0.5)
         );
 
         // Sprite array
