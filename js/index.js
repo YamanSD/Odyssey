@@ -1,9 +1,9 @@
 'use strict';
 
 import {Game, Text} from './GameEngine';
-// import {BusterShot, X} from "./GameScenario/Sprites";
-import {Level_1} from "./GameScenario/Levels";
-import {BusterShot, X} from "./GameScenario/Sprites";
+// import {BusterShot, X} from "./Game/Sprites";
+import {Level_1} from "./Game/Levels";
+import {BusterShot, X} from "./Game/Sprites";
 
 
 const baseSpeed = 10;
@@ -37,7 +37,7 @@ const ShootingState = {
     shoot: 1,
 }
 
-const x = new X(16000, 700, 2, (ignored) => {
+const x = new X(100, 300, 2, (ignored) => {
     // if (x.states.get(ShootingState) === ShootingState.shoot) {
     //     x.currentAnimation = x.animations.shoot;
     //     const m = new BusterShot(
@@ -100,6 +100,10 @@ const x = new X(16000, 700, 2, (ignored) => {
     //     x.states.set(JumpState, JumpState.idle);
     // }
 
+    if (x.game.areColliding(x, l1)) {
+        console.log("COLLIDE");
+    }
+
     x.x += moveVector[0];
     x.y += moveVector[1];
 
@@ -156,7 +160,6 @@ const keyLiftHandler = (e) => {
 g.follow(x);
 g.addEventListener('keydown', keyPressHandler);
 g.addEventListener('keyup', keyLiftHandler);
-
 
 g.insertSprite(l1);
 l1.load();
