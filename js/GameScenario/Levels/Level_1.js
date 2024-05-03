@@ -33,6 +33,7 @@ export default class Level_1 extends Level {
         const height = 200;
 
         return this.convertHitBoxes([
+            // Ground
             {
                 x: 0,
                 y: 160,
@@ -203,6 +204,79 @@ export default class Level_1 extends Level {
                 y: 194,
                 width: 630,
                 height: height
+            },
+            // Ceiling
+            {
+                x: 416,
+                y: 0,
+                width: 300,
+                height: 64
+            },
+            {
+                x: 640,
+                y: 64,
+                width: 100,
+                height: 64
+            },
+            {
+                x: 736,
+                y: 128,
+                width: 140,
+                height: 79
+            },
+            {
+                x: 864,
+                y: 207,
+                width: 140,
+                height: 64
+            },
+            {
+                x: 991,
+                y: 207,
+                width: 130,
+                height: 128
+            },
+            {
+                x: 1121,
+                y: 193,
+                width: 4255,
+                height: 64
+            },
+            {
+                x: 5376,
+                y: 257,
+                width: 128,
+                height: 95
+            },
+            {
+                x: 5504,
+                y: 193,
+                width: 128,
+                height: 95
+            },
+            {
+                x: 5632,
+                y: 98,
+                width: 128,
+                height: 95
+            },
+            {
+                x: 5760,
+                y: 33,
+                width: 128,
+                height: 95
+            },
+            {
+                x: 5888,
+                y: 0,
+                width: 128,
+                height: 33
+            },
+            {
+                x: 5888,
+                y: -30,
+                width: 400,
+                height: 30
             }
         ]);
     }
