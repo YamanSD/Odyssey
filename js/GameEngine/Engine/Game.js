@@ -822,9 +822,6 @@ export default class Game {
      * @param sprite {Sprite} to be removed.
      */
     removeSprite(sprite) {
-        // Erase the sprite and remove it from the Collision
-        this.eraseSprite(sprite);
-
         // Remove the sprite from the sprites set
         this.#sprites.delete(sprite);
 
@@ -1035,32 +1032,6 @@ export default class Game {
      */
     revertCamera() {
         this.translateCamera(-1);
-    }
-
-    /**
-     * Erases the object, exposing any objects beneath it.
-     *
-     * @param sprite {Sprite} to be erased.
-     * @returns {Set<HitBox>} the intersection rectangles.
-     * @protected
-     */
-    eraseSprite(sprite) {
-        // const hitBoxes = sprite.hitBox;
-        //
-        // // Get the intersection rectangles
-        // const interRects = this.#quadTree.retrieve(
-        //     hitBoxes
-        // );
-        //
-        // // Iterate over the sprites in the collision rectangles and redraw
-        // for (const interRect of interRects) {
-        //     // Remove from Plane
-        //     if (interRect.sprite.id === sprite.id) {
-        //         this.#quadTree.remove(interRect);
-        //     }
-        // }
-        //
-        // return interRects;
     }
 
     /**
