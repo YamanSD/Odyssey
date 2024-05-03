@@ -94,11 +94,9 @@ export default class Game {
     #followed;
 
     /**
-     * @typedef Settings {{}}
-     *
      * Object containing game settings.
      *
-     * @type {Settings}
+     * @type {Map<any, any>}
      * @private
      */
     #settings;
@@ -210,8 +208,8 @@ export default class Game {
 
     /**
      * @param canvasId {string} HTML5 ID of the canvas element.
-     * @param width {number} width of the game map.
-     * @param height {number} height of the game map.
+     * @param width {number?} width of the game map.
+     * @param height {number?} height of the game map.
      * @param showHitBoxes {boolean?} true to show sprite hit-boxes.
      * @param quadrantBrush {{
      *     borderWidth?: number,
@@ -245,10 +243,6 @@ export default class Game {
         this.preTick = preTick;
         this.postTick = postTick;
 
-        // Logical width and height of the map
-        this.#width = width;
-        this.#height = height;
-
         // Resize the canvas to fill the screen
         Game.resizeCanvas(canvas);
 
@@ -260,6 +254,9 @@ export default class Game {
 
         // Initialize the data fields
         this.clear();
+
+        // Logical width and height of the map
+        this.resize(width ?? 0, height ?? 0);
 
         this.addEventListener('resize', () => {
             Game.resizeCanvas(this.canvas);
@@ -277,7 +274,7 @@ export default class Game {
     }
 
     /**
-     * @returns {Settings} the settings of the game.
+     * @returns {Map<any, any>} the settings of the game.
      */
     get settings() {
         return this.#settings;
@@ -398,7 +395,7 @@ export default class Game {
      * @returns {number} half the logical width of the canvas.
      */
     get halfWidth() {
-        return this.width / 2;
+        return Math.floor(this.width / 2);
     }
 
     /**
@@ -412,7 +409,7 @@ export default class Game {
      * @returns {number} half the logical height of the canvas.
      */
     get halfHeight() {
-        return this.height / 2;
+        return Math.floor(this.height / 2);
     }
 
     /**
@@ -482,16 +479,6 @@ export default class Game {
     }
 
     /**
-     * @param settings {Settings} new value of the settings.
-     */
-    set settings(settings) {
-        this.#settings = {
-            ...this.#settings,
-            ...settings
-        };
-    }
-
-    /**
      * @param value {{
      *     x?: number,
      *     y?: number,
@@ -531,6 +518,22 @@ export default class Game {
      */
     set postTick(value) {
         this.#postTick = value;
+    }
+
+    /**
+     * Changes the perceived dimensions to the given ones.
+     *
+     * @param width {number} new logical width of the game.
+     * @param height {number} new logical height of the game.
+     */
+    resize(width, height) {
+        this.#width = width;
+        this.#height = height;
+
+        this.perceivedDimensions = {
+            width,
+            height
+        };
     }
 
     /**

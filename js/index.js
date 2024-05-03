@@ -89,7 +89,7 @@ const x = new X(200, 300, 2, (ignored) => {
 const l1 = new Level_1([x]);
 
 
-const g = new Game("mainCanvas", l1.width, l1.height);
+const g = new Game("mainCanvas");
 
 
 /**

@@ -118,6 +118,8 @@ export default class Level extends Sprite {
      */
     load() {
         if (this.game) {
+            this.game.resize(this.width, this.height);
+
             this.sprites.forEach(s => {
                this.game.insertSprite(s);
             });
