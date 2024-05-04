@@ -28,6 +28,16 @@ export default class HitBox {
     #desc;
 
     /**
+     * @type {{
+     *     sin: number,
+     *     cos: number,
+     *     tan: number
+     * }} common trig-values of rotation.
+     * @private
+     */
+    #trig;
+
+    /**
      * @param description {{
      *   topLeftCoords: [number, number],
      *   height: number,
@@ -39,6 +49,11 @@ export default class HitBox {
     constructor(description, sprite) {
         this.#desc = description;
         this.#sprite = sprite;
+        this.#trig = {
+            sin: Math.sin(this.rotation),
+            cos: Math.cos(this.rotation),
+            tan: Math.tan(this.rotation)
+        };
     }
 
     /**
@@ -134,15 +149,24 @@ export default class HitBox {
     }
 
     /**
-     * @return {[number, number][]} list of coordinates for the hit box polygon.
+     * @returns {number} sine of the rotation.
      */
-    get corners() {
-        return [
-            [this.x, this.y],
-            this.#rotatePoint(this.x + this.width, this.y),
-            this.#rotatePoint(this.x, this.y + this.height),
-            this.#rotatePoint(this.x + this.width, this.y + this.height)
-        ];
+    get sin() {
+        return this.#trig.sin;
+    }
+
+    /**
+     * @returns {number} cosine of the rotation.
+     */
+    get cos() {
+        return this.#trig.cos;
+    }
+
+    /**
+     * @returns {number} tangent of the rotation.
+     */
+    get tan() {
+        return this.#trig.tan;
     }
 
     /**
@@ -197,6 +221,13 @@ export default class HitBox {
     }
 
     /**
+     * @param x {number} x-coordinate to be projected properly to the top of the rectangle.
+     */
+    projectX(x) {
+        return this.tan * (x - this.x) + this.y;
+    }
+
+    /**
      * @param x {number} x-coordinate of a point.
      * @param y {number} y-coordinate of a point.
      * @returns {boolean} true if point (x, y) is in the hit box.
@@ -213,8 +244,7 @@ export default class HitBox {
      * @private
      */
     #rotatePoint(x, y) {
-        const a = this.rotation;
-        const s = Math.sin(a), c = Math.cos(a);
+        const s = this.sin, c = this.cos;
 
         // Translate
         x -= this.x;

@@ -469,6 +469,20 @@ export default class Sprite {
     get height() {}
 
     /**
+     * @returns {number} rightmost x-coordinate.
+     */
+    get rx() {
+        return this.x + this.width;
+    }
+
+    /**
+     * @returns {number} bottommost y-coordinate.
+     */
+    get by() {
+        return this.y + this.height;
+    }
+
+    /**
      * @returns {boolean} true if the sprite does not update.
      */
     get static() {
@@ -667,6 +681,20 @@ export default class Sprite {
     }
 
     /**
+     * @param rx {number} new rightmost x-coordinate.
+     */
+    set rx(rx) {
+        this.x = rx - this.width;
+    }
+
+    /**
+     * @param by {number} new bottommost y-coordinate.
+     */
+    set by(by) {
+        this.y = by - this.height;
+    }
+
+    /**
      * Stops the current dominant animation.
      */
     stopAnimation() {
@@ -761,9 +789,11 @@ export default class Sprite {
      * If the sprite is moving to the North, its flip is South.
      * If the sprite is moving South-West, its flip is North-East.
      *
+     * @param collider {HitBox} collider hit box.
+     * @param collided {HitBox} collided hit box.
      * @returns {CollisionDirection} the flipped direction of movement.
      */
-    get movementDirection() {
+    movementDirection(collider, collided) {
         const dx = this.x - this.prevX,
             dy = this.y - this.prevY;
 
@@ -782,6 +812,10 @@ export default class Sprite {
         } else if (dy > 0) {
             res.north;
         }
+
+        // Set the collided hit boxes.
+        res.collider = collider;
+        res.collided = collided;
 
         return res;
     }

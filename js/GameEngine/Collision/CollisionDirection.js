@@ -11,6 +11,18 @@ export default class CollisionDirection {
     #dir;
 
     /**
+     * @type {HitBox} Primary HitBox that collided.
+     * @private
+     */
+    #collider;
+
+    /**
+     * @type {HitBox} Secondary HitBox that collided.
+     * @private
+     */
+    #collided;
+
+    /**
      * Collision directions.
      *
      * @type {{S: number, E: number, W: number, N: number}}
@@ -158,6 +170,34 @@ export default class CollisionDirection {
      */
     get isNone() {
         return this.#dir === CollisionDirection.directions.NONE;
+    }
+
+    /**
+     * @returns {HitBox} secondary colliding HitBox.
+     */
+    get collided() {
+        return this.#collided;
+    }
+
+    /**
+     * @returns {HitBox} primary colliding HitBox.
+     */
+    get collider() {
+        return this.#collider;
+    }
+
+    /**
+     * @param s {HitBox} new secondary HitBox.
+     */
+    set collided(s) {
+        this.#collided = s;
+    }
+
+    /**
+     * @param s {HitBox} new primary HitBox.
+     */
+    set collider(s) {
+        this.#collider = s;
     }
 
     /**

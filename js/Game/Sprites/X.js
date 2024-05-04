@@ -504,7 +504,7 @@ export default class X extends Sprite {
             return 0;
         }
 
-        return this.getAnimation(this.currentAnimation).singleWidth;
+        return this.scale * this.getAnimation(this.currentAnimation).singleWidth;
     }
 
     /**
@@ -515,7 +515,7 @@ export default class X extends Sprite {
             return 0;
         }
 
-        return this.getAnimation(this.currentAnimation).singleHeight;
+        return this.scale * this.getAnimation(this.currentAnimation).singleHeight;
     }
 
     /**

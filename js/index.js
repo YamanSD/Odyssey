@@ -61,7 +61,7 @@ const x = new X(100, 300, 2, (ignored) => {
     //     x.states.set(ShootingState, ShootingState.idle);
     // }
     //
-    // const gravity = 2;
+    const gravity = 4;
     // const floorY = 400;
     //
     // if (moveVector[1] < 0
@@ -71,12 +71,21 @@ const x = new X(100, 300, 2, (ignored) => {
     //     x.states.set(JumpState, JumpState.floating);
     // }
     //
-    // x.y = Math.min(x.y + moveVector[1] + gravity, floorY - x.height);
-    // moveVector[1] += gravity;
-    //
-    // if (moveVector[1] >= 0) {
-    //     moveVector[1] = 0;
-    // }
+    x.y += moveVector[1] + gravity;
+    const col = x.colliding(l1);
+
+    if (col) {
+        if (col.isNorth) {
+            console.log(col.collided.y);
+            x.by = col.collided.projectX(x.x);
+        }
+    }
+
+    moveVector[1] += gravity;
+
+    if (moveVector[1] >= 0) {
+        moveVector[1] = 0;
+    }
     //
     // if (moveVector[0]) {
     //     x.x += moveVector[0];
@@ -100,14 +109,8 @@ const x = new X(100, 300, 2, (ignored) => {
     //     x.states.set(JumpState, JumpState.idle);
     // }
 
-    x.x += moveVector[0];
-    x.y += moveVector[1];
-
-    const col = x.colliding(l1);
-
-    if (col) {
-        console.log(`${col}`);
-    }
+    x.rx += moveVector[0];
+    // x.by += moveVector[1];
 
     x.moveCurrentAnimation();
 });

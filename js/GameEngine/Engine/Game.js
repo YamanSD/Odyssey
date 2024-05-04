@@ -615,7 +615,7 @@ export default class Game {
      */
     areCollidingHitBoxes(r0, r1) {
         if (this.areCollidingProjections(r0, r1) && this.areCollidingProjections(r1, r0)) {
-            return r0.sprite.movementDirection;
+            return r0.sprite.movementDirection(r0, r1);
         }
 
         return null;
