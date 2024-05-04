@@ -1,6 +1,6 @@
 'use strict';
 
-import {HitBox} from "../Collision";
+import {HitBox, CollisionDirection} from "../Collision";
 import {RelativePoint, Sound} from "../Engine";
 import SpriteSheet from "./SpriteSheet.js";
 
@@ -203,6 +203,15 @@ export default class Sprite {
     #game;
 
     /**
+     * Used for collision direction resolution.
+     * Stores the previous coordinates.
+     *
+     * @type {[number, number]}
+     * @private
+     */
+    #prevCoords;
+
+    /**
      * @returns {number} a usable sprite ID.
      * @private
      */
@@ -298,6 +307,7 @@ export default class Sprite {
         this.#desc = description;
         this.#sheet = sheets;
         this.#coords = coords;
+        this.#prevCoords = [...coords];
         this.#animations = {};
         this.#animationId = 0;
         this.#states = new Map();
@@ -538,6 +548,20 @@ export default class Sprite {
     }
 
     /**
+     * @param value {number} new previous x.
+     */
+    set prevX(value) {
+        this.#prevCoords[0] = value;
+    }
+
+    /**
+     * @param value {number} new previous y.
+     */
+    set prevY(value) {
+        this.#prevCoords[1] = value;
+    }
+
+    /**
      * @param id {number} new ID of the next animation to play.
      */
     set currentAnimation(id) {
@@ -630,6 +654,7 @@ export default class Sprite {
      * @param x {number} new x-coordinate of the sprite.
      */
     set x(x) {
+        this.prevX = this.x;
         this.#coords[0] = x;
     }
 
@@ -637,6 +662,7 @@ export default class Sprite {
      * @param y {number} new y-coordinate of the sprite.
      */
     set y(y) {
+        this.prevY = this.y;
         this.#coords[1] = y;
     }
 
@@ -687,14 +713,14 @@ export default class Sprite {
 
     /**
      * @param s {Sprite} to check the collision with.
-     * @returns {boolean} true if this sprite and the given sprite are colliding.
+     * @returns {CollisionDirection | null} collision direction if colliding, else null.
      */
     colliding(s) {
         if (this.game) {
             return this.game.areColliding(this, s);
         }
 
-        return false;
+        return null;
     }
 
     /**
@@ -729,6 +755,49 @@ export default class Sprite {
      */
     get hitBox() {
         return this.#currentHitBox ?? this.defaultHitBox;
+    }
+
+    /**
+     * If the sprite is moving to the North, its flip is South.
+     * If the sprite is moving South-West, its flip is North-East.
+     *
+     * @returns {CollisionDirection} the flipped direction of movement.
+     */
+    get movementDirection() {
+        const dx = this.x - this.prevX,
+            dy = this.y - this.prevY;
+
+        const res = CollisionDirection.None;
+
+        // Check dx
+        if (dx < 0) {
+            res.east;
+        } else if (dx > 0) {
+            res.west;
+        }
+
+        // Check dy
+        if (dy < 0) {
+            res.south;
+        } else if (dy > 0) {
+            res.north;
+        }
+
+        return res;
+    }
+
+    /**
+     * @returns {number} previous x.
+     */
+    get prevX() {
+        return this.#prevCoords[0];
+    }
+
+    /**
+     * @returns {number} previous y.
+     */
+    get prevY() {
+        return this.#prevCoords[1];
     }
 
     /**

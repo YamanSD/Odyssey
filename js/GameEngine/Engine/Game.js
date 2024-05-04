@@ -563,35 +563,39 @@ export default class Game {
     /**
      * @param s0 {Sprite} first sprite.
      * @param s1 {Sprite} second sprite.
-     * @returns {boolean} if the hit-boxes of both sprites are overlapping.
+     * @returns {CollisionDirection | null} if the hit-boxes of both sprites are overlapping, else null.
      */
     areColliding(s0, s1) {
         for (const h0 of s0.hitBox) {
             for (const h1 of s1.hitBox) {
-                if (this.areCollidingHitBoxes(h0, h1)) {
-                    return true;
+                const res = this.areCollidingHitBoxes(h0, h1);
+
+                if (res) {
+                    return res;
                 }
             }
         }
 
-        return false;
+        return null;
     }
 
     /**
      * @param s0 {Sprite} first sprite.
      * @param hitBoxes {HitBox[]} list of hit boxes.
-     * @returns {boolean} if the hit-boxes of both sprites are overlapping.
+     * @returns {CollisionDirection | null} if the hit-boxes of both sprites are overlapping, else null.
      */
     isColliding(s0, hitBoxes) {
         for (const h0 of s0.hitBox) {
             for (const h1 of hitBoxes) {
-                if (this.areCollidingHitBoxes(h0, h1)) {
-                    return true;
+                const res = this.areCollidingHitBoxes(h0, h1);
+
+                if (res) {
+                    return res;
                 }
             }
         }
 
-        return false;
+        return null;
     }
 
     /**
@@ -607,10 +611,14 @@ export default class Game {
      * {@link DLine} links the Line class.
      * @param r0 {HitBox} first hit box.
      * @param r1 {HitBox} second hit box.
-     * @returns {boolean} true if the hit boxes are colliding.
+     * @returns {CollisionDirection | null} direction of the collision if present, else null.
      */
     areCollidingHitBoxes(r0, r1) {
-        return this.areCollidingProjections(r0, r1) && this.areCollidingProjections(r1, r0);
+        if (this.areCollidingProjections(r0, r1) && this.areCollidingProjections(r1, r0)) {
+            return r0.sprite.movementDirection;
+        }
+
+        return null;
     }
 
     /**
@@ -1342,9 +1350,9 @@ export default class Game {
         const lines = r1.axis;
         const corners = r0.vectorCorners;
 
-        let isCollide = true;
+        for (let dimension = 0; dimension < lines.length; dimension++) {
+            const line = lines[dimension];
 
-        lines.forEach((line, dimension) => {
             /**
              * @type {{
              *     signedDistance: number,
@@ -1372,11 +1380,11 @@ export default class Game {
                     || Math.abs(minMax[0].signedDistance) < rectHalfSize
                     || Math.abs(minMax[1].signedDistance) < rectHalfSize)
             ) {
-                isCollide = false;
+                return false
             }
-        });
+        }
 
-        return isCollide;
+        return true;
     }
 
     /**

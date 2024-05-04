@@ -100,12 +100,14 @@ const x = new X(100, 300, 2, (ignored) => {
     //     x.states.set(JumpState, JumpState.idle);
     // }
 
-    if (x.game.areColliding(x, l1)) {
-        console.log("COLLIDE");
-    }
-
     x.x += moveVector[0];
     x.y += moveVector[1];
+
+    const col = x.colliding(l1);
+
+    if (col) {
+        console.log(`${col}`);
+    }
 
     x.moveCurrentAnimation();
 });
@@ -162,5 +164,6 @@ g.addEventListener('keydown', keyPressHandler);
 g.addEventListener('keyup', keyLiftHandler);
 
 g.insertSprite(l1);
+// console.log(g.areColliding(x, x));
 l1.load();
 g.resume();

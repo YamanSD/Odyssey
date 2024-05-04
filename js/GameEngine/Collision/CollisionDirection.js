@@ -159,4 +159,36 @@ export default class CollisionDirection {
     get isNone() {
         return this.#dir === CollisionDirection.directions.NONE;
     }
+
+    /**
+     * @returns {string} string representation of the collision direction.
+     */
+    toString() {
+        if (this.isNone) {
+            return "None";
+        }
+
+        let v = null, h = null;
+
+        if (this.isNorth || this.isSouth) {
+            v = this.isNorth ? "North" : "South";
+        }
+
+        if (this.isEast || this.isWest) {
+            h = this.isEast ? "East" : "West";
+        }
+
+        if (v) {
+            if (h) {
+                return `${v}-${h}`;
+            }
+
+            return v;
+        } else if (h) { // Always true if reached here
+            return h;
+        }
+
+        // Silence warnings
+        return "";
+    }
 }
