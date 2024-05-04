@@ -2,7 +2,7 @@
 
 import {Game, Text} from './GameEngine';
 // import {BusterShot, X} from "./Game/Sprites";
-import {Level_1} from "./Game/Levels";
+import {Level_2} from "./Game/Levels";
 import {BusterShot, X} from "./Game/Sprites";
 
 
@@ -61,7 +61,7 @@ const x = new X(100, 300, 2, (ignored) => {
     //     x.states.set(ShootingState, ShootingState.idle);
     // }
     //
-    const gravity = 4;
+    const gravity = speed;
     // const floorY = 400;
     //
     // if (moveVector[1] < 0
@@ -114,7 +114,7 @@ const x = new X(100, 300, 2, (ignored) => {
 
     x.moveCurrentAnimation();
 });
-const l1 = new Level_1([x, txt]);
+const l1 = new Level_2([x, txt]);
 
 
 const g = new Game("mainCanvas", undefined, undefined, true);

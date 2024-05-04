@@ -4,11 +4,11 @@ import Level from "./Level.js";
 
 
 /**
- * @class Level_1
+ * @class Level_2
  *
- * First level in the game.
+ * Second level in the game.
  */
-export default class Level_1 extends Level {
+export default class Level_2 extends Level {
     /**
      * @param sprites {Sprite[]} array of sprites to be loaded to the map.
      */
@@ -17,7 +17,7 @@ export default class Level_1 extends Level {
             sprites,
             6384,
             496,
-            ['level1.png'],
+            ['level2.png'],
             {
                 fillColor: '#FFFF0077'
             }
@@ -285,7 +285,7 @@ export default class Level_1 extends Level {
      * @returns {Sprite} a clone of this sprite.
      */
     get clone() {
-        return new Level_1(
+        return new Level_2(
             this.sprites,
         );
     }
