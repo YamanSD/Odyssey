@@ -53,7 +53,7 @@ export default class X extends Sprite {
 
         this.#scale = scale;
 
-        // Implement a shoot loop
+        // TODO Implement a shoot loop
 
         // Create the animations
         this.#animations = {
@@ -538,7 +538,7 @@ export default class X extends Sprite {
      * @param context {CanvasRenderingContext2D} 2d canvas element context.
      */
     draw(context) {
-        this.drawCurrentAnimation(this.x, this.y, context, 2);
+        this.drawCurrentAnimation(this.x, this.y, context, this.scale);
     }
 
     /**

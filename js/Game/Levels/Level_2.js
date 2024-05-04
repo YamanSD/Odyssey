@@ -17,7 +17,7 @@ export default class Level_2 extends Level {
             sprites,
             6384,
             496,
-            ['level2.png'],
+            ['level_2.png'],
             {
                 fillColor: '#FFFF0077'
             }

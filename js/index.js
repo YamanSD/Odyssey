@@ -2,7 +2,7 @@
 
 import {Game, Text} from './GameEngine';
 // import {BusterShot, X} from "./Game/Sprites";
-import {Level_2} from "./Game/Levels";
+import {Level_1} from "./Game/Levels";
 import {BusterShot, X} from "./Game/Sprites";
 
 
@@ -36,8 +36,9 @@ const ShootingState = {
     idle: 0,
     shoot: 1,
 }
+const l1 = new Level_1([txt]);
 
-const x = new X(100, 300, 2, (ignored) => {
+const x = new X(9500, 300, l1.scale, (ignored) => {
     // if (x.states.get(ShootingState) === ShootingState.shoot) {
     //     x.currentAnimation = x.animations.shoot;
     //     const m = new BusterShot(
@@ -61,7 +62,7 @@ const x = new X(100, 300, 2, (ignored) => {
     //     x.states.set(ShootingState, ShootingState.idle);
     // }
     //
-    const gravity = speed;
+    // const gravity = speed;
     // const floorY = 400;
     //
     // if (moveVector[1] < 0
@@ -71,21 +72,21 @@ const x = new X(100, 300, 2, (ignored) => {
     //     x.states.set(JumpState, JumpState.floating);
     // }
     //
-    x.y += moveVector[1] + gravity;
-    const col = x.colliding(l1);
-
-    if (col) {
-        if (col.isNorth) {
-            console.log(col.collided.y);
-            x.by = col.collided.projectX(x.x);
-        }
-    }
-
-    moveVector[1] += gravity;
-
-    if (moveVector[1] >= 0) {
-        moveVector[1] = 0;
-    }
+    // x.y += moveVector[1] + gravity;
+    // const col = x.colliding(l1);
+    //
+    // if (col) {
+    //     if (col.isNorth) {
+    //         console.log(col.collided.y);
+    //         x.by = col.collided.projectX(x.x);
+    //     }
+    // }
+    //
+    // moveVector[1] += gravity;
+    //
+    // if (moveVector[1] >= 0) {
+    //     moveVector[1] = 0;
+    // }
     //
     // if (moveVector[0]) {
     //     x.x += moveVector[0];
@@ -110,13 +111,12 @@ const x = new X(100, 300, 2, (ignored) => {
     // }
 
     x.rx += moveVector[0];
-    // x.by += moveVector[1];
+    x.by += moveVector[1];
 
     x.moveCurrentAnimation();
 });
-const l1 = new Level_2([x, txt]);
 
-
+l1.sprites.push(x);
 const g = new Game("mainCanvas", undefined, undefined, true);
 
 

@@ -14,9 +14,9 @@ export default class Level extends Sprite {
      * List of sprites inside the level.
      *
      * @type {Sprite[]}
-     * @protected
+     * @private
      */
-    sprites;
+    #sprites;
 
 
     /**
@@ -53,11 +53,11 @@ export default class Level extends Sprite {
             undefined,
             false,
             true,
-            scale ?? Game.windowHeight / (height * 0.5)
+            Game.windowHeight / (height * (scale ?? 0.5))
         );
 
         // Sprite array
-        this.sprites = sprites;
+        this.#sprites = sprites;
 
         this.currentAnimation = this.createAnimation(
             0,
@@ -111,6 +111,13 @@ export default class Level extends Sprite {
      */
     get height() {
         return Math.floor(this.desc.height * this.scale);
+    }
+
+    /**
+     * @returns {Sprite[]} reference to the sprites array.
+     */
+    get sprites() {
+        return this.#sprites;
     }
 
     /**
