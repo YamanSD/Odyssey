@@ -1,9 +1,10 @@
 'use strict';
 
-import {Game, Text} from './GameEngine';
-// import {BusterShot, X} from "./Game/Sprites";
+import {Game, Sprite, Text} from './GameEngine';
+// import {BusterShot, Player} from "./Game/Sprites";
 import {Level_1} from "./Game/Levels";
-import {BusterShot, X} from "./Game/Sprites";
+import {BusterShot, Explosion, X} from "./Game/Sprites";
+import Grenade from "./Game/Sprites/Grenade.js";
 
 
 const baseSpeed = 10;
@@ -36,9 +37,22 @@ const ShootingState = {
     idle: 0,
     shoot: 1,
 }
+
 const l1 = new Level_1([txt]);
 
-const x = new X(9500, 300, l1.scale, (ignored) => {
+const expl = new Explosion(
+    500,
+    100,
+    2,
+    false,
+    true,
+    (e) => {
+        e.start()
+    }
+);
+l1.sprites.push(expl);
+
+const x = new X(500, 300, l1.scale, (ignored) => {
     // if (x.states.get(ShootingState) === ShootingState.shoot) {
     //     x.currentAnimation = x.animations.shoot;
     //     const m = new BusterShot(
@@ -110,11 +124,21 @@ const x = new X(9500, 300, l1.scale, (ignored) => {
     //     x.states.set(JumpState, JumpState.idle);
     // }
 
+    if (x.states.get(ShootingState) !== ShootingState.idle) {
+        x.states.set(ShootingState, ShootingState.idle);
+
+        x.game.insertSprite(new Grenade(x.level, x.x, x.by, true, x.scale));
+    }
+
     x.rx += moveVector[0];
     x.by += moveVector[1];
 
     x.moveCurrentAnimation();
 });
+
+Sprite.player = x;
+
+expl.start();
 
 l1.sprites.push(x);
 const g = new Game("mainCanvas", undefined, undefined, true);
@@ -142,6 +166,9 @@ const keyPressHandler = (e) => {
             break;
         case 'x':
             x.states.set(ShootingState, ShootingState.shoot);
+            break;
+        case 'h':
+            g.showHitBoxes = !g.showHitBoxes;
             break;
     }
 };

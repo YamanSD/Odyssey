@@ -2,13 +2,13 @@ import {Sprite} from "../../GameEngine";
 
 
 /**
- * @class X
+ * @class Player
  *
- * Class representing the playable character X.
+ * Class representing the playable character Player.
  */
-export default class X extends Sprite {
+export default class Player extends Sprite {
     /**
-     * Object containing the animations of X.
+     * Object containing the animations of Player.
      *
      * @type {Object<string, number>}
      * @private
@@ -16,17 +16,9 @@ export default class X extends Sprite {
     #animations;
 
     /**
-     * Scale of the images and hit boxes.
-     *
-     * @type {number}
-     * @private
-     */
-    #scale;
-
-    /**
      * @param x {number} x-coordinate of the hero.
      * @param y {number} y-coordinate of the hero.
-     * @param scale {number} scale of X.
+     * @param scale {number} scale of Player.
      * @param onUpdate {(function(number): boolean)?} called on each update cycle, with the current tick.
      * @param hitBoxBrush {{
      *    borderWidth?: number,
@@ -48,10 +40,12 @@ export default class X extends Sprite {
             [x, y],
             onUpdate,
             undefined,
-            hitBoxBrush
+            hitBoxBrush,
+            undefined,
+            undefined,
+            undefined,
+            scale
         );
-
-        this.#scale = scale;
 
         // TODO Implement a shoot loop
 
@@ -442,13 +436,6 @@ export default class X extends Sprite {
     }
 
     /**
-     * @returns {number} the scale of the hero.
-     */
-    get scale() {
-        return this.#scale;
-    }
-
-    /**
      * @returns {Object<string, number>} animations object.
      */
     get animations() {
@@ -458,7 +445,7 @@ export default class X extends Sprite {
     /**
      * @returns {{
      *   topLeftCoords: [number, number]
-     * }} description of X.
+     * }} description of Player.
      */
     get desc() {
         return super.desc;
@@ -522,7 +509,7 @@ export default class X extends Sprite {
      * @returns {Sprite} a clone of this sprite.
      */
     get clone() {
-        return new X(
+        return new Player(
             this.x,
             this.y,
             this.scale,
@@ -538,7 +525,11 @@ export default class X extends Sprite {
      * @param context {CanvasRenderingContext2D} 2d canvas element context.
      */
     draw(context) {
-        this.drawCurrentAnimation(this.x, this.y, context, this.scale);
+        this.drawCurrentAnimation(this.x, this.y, context);
+    }
+
+    damage(value) {
+        console.log(`DAMAGED BY: ${value}`);
     }
 
     /**
@@ -552,6 +543,6 @@ export default class X extends Sprite {
      * @returns {string} the type of the sprite.
      */
     get type() {
-        return X.type;
+        return Player.type;
     }
 }

@@ -67,6 +67,15 @@ export default class Sprite {
     static #showingHitBoxes = false;
 
     /**
+     * Player-controlled sprite.
+     *
+     * {@link Player} links the Player class.
+     * @type {Player}
+     * @private
+     */
+    static #player=  undefined;
+
+    /**
      * @type {any} sprite geometric description.
      * @private
      */
@@ -113,6 +122,15 @@ export default class Sprite {
      * @private
      */
     #currentAnimation;
+
+    /**
+     * {@link Level}
+     * Level instance of the sprite.
+     *
+     * @type {Level | undefined}
+     * @private
+     */
+    #level;
 
     /**
      * True indicates that the sprite does not update.
@@ -244,6 +262,20 @@ export default class Sprite {
     }
 
     /**
+     * @param p {Player} player-controlled sprite.
+     */
+    static set player(p) {
+        this.#player = p;
+    }
+
+    /**
+     * @returns {Player} the player-controlled sprite.
+     */
+    static get player() {
+        return this.#player;
+    }
+
+    /**
      * @param id {number} the ID of the sprite.
      * @returns {Sprite | undefined} the sprite associated with the ID if present.
      *          Otherwise, undefined.
@@ -311,6 +343,7 @@ export default class Sprite {
         this.#animations = {};
         this.#animationId = 0;
         this.#states = new Map();
+        this.#level = undefined;
         this.brush = brush;
         this.hitBoxBrush = hitBoxBrush;
         this.onUpdate = onUpdate;
@@ -388,6 +421,13 @@ export default class Sprite {
      */
     get y() {
         return this.#coords[1];
+    }
+
+    /**
+     * @returns {Player} the player controlled sprite.
+     */
+    get player() {
+        return Sprite.player;
     }
 
     /**
@@ -490,6 +530,13 @@ export default class Sprite {
     }
 
     /**
+     * @returns {Level|undefined} the sprite level.
+     */
+    get level() {
+        return this.#level;
+    }
+
+    /**
      * Override by child class to change to true.
      * Returns false be default.
      *
@@ -559,6 +606,14 @@ export default class Sprite {
      */
     set game(game) {
         this.#game = game;
+    }
+
+    /**
+     * {@link Level}
+     * @param level {Level} new sprite level.
+     */
+    set level(level) {
+        this.#level = level;
     }
 
     /**
@@ -720,11 +775,31 @@ export default class Sprite {
     }
 
     /**
+     * Uses the centers for the calculation.
+     *
+     * @param s {Sprite} to get the distance with.
+     * @returns {number} the Euclidean distance between this sprite and s.
+     */
+    euclideanDistance(s) {
+        return this.euclideanDistancePt(this.center, s.center);
+    }
+
+    /**
+     * Uses the centers for the calculation.
+     *
+     * @param s {Sprite} to get the distance with.
+     * @returns {number} the Manhattan distance between this sprite and s.
+     */
+    manhattanDistance(s) {
+        return this.manhattanDistancePt(this.center, s.center);
+    }
+
+    /**
      * @param p0 {[number, number]} coordinates of first point.
      * @param p1 {[number, number]} coordinates of second point.
      * @returns {number} the Euclidean distance between p0 and p1.
      */
-    euclideanDistance(p0, p1) {
+    euclideanDistancePt(p0, p1) {
         return Math.sqrt(
             (p0[0] - p1[0]) ** 2 + (p0[1] - p1[1]) ** 2
         );
@@ -735,7 +810,7 @@ export default class Sprite {
      * @param p1 {[number, number]} coordinates of second point.
      * @returns {number} the Manhattan distance between p0 and p1.
      */
-    manhattanDistance(p0, p1) {
+    manhattanDistancePt(p0, p1) {
         return Math.abs(p0[0] - p1[0]) + Math.abs(p0[1] - p1[1]);
     }
 
@@ -783,6 +858,13 @@ export default class Sprite {
      */
     get hitBox() {
         return this.#currentHitBox ?? this.defaultHitBox;
+    }
+
+    /**
+     * @returns {number[]} coordinates of the sprite center.
+     */
+    get center() {
+        return [this.x + this.width / 2, this.y + this.height / 2];
     }
 
     /**
@@ -942,22 +1024,35 @@ export default class Sprite {
      * @param x {number} x-coordinate of the top-left corner of the destination.
      * @param y {number} y-coordinate of the top-left corner of the destination.
      * @param ctx {CanvasRenderingContext2D} 2d canvas element context.
-     * @param scale {number?} scale of the final image.
      * @protected
      */
-    drawCurrentAnimation(x, y, ctx, scale) {
+    drawCurrentAnimation(x, y, ctx) {
         if (this.currentAnimation !== undefined) {
-            this.drawAnimation(
-                x,
-                y,
-                this.currentAnimation,
-                ctx,
-                undefined,
-                undefined,
-                undefined,
-                scale
-            );
+            this.drawAnimation(this.currentAnimation, x, y, ctx, this.scale);
         }
+    }
+
+    /**
+     * Draws the current dominant animation.
+     *
+     * @param id {number} ID of the animation to draw.
+     * @param x {number} x-coordinate of the top-left corner of the destination.
+     * @param y {number} y-coordinate of the top-left corner of the destination.
+     * @param ctx {CanvasRenderingContext2D} 2d canvas element context.
+     * @param scale {number?} scale of the animation. If not given, the sprite scale is used.
+     * @protected
+     */
+    drawAnimation(id, x, y, ctx, scale) {
+        this.drawAnimationFrame(
+            x,
+            y,
+            id,
+            ctx,
+            undefined,
+            undefined,
+            undefined,
+            scale ?? this.scale
+        );
     }
 
     /**
@@ -1016,13 +1111,11 @@ export default class Sprite {
 
     /**
      * @param id {number} ID of the animation.
-     * @returns {Animation} copy of the animation object.
+     * @returns {Animation} reference of the animation object.
      * @protected
      */
     getAnimation(id) {
-       return {
-           ...this.#animations[id]
-       } ;
+       return this.#animations[id];
     }
 
     /**
@@ -1038,7 +1131,7 @@ export default class Sprite {
      * @param scale {number?} scale of the final image.
      * @protected
      */
-    drawAnimation(
+    drawAnimationFrame(
         x,
         y,
         id,
