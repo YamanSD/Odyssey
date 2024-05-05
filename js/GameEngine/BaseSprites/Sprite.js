@@ -725,6 +725,9 @@ export default class Sprite {
     set x(x) {
         this.prevX = this.x;
         this.#coords[0] = x;
+        this.#currentHitBox?.forEach(h => {
+            h.x = x;
+        });
     }
 
     /**
@@ -733,6 +736,9 @@ export default class Sprite {
     set y(y) {
         this.prevY = this.y;
         this.#coords[1] = y;
+        this.#currentHitBox?.forEach(h => {
+            h.y = y;
+        });
     }
 
     /**
