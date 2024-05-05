@@ -3,7 +3,7 @@
 import {Game, Sprite, Text} from './GameEngine';
 // import {BusterShot, Player} from "./Game/Sprites";
 import {Level_1} from "./Game/Levels";
-import {BusterShot, Explosion, X} from "./Game/Sprites";
+import {BusterShot, Explosion, GrenadeMan, X} from "./Game/Sprites";
 import Grenade from "./Game/Sprites/Grenade.js";
 
 
@@ -38,8 +38,10 @@ const ShootingState = {
     shoot: 1,
 }
 
+
 const l1 = new Level_1([txt]);
 
+const gman = new GrenadeMan(600, 400, l1.scale);
 const expl = new Explosion(
     500,
     100,
@@ -50,7 +52,7 @@ const expl = new Explosion(
         e.start()
     }
 );
-l1.sprites.push(expl);
+l1.sprites.push(expl, gman);
 
 const x = new X(500, 300, l1.scale, (ignored) => {
     // if (x.states.get(ShootingState) === ShootingState.shoot) {
@@ -127,7 +129,7 @@ const x = new X(500, 300, l1.scale, (ignored) => {
     if (x.states.get(ShootingState) !== ShootingState.idle) {
         x.states.set(ShootingState, ShootingState.idle);
 
-        x.game.insertSprite(new Grenade(x.level, x.x, x.by, true, x.scale));
+        x.game.insertSprite(new Grenade(x.level, x.x, x.y, false, x.scale));
     }
 
     x.rx += moveVector[0];
@@ -165,7 +167,8 @@ const keyPressHandler = (e) => {
             moveVector[0] = speed;
             break;
         case 'x':
-            x.states.set(ShootingState, ShootingState.shoot);
+            gman.throwGrenade();
+            // x.states.set(ShootingState, ShootingState.shoot);
             break;
         case 'h':
             g.showHitBoxes = !g.showHitBoxes;

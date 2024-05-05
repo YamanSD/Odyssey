@@ -987,7 +987,7 @@ export default class Sprite {
             onStart,
             onEnd,
             hitBox,
-            currentCycle: 0,
+            currentCycle: 1, // Skip the first cycle
             currentRow: 0,
             currentCol: 0
         };
@@ -1077,13 +1077,13 @@ export default class Sprite {
     moveAnimation(id) {
         const anim = this.#animations[id];
 
-        // If this is the first frame, run onStart
-        if (anim.onStart && anim.currentCol === 0 && anim.currentRow === 0) {
-            anim.onStart();
-        }
-
         // Move iff the animation has completed its waiting cycle
         if ((anim.currentCycle %= anim.moveDur) === 0) {
+            // If this is the first frame, run onStart
+            if (anim.onStart && anim.currentCol === 0 && anim.currentRow === 0) {
+                anim.onStart();
+            }
+
             // Increment the current column
             anim.currentCol++;
 

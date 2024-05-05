@@ -59,14 +59,14 @@ export default class Explosion extends Sprite {
             ['explosion.gif'],
             [x, y],
             () => {
-                this.moveCurrentAnimation();
-
                 if (
                     this.damaging
                     && this.player
                     && this.euclideanDistance(this.player) <= (this.player.width + this.width) / 2) {
                     this.player.damage(10);
                 }
+
+                this.moveCurrentAnimation();
             },
             undefined,
             hitBoxBrush,

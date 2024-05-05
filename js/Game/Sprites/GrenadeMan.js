@@ -1,4 +1,5 @@
 import {Sprite} from "../../GameEngine";
+import Grenade from "./Grenade.js";
 
 
 /**
@@ -19,7 +20,6 @@ export default class GrenadeMan extends Sprite {
      * @param x {number} x-coordinate of the hero.
      * @param y {number} y-coordinate of the hero.
      * @param scale {number} scale of GrenadeMan.
-     * @param onUpdate {(function(number): boolean)?} called on each update cycle, with the current tick.
      * @param hitBoxBrush {{
      *    borderWidth?: number,
      *    borderColor?: string,
@@ -31,32 +31,39 @@ export default class GrenadeMan extends Sprite {
         x,
         y,
         scale,
-        onUpdate,
         hitBoxBrush
     ) {
         super(
             {},
             ['grenade_man_0.gif'],
             [x, y],
-            onUpdate,
+            () => {
+                if (this.player && this)
+
+                this.moveCurrentAnimation();
+            },
             undefined,
-            hitBoxBrush
+            hitBoxBrush,
+            undefined,
+            undefined,
+            undefined,
+            scale
         );
 
         // Create the animations
         this.#animations = {
             idle: this.createAnimation(
                 0,
-                14,
+                69,
                 1,
-                8,
+                7,
                 1,
-                8,
+                7,
                 54,
                 55,
                 1,
                 0,
-                15,
+                16,
             ),
             shootHorizontal: this.createAnimation(
                 0,
@@ -69,7 +76,7 @@ export default class GrenadeMan extends Sprite {
                 47,
                 1,
                 0,
-                15,
+                12,
             ),
             shootDiagonal: this.createAnimation(
                 0,
@@ -82,7 +89,7 @@ export default class GrenadeMan extends Sprite {
                 67,
                 1,
                 0,
-                15,
+                8,
             ),
             throwGrenadeStart: this.createAnimation(
                 0,
@@ -95,7 +102,7 @@ export default class GrenadeMan extends Sprite {
                 62,
                 1,
                 0,
-                15,
+                8,
                 undefined,
                 () => {
                     this.currentAnimation = this.animations.throwGrenadeEnd;
@@ -112,9 +119,17 @@ export default class GrenadeMan extends Sprite {
                 45,
                 1,
                 0,
-                15,
+                8,
                 () => {
-                    // TODO create the grenade instance
+                    this.game.insertSprite(
+                        new Grenade(
+                            this.level,
+                            this.x,
+                            this.y,
+                            !this.flip,
+                            this.scale
+                        )
+                    );
                 },
                 () => {
                     this.currentAnimation = this.animations.idle;
@@ -146,7 +161,12 @@ export default class GrenadeMan extends Sprite {
      */
     get defaultHitBox() {
         return this.convertHitBoxes([
-
+            {
+                x: this.x + 5,
+                y: this.y,
+                width: 45,
+                height: 55
+            }
         ]);
     }
 
@@ -180,7 +200,6 @@ export default class GrenadeMan extends Sprite {
             this.x,
             this.y,
             this.scale,
-            this.onUpdate,
             this.hitBoxBrush
         );
     }
@@ -193,6 +212,10 @@ export default class GrenadeMan extends Sprite {
      */
     draw(context) {
         this.drawCurrentAnimation(this.x, this.y, context);
+    }
+
+    throwGrenade() {
+        this.currentAnimation = this.animations.throwGrenadeStart;
     }
 
     /**
