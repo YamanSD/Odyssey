@@ -648,6 +648,8 @@ export default class Sprite {
 
         if (anim.hitBox) {
             this.hitBox = anim.hitBox(this.x, this.y);
+        } else {
+            this.hitBox = undefined;
         }
     }
 
@@ -715,7 +717,8 @@ export default class Sprite {
                 this.#currentHitBox = this.convertHitBoxes(value);
             }
         } else {
-            this.#currentHitBox = this.defaultHitBox;
+            // Back to default
+            this.#currentHitBox = undefined;
         }
     }
 
@@ -798,6 +801,15 @@ export default class Sprite {
      */
     manhattanDistance(s) {
         return this.manhattanDistancePt(this.center, s.center);
+    }
+
+    /**
+     * @param p0 {[number, number]} first point.
+     * @param p1 {[number, number]} second point.
+     * @returns {number} the slope of the line connecting the points.
+     */
+    linearSlope(p0, p1) {
+        return (p1[1] - p0[1]) / (p1[0] - p0[0]);
     }
 
     /**

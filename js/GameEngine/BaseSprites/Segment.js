@@ -214,7 +214,7 @@ export default class Segment extends Sprite {
      * @returns {number} the slope of the segment.
      */
     get slope() {
-        return (this.p1[1] - this.p0[1]) / (this.p1[0] - this.p0[0]);
+        return this.linearSlope(this.p0, this.p1);
     }
 
     /**

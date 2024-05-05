@@ -6,3 +6,5 @@ export {default as Explosion} from './Explosion.js';
 export {default as Grenade} from './Grenade.js';
 export {default as GrenadeMan} from './GrenadeMan.js';
 export {default as Bee} from './Bee.js';
+export {default as TrapBlast} from './TrapBlast.js';
+export {default as ShockProjectile} from './ShockProjectile.js';
