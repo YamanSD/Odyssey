@@ -3,7 +3,18 @@
 import {Game, Sprite, Text} from './GameEngine';
 // import {BusterShot, Player} from "./Game/Sprites";
 import {Level_1} from "./Game/Levels";
-import {IrisBeam, IrisCrystal, TrapBlast, ShockProjectile, Bee, BusterShot, Explosion, GrenadeMan, X} from "./Game/Sprites";
+import {
+    IrisBeam,
+    IrisCrystal,
+    TrapBlast,
+    ShockProjectile,
+    Bee,
+    BusterShot,
+    Explosion,
+    GrenadeMan,
+    X,
+    SuicideDrone
+} from "./Game/Sprites";
 import Grenade from "./Game/Sprites/Grenade.js";
 
 
@@ -127,6 +138,7 @@ const x = new X(500, 300, l1.scale, (ignored) => {
 
 Sprite.player = x;
 
+const d = new SuicideDrone(700, 400, l1.scale)
 const b = new IrisBeam(700, 400, l1.scale, false);
 const b2 = new IrisBeam(700, 400, l1.scale, true);
 
@@ -144,7 +156,7 @@ const expl = new Explosion(
 // b.currentAnimation = b.animations.attack;
 
 const sp = new ShockProjectile(0, 0, 2, 3);
-l1.sprites.push(expl, b, b2, sp);
+l1.sprites.push(expl, b, b2, d, sp);
 
 
 

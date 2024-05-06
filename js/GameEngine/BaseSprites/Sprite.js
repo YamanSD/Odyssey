@@ -47,6 +47,17 @@ export default class Sprite {
      */
 
     /**
+     * @typedef {{
+     *     x: number,
+     *     y: number,
+     *     acceleration: number,
+     *     speed_0: number,
+     *     speed?: number,
+     *     max_speed?: number,
+     * }} MovementType
+     */
+
+    /**
      * @type {number} ID counter for the sprites.
      * @private
      */
@@ -1025,6 +1036,35 @@ export default class Sprite {
             // Didn't move
             return [0, 0];
         }
+    }
+
+    /**
+     * Applies linear interpolation to accelerate this sprite to the destination.
+     *
+     * @param movement {MovementType} object controlling the sprite motion. Modified.
+     * @returns {[number, number]} the latest speed vector used.
+     */
+    accelerateTo(movement) {
+        const {x, y} = movement;
+        const dx = x - this.x, dy = y - this.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        // Acceleration
+        const accelerationFactor = movement.acceleration * distance;
+
+        // Initialize the movement
+        if (movement.speed === undefined) {
+            movement.speed = movement.speed_0 ?? 0;
+        }
+
+        // Adjust the speed, compare with distance to not overshoot
+        movement.speed = Math.min(
+            distance,
+            accelerationFactor + movement.speed,
+            movement.max_speed ?? distance
+        );
+
+        return this.moveTo(x, y, movement.speed);
     }
 
     /**

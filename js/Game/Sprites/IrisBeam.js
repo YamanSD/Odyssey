@@ -76,7 +76,7 @@ export default class IrisBeam extends Sprite {
         this.#animations = {
             charging: this.createAnimation(
                 0,
-                6,
+                5,
                 1374,
                 1,
                 4,
@@ -94,7 +94,7 @@ export default class IrisBeam extends Sprite {
             ),
             idle: this.createAnimation(
                 0,
-                10,
+                9,
                 1558,
                 1,
                 4,
@@ -127,7 +127,7 @@ export default class IrisBeam extends Sprite {
             ),
             decharge: this.createAnimation(
                 0,
-                8,
+                7,
                 1800,
                 1,
                 4,

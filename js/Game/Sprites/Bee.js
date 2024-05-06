@@ -4,7 +4,7 @@ import {Sprite} from "../../GameEngine";
 /**
  * @class Bee
  *
- * Class representing the grenade man enemy.
+ * Class representing the bee enemy.
  */
 export default class Bee extends Sprite {
     /**
