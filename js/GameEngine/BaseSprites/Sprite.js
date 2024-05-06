@@ -736,7 +736,7 @@ export default class Sprite {
      */
     set hitBox(value) {
         if (value) {
-            if (value instanceof HitBox) {
+            if (value[0] instanceof HitBox) {
                 this.#currentHitBox = value;
             } else {
                 this.#currentHitBox = this.convertHitBoxes(value);

@@ -23,17 +23,10 @@ export default class Level_1 extends Level {
             },
             0.32
         );
-    }
 
-    /**
-     * The returned hit box is used in collision detection.
-     *
-     * @returns {HitBox[]} a list of hit boxes that represent the default hit-boxes of the sprite.
-     */
-    get defaultHitBox() {
         const height = 200;
 
-        return this.convertHitBoxes([
+        this.hitBox = this.convertHitBoxes([
             // Ground
             {
                 x: 0,
@@ -239,8 +232,7 @@ export default class Level_1 extends Level {
         this.drawCurrentAnimation(
             0,
             0,
-            context,
-            this.scale
+            context
         );
     }
 }

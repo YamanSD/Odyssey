@@ -20,17 +20,19 @@ export default class Level extends Sprite {
 
 
     /**
+     * Each instance must initialize its hit-box.
+     *
      * @param sprites {Sprite[]} sprite array.
      * @param width {number} width of the map.
      * @param height {number} height of the map.
      * @param sheets {string[]} list of sprite sheets. First one must be the background.
-     *  @param hitBoxBrush {{
+     * @param hitBoxBrush {{
      *    borderWidth?: number,
      *    borderColor?: string,
      *    fillColor?: string,
      *    font?: string
-     *  }?} object hit-box brush properties.
-     *  @param scale {number?} scale of the sprite. Default is [2.67].
+     * }?} object hit-box brush properties.
+     * @param scale {number?} scale of the sprite. Default is [2.67].
      */
     constructor(
         sprites,
@@ -38,7 +40,7 @@ export default class Level extends Sprite {
         height,
         sheets,
         hitBoxBrush,
-        scale
+        scale,
     ) {
         super(
             {
@@ -118,6 +120,13 @@ export default class Level extends Sprite {
      */
     get sprites() {
         return this.#sprites;
+    }
+
+    /**
+     * @returns {*[]} Empty list. Not used by levels.
+     */
+    get defaultHitBox() {
+        return [];
     }
 
     /**
