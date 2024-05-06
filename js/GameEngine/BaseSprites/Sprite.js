@@ -727,10 +727,10 @@ export default class Sprite {
      */
     set x(x) {
         this.prevX = this.x;
-        this.#coords[0] = x;
         this.#currentHitBox?.forEach(h => {
-            h.x = x;
+            h.x += x - this.x;
         });
+        this.#coords[0] = x;
     }
 
     /**
@@ -738,10 +738,10 @@ export default class Sprite {
      */
     set y(y) {
         this.prevY = this.y;
-        this.#coords[1] = y;
         this.#currentHitBox?.forEach(h => {
-            h.y = y;
+            h.y += y - this.y;
         });
+        this.#coords[1] = y;
     }
 
     /**
@@ -875,7 +875,14 @@ export default class Sprite {
      * @returns {HitBox[]} a list of hit boxes that represent the current hit-boxes of the sprite.
      */
     get hitBox() {
-        return this.#currentHitBox ?? this.defaultHitBox;
+        if (this.#currentHitBox) {
+            return this.#currentHitBox;
+        }
+
+        // Create a hit box.
+        this.#currentHitBox = this.defaultHitBox;
+
+        return this.#currentHitBox;
     }
 
     /**
