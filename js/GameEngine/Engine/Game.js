@@ -614,7 +614,13 @@ export default class Game {
      * @returns {CollisionDirection | null} direction of the collision if present, else null.
      */
     areCollidingHitBoxes(r0, r1) {
-        if (this.areCollidingProjections(r0, r1) && this.areCollidingProjections(r1, r0)) {
+        if (
+            this.areCollidingProjections(r0, r1)
+            && (
+                (r0.rotation === 0 && r1.rotation === 0)
+                || this.areCollidingProjections(r1, r0)
+            )
+        ) {
             return r0.sprite.movementDirection(r0, r1);
         }
 
