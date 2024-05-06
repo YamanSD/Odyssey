@@ -602,8 +602,13 @@ export default class Game {
      * Waits for the game to finish loading the assets.
      */
     waitForLoading() {
-        while (Game.loading) {
+        while (true) {
             // Wait for the game to finish loading
+            const temp = Game.loading;
+
+            if (!temp) {
+                break;
+            }
         }
     }
 

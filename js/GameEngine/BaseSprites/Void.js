@@ -37,9 +37,12 @@ export default class Void extends Sprite {
             {},
             [],
             [0, 0],
-            (ignored, tick) => {
+            (tick) => {
                 if (tick === currentTick + updateAfter) {
                     onUpdate();
+
+                    // Remove from the game
+                    this.game.removeSprite(this);
                 }
             },
             undefined,
