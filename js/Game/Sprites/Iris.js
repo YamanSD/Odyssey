@@ -1,4 +1,6 @@
 import {Sprite} from "../../GameEngine";
+import IrisBeam from "./IrisBeam.js";
+import IrisCrystal from "./IrisCrystal.js";
 
 
 /**
@@ -10,6 +12,18 @@ const ActState = {
     forming: 0,
     active: 1,
     ready: 2,
+};
+
+/**
+ * State for the attacks of Iris.
+ *
+ * @type {{none: number, forwardRush: number, laserGrid: number, laserGridWait: number}}
+ */
+const AttackState = {
+    none: 0,
+    forwardRush: 1,
+    laserGrid: 2,
+    laserGridWait: 3,
 };
 
 /**
@@ -35,6 +49,25 @@ export default class Iris extends Sprite {
     #energyField;
 
     /**
+     * Iris's crystal
+     *
+     * @type {IrisCrystal | undefined}
+     * @private
+     */
+    #crystal;
+
+    /**
+     * Laser beams.
+     *
+     * @type {{
+     *     h: IrisBeam,
+     *     v: IrisBeam
+     * }}
+     * @private
+     */
+    #beams;
+
+    /**
      * @param x {number} x-coordinate of the hero.
      * @param y {number} y-coordinate of the hero.
      * @param scale {number} scale of Iris.
@@ -56,18 +89,33 @@ export default class Iris extends Sprite {
             ['iris_0.gif'],
             [x, y],
             () => {
+                // Handle activity states
                 switch (this.states.get(ActState)) {
                     case ActState.ready:
                         break;
                     case ActState.active:
-                        // Change to idle from idleGlow
-                        this.x += 2;
-                        this.y += 2;
+                        this.states.set(ActState, ActState.forming);
 
-                        this.states.set(ActState, ActState.ready);
-                        this.currentAnimation = this.animations.idle;
+                        this.game.setTimeout(() => {
+                            // Change to idle from idleGlow
+                            this.x += 6;
+                            this.y += 6;
+
+                            this.states.set(ActState, ActState.ready);
+                            this.currentAnimation = this.animations.idle;
+                        }, 20);
                         break;
+                }
 
+                // Handle attack states
+                switch (this.states.get(AttackState)) {
+                    case AttackState.forwardRush:
+                        this.moveTo(this.player.x, this.player.y - this.player.height, 1);
+                        break;
+                    case AttackState.laserGrid:
+
+                        this.states.set(AttackState, AttackState.laserGridWait);
+                        break;
                 }
 
                 this.moveCurrentAnimation();
@@ -319,7 +367,7 @@ export default class Iris extends Sprite {
                 111,
                 0,
                 0,
-                4
+                1
             ),
             idleGlow: this.createAnimation(
                 0,
@@ -345,7 +393,7 @@ export default class Iris extends Sprite {
                 111,
                 1,
                 0,
-                20,
+                15,
                 undefined,
                 () => {
                     this.currentAnimation = this.animations.formFinish_1;
@@ -362,7 +410,7 @@ export default class Iris extends Sprite {
                 97,
                 1,
                 0,
-                20,
+                15,
                 undefined,
                 () => {
                     // Calibrate center
@@ -453,10 +501,19 @@ export default class Iris extends Sprite {
             )
         };
 
+        // Initialize the iris beams
+        this.#beams = {
+            h: new IrisBeam(0, 0, this.scale, false, 500),
+            v: new IrisBeam(0, 0, this.scale, true, 600)
+        };
+
+        // Initialize the iris crystal
+        this.#crystal = new IrisCrystal(0, 0, this.scale);
+
         this.#energyField = this.createAnimation(
             0,
             353,
-            1546,
+            1536,
             2,
             2,
             4,
@@ -468,6 +525,8 @@ export default class Iris extends Sprite {
         );
 
         this.states.set(ActState, ActState.forming);
+        this.states.set(AttackState, AttackState.none);
+
         this.currentAnimation = this.animations.idleHuman;
     }
 
@@ -491,7 +550,14 @@ export default class Iris extends Sprite {
      * @returns {HitBox[]} the smallest rectangle that surrounds the shape.
      */
     get defaultHitBox() {
-        return [];
+        return this.convertHitBoxes([
+            {
+                x: this.x,
+                y: this.y,
+                width: 127,
+                height: 111
+            }
+        ]);
     }
 
     /**
@@ -536,14 +602,74 @@ export default class Iris extends Sprite {
      */
     draw(context) {
         this.drawCurrentAnimation(this.x, this.y, context);
+
+        if (this.states.get(AttackState) === AttackState.laserGridWait) {
+            this.drawAnimation(
+                this.#energyField,
+                this.x / this.scale - this.width + 60,
+                this.y / this.scale + 133,
+                context,
+                1
+            );
+        }
     }
 
     /**
      * Starts the formation of Iris.
      */
     form() {
-        // this.currentAnimation = this.animations.formLeftHand_0;
-        this.currentAnimation = this.animations.transitionAir;
+        this.currentAnimation = this.animations.formLeftHand_0;
+    }
+
+    moveCurrentAnimation() {
+        if (this.states.get(AttackState) === AttackState.laserGridWait) {
+            this.moveAnimation(this.#energyField);
+        }
+
+        super.moveCurrentAnimation();
+    }
+
+    /**
+     * Starts the forward rush attack.
+     */
+    forwardRush() {
+        if (this.states.get(ActState) === ActState.ready) {
+            this.currentAnimation = this.animations.moveForward;
+            this.states.set(AttackState, AttackState.forwardRush);
+        }
+    }
+
+    /**
+     * Starts the laser grid attack.
+     */
+    laserGrid() {
+        if (this.states.get(ActState) === ActState.ready) {
+            this.currentAnimation = this.animations.shootBeam;
+            this.states.set(AttackState, AttackState.laserGrid);
+
+            // Reference
+            const hBeam = this.#beams.h;
+
+            hBeam.start();
+            hBeam.x = this.x - hBeam.width - 20;
+            hBeam.y = this.y + this.height / 2 - hBeam.height / 3;
+
+            this.game.insertSprite(hBeam);
+        }
+    }
+
+    /**
+     * Initializes the crystal spawning sequence.
+     */
+    spawnCystal() {
+
+    }
+
+    /**
+     * @param value {number} value of the damage.
+     */
+    damage(value) {
+        // TODO
     }
 
     /**

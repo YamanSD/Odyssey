@@ -139,7 +139,7 @@ const x = new X(500, 300, l1.scale, (ignored) => {
 
 Sprite.player = x;
 
-const d = new Iris(700, 400, l1.scale);
+const d = new Iris(700, 100, l1.scale);
 const b = new IrisBeam(700, 400, l1.scale, false);
 const b2 = new IrisBeam(700, 400, l1.scale, true);
 
@@ -195,13 +195,15 @@ const keyPressHandler = (e) => {
             // x.states.set(ShootingState, ShootingState.shoot);
             break;
         case 'e':
-            x.flip = !x.flip;
+            d.laserGrid();
             break;
         case 'h':
             g.showHitBoxes = !g.showHitBoxes;
             break;
     }
 };
+
+// d.currentAnimation = d.animations.shootBeam;
 
 /**
  * @param e {KeyboardEvent}
