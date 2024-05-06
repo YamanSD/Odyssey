@@ -958,6 +958,38 @@ export default class Sprite {
     draw(context) {}
 
     /**
+     * Applies linear interpolation to move this sprite to the destination.
+     *
+     * @param x {number} destination x-coordinate.
+     * @param y {number} destination y-coordinate.
+     * @param speed {number} speed of movement.
+     * @returns {[number, number]} the speed vector used.
+     */
+    moveTo(x, y, speed) {
+        const dx = x - this.x, dy = y - this.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        // If the sprite is not yet at the target position
+        if (distance > speed) {
+            // Calculate the ratio of how much to move in each direction
+            const ratio = speed / distance;
+            const vector = [dx * ratio, dy * ratio];
+
+            this.x += vector[0];
+            this.y += vector[1];
+
+            // Return the speed vector
+            return vector;
+        } else {
+            this.x = x;
+            this.y = y;
+
+            // Didn't move
+            return [0, 0];
+        }
+    }
+
+    /**
      * Creates a sprite animation that can be used.
      *
      * @param sheetInd {number} index of the sprite sheet from the sheets list.
