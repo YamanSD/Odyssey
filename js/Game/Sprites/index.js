@@ -10,3 +10,4 @@ export {default as TrapBlast} from './TrapBlast.js';
 export {default as ShockProjectile} from './ShockProjectile.js';
 export {default as IrisCrystal} from './IrisCrystal.js';
 export {default as SuicideDrone} from './SuicideDrone.js';
+export {default as IrisBeam} from './IrisBeam.js';

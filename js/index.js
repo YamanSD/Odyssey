@@ -3,7 +3,7 @@
 import {Game, Sprite, Text} from './GameEngine';
 // import {BusterShot, Player} from "./Game/Sprites";
 import {Level_1} from "./Game/Levels";
-import {SuicideDrone, IrisCrystal, TrapBlast, ShockProjectile, Bee, BusterShot, Explosion, GrenadeMan, X} from "./Game/Sprites";
+import {IrisBeam, IrisCrystal, TrapBlast, ShockProjectile, Bee, BusterShot, Explosion, GrenadeMan, X} from "./Game/Sprites";
 import Grenade from "./Game/Sprites/Grenade.js";
 
 
@@ -127,7 +127,9 @@ const x = new X(500, 300, l1.scale, (ignored) => {
 
 Sprite.player = x;
 
-const b = new SuicideDrone(700, 400, 2);
+const b = new IrisBeam(700, 400, l1.scale, false);
+const b2 = new IrisBeam(700, 400, l1.scale, true);
+
 // const gman = new GrenadeMan(600, 400, l1.scale);
 const expl = new Explosion(
     500,
@@ -142,7 +144,7 @@ const expl = new Explosion(
 // b.currentAnimation = b.animations.attack;
 
 const sp = new ShockProjectile(0, 0, 2, 3);
-l1.sprites.push(expl, b, sp);
+l1.sprites.push(expl, b, b2, sp);
 
 
 
@@ -173,12 +175,13 @@ const keyPressHandler = (e) => {
             moveVector[0] = speed;
             break;
         case 'x':
-            b.form();
+            b.start();
+            b2.start();
             // gman.throwGrenade();
             // x.states.set(ShootingState, ShootingState.shoot);
             break;
         case 'e':
-            b.attack();
+            x.flip = !x.flip;
             break;
         case 'h':
             g.showHitBoxes = !g.showHitBoxes;
