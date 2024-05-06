@@ -49,11 +49,7 @@ export default class HitBox {
     constructor(description, sprite) {
         this.#desc = description;
         this.#sprite = sprite;
-        this.#trig = {
-            sin: Math.sin(this.rotation),
-            cos: Math.cos(this.rotation),
-            tan: Math.tan(this.rotation)
-        };
+        this.rotation = description.rotation ?? 0;
     }
 
     /**
@@ -80,6 +76,20 @@ export default class HitBox {
      */
     get y() {
         return this.#desc.topLeftCoords[1];
+    }
+
+    /**
+     * @returns {number} rightmost x of the hit-box.
+     */
+    get rx() {
+        return this.x + this.width;
+    }
+
+    /**
+     * @returns {number} Bottommost y of the hit-box.
+     */
+    get by() {
+        return this.y + this.height;
     }
 
     /**
@@ -186,6 +196,32 @@ export default class HitBox {
     }
 
     /**
+     * @param value {number} new rotation of the hit-box in radians.
+     */
+    set rotation(value) {
+        this.desc.rotation = value;
+        this.#trig = {
+            sin: Math.sin(value),
+            cos: Math.cos(value),
+            tan: Math.tan(value)
+        };
+    }
+
+    /**
+     * @param rx {number} new rightmost x-coordinate.
+     */
+    set rx(rx) {
+        this.x = rx - this.width;
+    }
+
+    /**
+     * @param by {number} new bottommost y-coordinate.
+     */
+    set by(by) {
+        this.y = by - this.height;
+    }
+
+    /**
      * @param value {number} new value.
      */
     set height(value) {
@@ -218,6 +254,13 @@ export default class HitBox {
         this.x = s * (this.x - x) + x;
         this.y = s * (this.y - y) + y;
         return this;
+    }
+
+    /**
+     * Flips the hit-box horizontally around the sprite half-width.
+     */
+    flip() {
+        this.x = 2 * (this.sprite.x + this.sprite.width / 2) - this.rx;
     }
 
     /**

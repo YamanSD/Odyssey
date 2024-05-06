@@ -94,6 +94,20 @@ export default class Sprite {
     #flip;
 
     /**
+     * Affects the image drawing.
+     *
+     * @type {number} clockwise rotation of the sprite in degrees.
+     * @private
+     */
+    #rotation;
+
+    /**
+     * @type {number} cached rotation in radians.
+     * @private
+     */
+    #radRotation;
+
+    /**
      * @type {string[]} list of sprite sheet paths.
      * @private
      */
@@ -342,15 +356,16 @@ export default class Sprite {
         this.#prevCoords = [...coords];
         this.#animations = {};
         this.#animationId = 0;
+        this.#rotation = this.#radRotation = 0;
         this.#states = new Map();
         this.#level = undefined;
+        this.#flip = false; // Do not use the setter, might cause issues
         this.brush = brush;
         this.hitBoxBrush = hitBoxBrush;
         this.onUpdate = onUpdate;
         this.relativePoint = relativePoint;
         this.ignorable = ignorable ?? false;
         this.static = isStatic ?? false;
-        this.flip = false;
 
         // Dummy value
         // Do not use the setter, since defaultHitBox is abstract
@@ -379,6 +394,13 @@ export default class Sprite {
      */
     get flip() {
         return this.#flip;
+    }
+
+    /**
+     * @returns {number} the rotation of the sprite in degrees.
+     */
+    get rotation() {
+        return this.#rotation;
     }
 
     /**
@@ -598,6 +620,9 @@ export default class Sprite {
      * @param value {boolean} true to flip the image, false to restore to original.
      */
     set flip(value) {
+        // Flip the hit-boxes
+        this.hitBox.forEach(h => h.flip(value));
+
         this.#flip = value;
     }
 
@@ -734,6 +759,17 @@ export default class Sprite {
     }
 
     /**
+     * @param deg {number} new clockwise rotation in degrees.
+     */
+    set rotation(deg) {
+        this.#currentHitBox?.forEach(h => {
+            h.rotation += this.degToRadians(deg - this.rotation);
+        });
+        this.#rotation = deg;
+        this.#radRotation = this.degToRadians(deg);
+    }
+
+    /**
      * @param y {number} new y-coordinate of the sprite.
      */
     set y(y) {
@@ -856,16 +892,25 @@ export default class Sprite {
      * @param rects {BasicHitBox[]} list of rectangles to convert to Collision instances.
      */
     convertHitBoxes(rects) {
-        return rects.map(r => new HitBox({
-                topLeftCoords: [r.x, r.y],
-                rotation: this.degToRadians(r.rotation ?? 0),
-                height: r.height,
-                width: r.width
-            }, this).scale(
-                this.scale,
-                this.x,
-                this.y
-            )
+        return rects.map(r => {
+                const h = new HitBox({
+                    topLeftCoords: [r.x, r.y],
+                    rotation: this.degToRadians(r.rotation ?? 0),
+                    height: r.height,
+                    width: r.width
+                }, this).scale(
+                    this.scale,
+                    this.x,
+                    this.y
+                );
+
+                // Flip the hit-box
+                if (this.flip) {
+                    h.flip();
+                }
+
+                return h;
+            }
         );
     }
 
@@ -1202,14 +1247,20 @@ export default class Sprite {
             ctx.scale(-1, 1);
         }
 
+        // Translate coordinates
+        ctx.translate((this.flip ? -scale * anim.singleWidth - x : x), y);
+
+        // Rotate the image
+        ctx.rotate(this.#radRotation);
+
         ctx.drawImage(
             SpriteSheet.load(this.sheets[anim.sheetInd], forceLoad, width, height),
             (anim.singleWidth + anim.cSpace) * anim.currentCol + anim.startX,
             (anim.singleHeight + anim.rSpace) * anim.currentRow + anim.startY,
             anim.singleWidth,
             anim.singleHeight,
-            (this.flip ? -scale * anim.singleWidth - x: x),
-            y,
+            0, // Already translated
+            0, // Already translated
             scale * anim.singleWidth,
             scale * anim.singleHeight,
         );
