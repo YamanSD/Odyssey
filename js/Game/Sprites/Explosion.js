@@ -4,7 +4,7 @@ import {Sprite} from "../../GameEngine";
 /**
  * @class Explosion
  *
- * Class representing visual explosions.
+ * Class representing explosions.
  */
 export default class Explosion extends Sprite {
     /**

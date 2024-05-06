@@ -8,3 +8,5 @@ export {default as GrenadeMan} from './GrenadeMan.js';
 export {default as Bee} from './Bee.js';
 export {default as TrapBlast} from './TrapBlast.js';
 export {default as ShockProjectile} from './ShockProjectile.js';
+export {default as IrisCrystal} from './IrisCrystal.js';
+export {default as SuicideDrone} from './SuicideDrone.js';

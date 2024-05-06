@@ -3,7 +3,7 @@
 import {Game, Sprite, Text} from './GameEngine';
 // import {BusterShot, Player} from "./Game/Sprites";
 import {Level_1} from "./Game/Levels";
-import {TrapBlast, ShockProjectile, Bee, BusterShot, Explosion, GrenadeMan, X} from "./Game/Sprites";
+import {SuicideDrone, IrisCrystal, TrapBlast, ShockProjectile, Bee, BusterShot, Explosion, GrenadeMan, X} from "./Game/Sprites";
 import Grenade from "./Game/Sprites/Grenade.js";
 
 
@@ -127,9 +127,7 @@ const x = new X(500, 300, l1.scale, (ignored) => {
 
 Sprite.player = x;
 
-const b = new TrapBlast(600, 400, 2, {
-    'fillColor': '#00FF0055'
-});
+const b = new SuicideDrone(700, 400, 2);
 // const gman = new GrenadeMan(600, 400, l1.scale);
 const expl = new Explosion(
     500,
@@ -143,7 +141,7 @@ const expl = new Explosion(
 );
 // b.currentAnimation = b.animations.attack;
 
-const sp = new ShockProjectile(200, 0, 2, 3);
+const sp = new ShockProjectile(0, 0, 2, 3);
 l1.sprites.push(expl, b, sp);
 
 
@@ -175,9 +173,12 @@ const keyPressHandler = (e) => {
             moveVector[0] = speed;
             break;
         case 'x':
-            b.activate();
+            b.form();
             // gman.throwGrenade();
             // x.states.set(ShootingState, ShootingState.shoot);
+            break;
+        case 'e':
+            b.attack();
             break;
         case 'h':
             g.showHitBoxes = !g.showHitBoxes;

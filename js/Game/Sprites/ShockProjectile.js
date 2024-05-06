@@ -52,12 +52,7 @@ export default class ShockProjectile extends Sprite {
         );
 
         // Initialize the speed vector
-        this.#speedVector = [
-            1,
-            this.linearSlope([x, y], [this.player.x, this.player.y])
-        ].map(n => {
-            return (this.player.x < this.x ? -speed : speed) * n;
-        });
+        this.#speedVector = this.moveTo(this.player.x, this.player.y, speed);
 
         this.currentAnimation = this.createAnimation(
             0,
