@@ -875,14 +875,7 @@ export default class Sprite {
      * @returns {HitBox[]} a list of hit boxes that represent the current hit-boxes of the sprite.
      */
     get hitBox() {
-        if (this.#currentHitBox) {
-            return this.#currentHitBox;
-        }
-
-        // Create a hit box.
-        this.#currentHitBox = this.defaultHitBox;
-
-        return this.#currentHitBox;
+        return this.#currentHitBox ?? this.defaultHitBox;
     }
 
     /**
