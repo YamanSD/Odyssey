@@ -13,6 +13,7 @@ import {
     Explosion,
     GrenadeMan,
     X,
+    Iris,
     SuicideDrone
 } from "./Game/Sprites";
 import Grenade from "./Game/Sprites/Grenade.js";
@@ -138,7 +139,7 @@ const x = new X(500, 300, l1.scale, (ignored) => {
 
 Sprite.player = x;
 
-const d = new SuicideDrone(700, 400, l1.scale)
+const d = new Iris(700, 400, l1.scale);
 const b = new IrisBeam(700, 400, l1.scale, false);
 const b2 = new IrisBeam(700, 400, l1.scale, true);
 
@@ -163,7 +164,7 @@ l1.sprites.push(expl, b, b2, d, sp);
 expl.start();
 
 l1.sprites.push(x);
-const g = new Game("mainCanvas", undefined, undefined, true);
+const g = new Game("mainCanvas", undefined, undefined, false);
 
 
 /**
@@ -187,8 +188,9 @@ const keyPressHandler = (e) => {
             moveVector[0] = speed;
             break;
         case 'x':
-            b.start();
-            b2.start();
+            d.form();
+            // b.start();
+            // b2.start();
             // gman.throwGrenade();
             // x.states.set(ShootingState, ShootingState.shoot);
             break;
