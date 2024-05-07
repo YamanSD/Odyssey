@@ -3,6 +3,16 @@ import Explosion from "./Explosion.js";
 
 
 /**
+ * Falling state.
+ *
+ * @type {{falling: number, idle: number}}
+ */
+const FallState = {
+    idle: 0,
+    falling: 1
+};
+
+/**
  * @class Bomb
  *
  * Class representing the bomb projectile.
@@ -40,16 +50,20 @@ export default class Bomb extends Sprite {
             ['bomberbat.gif'],
             [x, y],
             () => {
-                // Accelerate down
-                this.#speedVector[1] = Math.min(this.#speedVector[1] + 0.5, 18);
+                switch (this.states.get(FallState)) {
+                    case FallState.falling:
+                        // Accelerate down
+                        this.#speedVector[1] = Math.min(this.#speedVector[1] + 0.5, 18);
 
-                this.y += this.#speedVector[1];
+                        this.y += this.#speedVector[1];
 
-                if (this.colliding(this.level) || this.colliding(this.player)) {
-                    this.explode();
+                        if (this.colliding(this.level) || this.colliding(this.player)) {
+                            this.explode();
+                        }
+
+                        this.moveCurrentAnimation();
+                        break;
                 }
-
-                this.moveCurrentAnimation();
             },
             undefined,
             hitBoxBrush,
@@ -139,6 +153,13 @@ export default class Bomb extends Sprite {
      */
     draw(context) {
         this.drawCurrentAnimation(this.x, this.y, context);
+    }
+
+    /**
+     * Releases the bomb
+     */
+    release() {
+        this.states.set(FallState, FallState.falling);
     }
 
     /**

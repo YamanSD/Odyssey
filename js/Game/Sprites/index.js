@@ -17,3 +17,4 @@ export {default as Spiky} from './Spiky.js';
 export {default as Rocket} from './Rocket.js';
 export {default as GigaDeath} from './GigaDeath.js';
 export {default as Bomb} from './Bomb.js';
+export {default as BomberBat} from './BomberBat.js';
