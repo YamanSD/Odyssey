@@ -17,6 +17,7 @@ import {
     GigaDeath,
     Iris,
     IrisField,
+    Bomb,
     SuicideDrone
 } from "./Game/Sprites";
 import Grenade from "./Game/Sprites/Grenade.js";
@@ -147,7 +148,7 @@ const field = new IrisField(0, 0, 0, l1.scale);
 const d = new Iris(700, 500, field, l1.scale);
 const b = new IrisBeam(700, 400, l1.scale, false);
 const b2 = new IrisBeam(700, 400, l1.scale, true);
-const gig = new GigaDeath(700, 200, true, l1.scale);
+const gig = new Bomb(l1, 600, 0, 2);
 
 // const gman = new GrenadeMan(600, 400, l1.scale);
 const expl = new Explosion(
