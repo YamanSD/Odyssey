@@ -64,7 +64,7 @@ export default class BomberBat extends Sprite {
                         });
                         break;
                     case BombState.held:
-                        this.moveTo(this.player.x, this.player.y - 150, 2, () => {
+                        this.moveTo(this.player.x, this.y, 2, () => {
                             this.releaseBomb();
                         });
                         break;
