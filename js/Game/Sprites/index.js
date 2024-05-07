@@ -13,3 +13,5 @@ export {default as SuicideDrone} from './SuicideDrone.js';
 export {default as IrisBeam} from './IrisBeam.js';
 export {default as Iris} from './Iris.js';
 export {default as IrisField} from './IrisField.js';
+export {default as Spiky} from './Spiky.js';
+export {default as Rocket} from './Rocket.js';

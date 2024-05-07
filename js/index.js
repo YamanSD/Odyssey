@@ -12,6 +12,7 @@ import {
     BusterShot,
     Explosion,
     GrenadeMan,
+    Rocket,
     X,
     Iris,
     IrisField,
@@ -129,7 +130,8 @@ const x = new X(500, 300, l1.scale, (ignored) => {
     if (x.states.get(ShootingState) !== ShootingState.idle) {
         x.states.set(ShootingState, ShootingState.idle);
 
-        x.game.insertSprite(new Grenade(x.level, x.x, x.y, false, x.scale));
+        const r = new Rocket(l1, x.x + 100, x.y + 100, true, 2);
+        x.game.insertSprite(r);
     }
 
     x.rx += moveVector[0];
@@ -190,12 +192,12 @@ const keyPressHandler = (e) => {
             moveVector[0] = speed;
             break;
         case 'x':
-            d.spawnDrones();
+            // d.spawnDrones();
             // d.laserGrid();
             // b.start();
             // b2.start();
             // gman.throwGrenade();
-            // x.states.set(ShootingState, ShootingState.shoot);
+            x.states.set(ShootingState, ShootingState.shoot);
             break;
         case 'e':
             // d.laserGrid();
