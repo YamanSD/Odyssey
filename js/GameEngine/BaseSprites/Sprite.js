@@ -1012,9 +1012,10 @@ export default class Sprite {
      * @param x {number} destination x-coordinate.
      * @param y {number} destination y-coordinate.
      * @param speed {number} speed of movement.
+     * @param onArrival {function()?} callback function. Triggered when the sprite reaches the destination.
      * @returns {[number, number]} the speed vector used.
      */
-    moveTo(x, y, speed) {
+    moveTo(x, y, speed, onArrival) {
         const dx = x - this.x, dy = y - this.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
 
@@ -1033,6 +1034,10 @@ export default class Sprite {
             this.x = x;
             this.y = y;
 
+            if (onArrival) {
+                onArrival();
+            }
+
             // Didn't move
             return [0, 0];
         }
@@ -1042,9 +1047,10 @@ export default class Sprite {
      * Applies linear interpolation to accelerate this sprite to the destination.
      *
      * @param movement {MovementType} object controlling the sprite motion. Modified.
+     * @param onArrival {function()?} callback function. Triggered when the sprite reaches the destination.
      * @returns {[number, number]} the latest speed vector used.
      */
-    accelerateTo(movement) {
+    accelerateTo(movement, onArrival) {
         const {x, y} = movement;
         const dx = x - this.x, dy = y - this.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
@@ -1064,7 +1070,7 @@ export default class Sprite {
             movement.max_speed ?? distance
         );
 
-        return this.moveTo(x, y, movement.speed);
+        return this.moveTo(x, y, movement.speed, onArrival);
     }
 
     /**
@@ -1276,6 +1282,9 @@ export default class Sprite {
         height,
         scale
     ) {
+        // Save the context
+        ctx.save();
+
         const anim = this.#animations[id];
 
         if (scale === undefined) {
@@ -1304,5 +1313,8 @@ export default class Sprite {
             scale * anim.singleWidth,
             scale * anim.singleHeight,
         );
+
+        // Restore the context
+        ctx.restore();
     }
 }
