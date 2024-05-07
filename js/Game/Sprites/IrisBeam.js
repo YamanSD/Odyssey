@@ -32,6 +32,7 @@ export default class IrisBeam extends Sprite {
      * @param scale {number} scale of IrisBeam.
      * @param vertical {boolean} true for a vertical beam.
      * @param duration {number?} duration of the beam.
+     * @param onEnd {function()?} called when the beam ends.
      * @param hitBoxBrush {{
      *    borderWidth?: number,
      *    borderColor?: string,
@@ -45,6 +46,7 @@ export default class IrisBeam extends Sprite {
         scale,
         vertical,
         duration = 400,
+        onEnd,
         hitBoxBrush
     ) {
         super(
@@ -108,6 +110,10 @@ export default class IrisBeam extends Sprite {
                     this.game.setTimeout(
                         () => {
                             this.currentAnimation = this.animations.decharge;
+
+                            if (onEnd) {
+                                onEnd();
+                            }
                         },
                         duration
                     );
@@ -136,7 +142,7 @@ export default class IrisBeam extends Sprite {
                 44,
                 0,
                 1,
-                4,
+                2,
                 () => {
                     this.states.set(PowerState, PowerState.charging);
                 },
@@ -203,7 +209,6 @@ export default class IrisBeam extends Sprite {
     /**
      * Draws the rectangle in the 2d context.
      *
-     * @Abstract
      * @param context {CanvasRenderingContext2D} 2d canvas element context.
      */
     draw(context) {

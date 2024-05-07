@@ -187,7 +187,6 @@ export default class Text extends Sprite {
     /**
      * Draws the text in the 2d context.
      *
-     * @Abstract
      * @param context {CanvasRenderingContext2D} 2d canvas element context.
      */
     draw(context) {

@@ -5,7 +5,7 @@ import {Sprite} from "../../GameEngine";
  * State for the crystal.
  * @type {{forming: number, formed: number, deformed: number, attacking: number}}
  */
-const CrystalState = {
+export const CrystalState = {
     deformed: 0,
     forming: 1,
     formed: 2,
@@ -25,6 +25,14 @@ export default class IrisCrystal extends Sprite {
      * @private
      */
     #animations;
+
+    /**
+     * Mote-To instructions, called with onUpdate.
+     *
+     * @type {[number, number, number, function()?]}
+     * @private
+     */
+    #moveToInstructions;
 
     /**
      * @param x {number} x-coordinate of the hero.
@@ -48,6 +56,10 @@ export default class IrisCrystal extends Sprite {
             ['iris_0.gif'],
             [x, y],
             () => {
+                if (this.#moveToInstructions) {
+                    super.moveTo(...this.#moveToInstructions);
+                }
+
                 this.moveCurrentAnimation();
             },
             undefined,
@@ -110,8 +122,8 @@ export default class IrisCrystal extends Sprite {
                 undefined,
                 () => {
                     // Adjust for centering
-                    this.x -= 16;
-                    this.y -= 16;
+                    this.x -= 24;
+                    this.y -= 24;
 
                     this.currentAnimation = this.animations.formingEnd;
                 }
@@ -131,7 +143,7 @@ export default class IrisCrystal extends Sprite {
                 undefined,
                 () => {
                     // Adjust for centering
-                    this.x += 16;
+                    this.x += 22;
                     this.y += 16;
 
                     this.states.set(CrystalState, CrystalState.formed);
@@ -258,12 +270,11 @@ export default class IrisCrystal extends Sprite {
     /**
      * Draws the rectangle in the 2d context.
      *
-     * @Abstract
      * @param context {CanvasRenderingContext2D} 2d canvas element context.
      */
     draw(context) {
         if (this.glows) {
-            this.drawAnimation(this.animations.glow, this.x - 8, this.y - 8, context);
+            this.drawAnimation(this.animations.glow, this.x - 10, this.y - 10, context);
         }
 
         this.drawCurrentAnimation(this.x, this.y, context);
@@ -278,6 +289,22 @@ export default class IrisCrystal extends Sprite {
         }
 
         super.moveCurrentAnimation();
+    }
+
+    /**
+     * Applies linear interpolation to move this sprite to the destination.
+     *
+     * @param x {number} destination x-coordinate.
+     * @param y {number} destination y-coordinate.
+     * @param speed {number} speed of movement.
+     * @param onArrival {function()?} callback function. Triggered when the sprite reaches the destination.
+     * @returns {[number, number]} the speed vector used.
+     */
+    moveTo(x, y, speed, onArrival) {
+        this.#moveToInstructions = [x, y, speed, () => {
+            this.#moveToInstructions = undefined;
+            onArrival();
+        }];
     }
 
     /**

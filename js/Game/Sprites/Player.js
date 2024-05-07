@@ -521,7 +521,6 @@ export default class Player extends Sprite {
     /**
      * Draws the rectangle in the 2d context.
      *
-     * @Abstract
      * @param context {CanvasRenderingContext2D} 2d canvas element context.
      */
     draw(context) {

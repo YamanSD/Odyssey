@@ -14,6 +14,7 @@ import {
     GrenadeMan,
     X,
     Iris,
+    IrisField,
     SuicideDrone
 } from "./Game/Sprites";
 import Grenade from "./Game/Sprites/Grenade.js";
@@ -139,7 +140,8 @@ const x = new X(500, 300, l1.scale, (ignored) => {
 
 Sprite.player = x;
 
-const d = new Iris(700, 100, l1.scale);
+const field = new IrisField(0, 0, 0, l1.scale);
+const d = new Iris(700, 500, field, l1.scale);
 const b = new IrisBeam(700, 400, l1.scale, false);
 const b2 = new IrisBeam(700, 400, l1.scale, true);
 
@@ -157,7 +159,7 @@ const expl = new Explosion(
 // b.currentAnimation = b.animations.attack;
 
 const sp = new ShockProjectile(0, 0, 2, 3);
-l1.sprites.push(expl, b, b2, d, sp);
+l1.sprites.push(field, expl, b, b2, d, sp);
 
 
 
@@ -188,14 +190,16 @@ const keyPressHandler = (e) => {
             moveVector[0] = speed;
             break;
         case 'x':
-            d.form();
+            d.spawnDrones();
+            // d.laserGrid();
             // b.start();
             // b2.start();
             // gman.throwGrenade();
             // x.states.set(ShootingState, ShootingState.shoot);
             break;
         case 'e':
-            d.laserGrid();
+            // d.laserGrid();
+            d.spawnCrystal();
             break;
         case 'h':
             g.showHitBoxes = !g.showHitBoxes;

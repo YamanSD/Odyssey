@@ -57,6 +57,8 @@ export default class SuicideDrone extends Sprite {
                     if (this.colliding(this.player)) {
                         this.explode(true);
                     }
+                } else {
+                    this.moveTo(this.x + 50, this.y - 50, 2);
                 }
 
                 this.moveCurrentAnimation();
@@ -198,7 +200,6 @@ export default class SuicideDrone extends Sprite {
     /**
      * Draws the rectangle in the 2d context.
      *
-     * @Abstract
      * @param context {CanvasRenderingContext2D} 2d canvas element context.
      */
     draw(context) {
