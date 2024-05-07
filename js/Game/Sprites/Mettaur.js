@@ -1,15 +1,15 @@
 import {Sprite} from "../../GameEngine";
-import Grenade from "./Grenade.js";
+import MettaurProjectile from "./MettaurProjectile.js";
 
 
 /**
- * @class GrenadeMan
+ * @class Mettaur
  *
- * Class representing the grenade man enemy.
+ * Class representing the mettaur enemy.
  */
-export default class GrenadeMan extends Sprite {
+export default class Mettaur extends Sprite {
     /**
-     * Object containing the animations of GrenadeMan.
+     * Object containing the animations of Mettaur.
      *
      * @type {Object<string, number>}
      * @private
@@ -19,7 +19,7 @@ export default class GrenadeMan extends Sprite {
     /**
      * @param x {number} x-coordinate of the hero.
      * @param y {number} y-coordinate of the hero.
-     * @param scale {number} scale of GrenadeMan.
+     * @param scale {number} scale of Mettaur.
      * @param hitBoxBrush {{
      *    borderWidth?: number,
      *    borderColor?: string,
@@ -35,12 +35,10 @@ export default class GrenadeMan extends Sprite {
     ) {
         super(
             {},
-            ['grenade_man_0.gif'],
+            ['mettaur.gif'],
             [x, y],
             () => {
-                if (this.player && this) // TODO finish AI
 
-                this.moveCurrentAnimation();
             },
             undefined,
             hitBoxBrush,
@@ -52,89 +50,7 @@ export default class GrenadeMan extends Sprite {
 
         // Create the animations
         this.#animations = {
-            idle: this.createAnimation(
-                0,
-                69,
-                1,
-                7,
-                1,
-                7,
-                54,
-                55,
-                1,
-                0,
-                16,
-            ),
-            shootHorizontal: this.createAnimation(
-                0,
-                16,
-                80,
-                2,
-                1,
-                2,
-                60,
-                47,
-                1,
-                0,
-                12,
-            ),
-            shootDiagonal: this.createAnimation(
-                0,
-                163,
-                61,
-                2,
-                1,
-                2,
-                46,
-                67,
-                1,
-                0,
-                8,
-            ),
-            throwGrenadeStart: this.createAnimation(
-                0,
-                3,
-                201,
-                4,
-                1,
-                4,
-                59,
-                62,
-                1,
-                0,
-                8,
-                undefined,
-                () => {
-                    this.currentAnimation = this.animations.throwGrenadeEnd;
-                }
-            ),
-            throwGrenadeEnd: this.createAnimation(
-                0,
-                256,
-                218,
-                3,
-                1,
-                3,
-                63,
-                45,
-                1,
-                0,
-                8,
-                () => {
-                    this.game.insertSprite(
-                        new Grenade(
-                            this.level,
-                            this.x,
-                            this.y,
-                            !this.flip,
-                            this.scale
-                        )
-                    );
-                },
-                () => {
-                    this.currentAnimation = this.animations.idle;
-                }
-            )
+            //TODO
         };
 
         this.currentAnimation = this.animations.idle;
@@ -150,7 +66,7 @@ export default class GrenadeMan extends Sprite {
     /**
      * @returns {{
      *   topLeftCoords: [number, number]
-     * }} description of GrenadeMan.
+     * }} description of Mettaur.
      */
     get desc() {
         return super.desc;
@@ -196,12 +112,7 @@ export default class GrenadeMan extends Sprite {
      * @returns {Sprite} a clone of this sprite.
      */
     get clone() {
-        return new GrenadeMan(
-            this.x,
-            this.y,
-            this.scale,
-            this.hitBoxBrush
-        );
+        return undefined;
     }
 
     /**
@@ -228,6 +139,6 @@ export default class GrenadeMan extends Sprite {
      * @returns {string} the type of the sprite.
      */
     get type() {
-        return GrenadeMan.type;
+        return Mettaur.type;
     }
 }
