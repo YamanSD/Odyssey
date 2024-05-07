@@ -457,6 +457,20 @@ export default class Sprite {
     }
 
     /**
+     * @returns {number} scaled x-coordinate.
+     */
+    get scaledX() {
+        return this.x * this.scale;
+    }
+
+    /**
+     * @returns {number} scaled y-coordinate.
+     */
+    get scaledY() {
+        return this.y * this.scale;
+    }
+
+    /**
      * @returns {Player} the player controlled sprite.
      */
     get player() {

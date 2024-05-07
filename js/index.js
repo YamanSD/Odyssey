@@ -14,6 +14,7 @@ import {
     GrenadeMan,
     Rocket,
     X,
+    GigaDeath,
     Iris,
     IrisField,
     SuicideDrone
@@ -146,6 +147,7 @@ const field = new IrisField(0, 0, 0, l1.scale);
 const d = new Iris(700, 500, field, l1.scale);
 const b = new IrisBeam(700, 400, l1.scale, false);
 const b2 = new IrisBeam(700, 400, l1.scale, true);
+const gig = new GigaDeath(700, 200, true, l1.scale);
 
 // const gman = new GrenadeMan(600, 400, l1.scale);
 const expl = new Explosion(
@@ -161,7 +163,7 @@ const expl = new Explosion(
 // b.currentAnimation = b.animations.attack;
 
 const sp = new ShockProjectile(0, 0, 2, 3);
-l1.sprites.push(field, expl, b, b2, d, sp);
+l1.sprites.push(field, expl, b, b2, d, sp, gig);
 
 
 
