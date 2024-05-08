@@ -19,4 +19,5 @@ export {default as GigaDeath} from './GigaDeath.js';
 export {default as Bomb} from './Bomb.js';
 export {default as BomberBat} from './BomberBat.js';
 export {default as VerticalMeteor} from './VerticalMeteor.js';
-export {default as MattaurProjectile} from './MettaurProjectile.js';
+export {default as MettaurProjectile} from './MettaurProjectile.js';
+export {default as Mettaur} from './Mettaur.js';

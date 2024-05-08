@@ -255,6 +255,12 @@ export default class Sprite {
     #prevCoords;
 
     /**
+     * @type {[number, number]} initial coordinates.
+     * @protected
+     */
+    #initCoords;
+
+    /**
      * @returns {number} a usable sprite ID.
      * @private
      */
@@ -364,6 +370,7 @@ export default class Sprite {
         this.#desc = description;
         this.#sheet = sheets;
         this.#coords = coords;
+        this.#initCoords = [...coords];
         this.#prevCoords = [...coords];
         this.#animations = {};
         this.#animationId = 0;
@@ -398,6 +405,20 @@ export default class Sprite {
      */
     get id() {
         return this.#id;
+    }
+
+    /**
+     * @returns {number} Initial x-coordinate.
+     */
+    get initX() {
+        return this.#initCoords[0];
+    }
+
+    /**
+     * @returns {number} Initial y-coordiante.
+     */
+    get initY() {
+        return this.#initCoords[1];
     }
 
     /**

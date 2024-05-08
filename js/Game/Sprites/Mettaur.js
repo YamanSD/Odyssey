@@ -3,6 +3,19 @@ import MettaurProjectile from "./MettaurProjectile.js";
 
 
 /**
+ * State for the Mettaur attacks.
+ *
+ * @type {{dormant: number, runningAway: number, wakingUp: number, active: number}}
+ */
+const ActState = {
+    dormant: 0,
+    active: 1,
+    wakingUp: 2,
+    runningAway: 3
+};
+
+
+/**
  * @class Mettaur
  *
  * Class representing the mettaur enemy.
@@ -15,6 +28,22 @@ export default class Mettaur extends Sprite {
      * @private
      */
     #animations;
+
+    /**
+     * Cool down for the bullets.
+     *
+     * @type {number}
+     * @private
+     */
+    #coolDown;
+
+    /**
+     * Move to x-coordinate of the destination used to walk the Mettaur.
+     *
+     * @type {number | undefined}
+     * @private
+     */
+    #moveToDestination;
 
     /**
      * @param x {number} x-coordinate of the hero.
@@ -35,10 +64,53 @@ export default class Mettaur extends Sprite {
     ) {
         super(
             {},
-            ['mettaur.gif'],
+            ['mettaur.png'],
             [x, y],
             () => {
+                // Mettaur must run
+                if (this.#moveToDestination !== undefined) {
+                    this.moveTo(
+                        this.#moveToDestination,
+                        this.y,
+                        3,
+                        () => {
+                            this.#moveToDestination = undefined;
+                            this.states.set(ActState, ActState.active);
+                        }
+                    );
+                }
 
+                switch (this.states.get(ActState)) {
+                    case ActState.dormant:
+                        if (this.manhattanDistance(this.player) < 600) {
+                            this.states.set(ActState, ActState.wakingUp);
+                            this.currentAnimation = this.animations.wakeUp;
+                        }
+                        break;
+                    case ActState.active:
+                        this.flip = this.player.x >= this.x;
+
+                        if (this.manhattanDistance(this.player) < 200) {
+                            // Run away
+                            this.states.set(ActState, ActState.runningAway);
+                        } else if (this.#coolDown <= 0) {
+                            this.shoot();
+
+                            // Reset cool down
+                            this.#coolDown = 75;
+                        }
+                        break;
+                    case ActState.runningAway:
+                        if (this.#moveToDestination === undefined) {
+                            this.currentAnimation = this.animations.walk;
+                            this.flip = !this.flip;
+                            this.#moveToDestination = this.x + (this.flip ? 200 : -200);
+                        }
+                        break;
+                }
+
+                this.#coolDown--;
+                this.moveCurrentAnimation();
             },
             undefined,
             hitBoxBrush,
@@ -50,10 +122,183 @@ export default class Mettaur extends Sprite {
 
         // Create the animations
         this.#animations = {
-            //TODO
+            idleDormant: this.createAnimation(
+                0,
+                35,
+                12,
+                1,
+                1,
+                1,
+                27,
+                31,
+                0,
+                0,
+                4,
+                undefined,
+                undefined,
+                (x, y) => {
+                    return [
+                        {
+                            x: x + 2,
+                            y: y + 15,
+                            width: 24,
+                            height: 16
+                        }
+                    ]
+                }
+            ),
+            wakeUp: this.createAnimation(
+                0,
+                35,
+                12,
+                5,
+                1,
+                5,
+                27,
+                31,
+                1,
+                0,
+                4,
+                () => {
+                    this.states.set(ActState, ActState.wakingUp);
+                },
+                () => {
+                    this.states.set(ActState, ActState.active);
+                    this.currentAnimation = this.animations.idle;
+                }
+            ),
+            idle: this.createAnimation(
+                0,
+                175,
+                12,
+                1,
+                1,
+                1,
+                27,
+                31,
+                0,
+                0,
+                4
+            ),
+            walk: this.createAnimation(
+                0,
+                14,
+                52,
+                8,
+                1,
+                8,
+                25,
+                36,
+                1,
+                0,
+                4,
+            ),
+            prepareJump: this.createAnimation(
+                0,
+                25,
+                99,
+                3,
+                1,
+                3,
+                28,
+                34,
+                1,
+                0,
+                4,
+                () => {
+                    // this.states.set(ActState, ActState.jumping);
+                },
+                () => {
+                    this.currentAnimation = this.animations.inAir;
+                }
+            ),
+            inAir: this.createAnimation(
+                0,
+                122,
+                102,
+                1,
+                1,
+                1,
+                29,
+                31,
+                0,
+                0,
+                1
+            ),
+            land: this.createAnimation(
+                0,
+                155,
+                100,
+                3,
+                1,
+                3,
+                27,
+                33,
+                1,
+                0,
+                4,
+                undefined,
+                () => {
+                    // this.states.set(ActState, ActState.attacking);
+                }
+            ),
+            shootStart: this.createAnimation(
+                0,
+                14,
+                144,
+                4,
+                1,
+                4,
+                35,
+                32,
+                1,
+                0,
+                4,
+                () => {
+                    // Pushback effect
+                    if (this.flip) {
+                        this.x -= 10;
+                    } else {
+                        this.x += 10;
+                    }
+                },
+                () => {
+                    this.game.insertSprite(
+                        new MettaurProjectile(
+                            this.level,
+                            this.x,
+                            this.y + this.height / 2 + 10,
+                            !this.flip,
+                            2
+                        )
+                    );
+                    this.currentAnimation = this.animations.shootEnd;
+                }
+            ),
+            shootEnd: this.createAnimation(
+                0,
+                164,
+                139,
+                3,
+                1,
+                3,
+                25,
+                37,
+                1,
+                0,
+                4,
+                undefined,
+                () => {
+                    this.currentAnimation = this.animations.idle;
+                }
+            ),
         };
 
-        this.currentAnimation = this.animations.idle;
+        // Initially can shoot
+        this.#coolDown = 0;
+
+        this.states.set(ActState, ActState.dormant);
+        this.currentAnimation = this.animations.idleDormant;
     }
 
     /**
@@ -78,10 +323,10 @@ export default class Mettaur extends Sprite {
     get defaultHitBox() {
         return this.convertHitBoxes([
             {
-                x: this.x + 5,
-                y: this.y,
-                width: 45,
-                height: 55
+                x: this.x,
+                y: this.y + 8,
+                width: 26,
+                height: 24
             }
         ]);
     }
@@ -124,8 +369,13 @@ export default class Mettaur extends Sprite {
         this.drawCurrentAnimation(this.x, this.y, context);
     }
 
-    throwGrenade() {
-        this.currentAnimation = this.animations.throwGrenadeStart;
+    /**
+     * Shoots its projectile.
+     */
+    shoot() {
+        if (this.states.get(ActState) === ActState.active) {
+            this.currentAnimation = this.animations.shootStart;
+        }
     }
 
     /**

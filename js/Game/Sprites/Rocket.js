@@ -271,7 +271,7 @@ export default class Rocket extends Sprite {
         this.drawAnimation(
             this.#trailAnimation,
             this.flip ? this.x - (trailWidth + 16) : this.rx - trailWidth / 2,
-            this.y + this.height / 2 - 17,
+            this.y + this.height / 2 - 16,
             context
         );
         this.drawCurrentAnimation(

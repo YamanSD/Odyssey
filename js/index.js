@@ -18,6 +18,7 @@ import {
     Iris,
     IrisField,
     Bomb,
+    Mettaur,
     SuicideDrone, BomberBat
 } from "./Game/Sprites";
 
@@ -131,7 +132,7 @@ const x = new X(500, 300, l1.scale, (ignored) => {
     if (x.states.get(ShootingState) !== ShootingState.idle) {
         x.states.set(ShootingState, ShootingState.idle);
 
-        const r = new Rocket(l1, x.x + 100, x.y + 100, true, 2);
+        const r = new Rocket(l1, x.x + 100, x.y + 100, false, 2);
         x.game.insertSprite(r);
     }
 
@@ -146,7 +147,7 @@ Sprite.player = x;
 const bomb = new Bomb(l1, 0, 0, 2);
 const field = new IrisField(0, 0, 0, l1.scale);
 const d = new Iris(700, 500, field, l1.scale);
-const b = new IrisBeam(700, 400, l1.scale, false);
+const b = new Mettaur(1000, 500, l1.scale);
 const b2 = new IrisBeam(700, 400, l1.scale, true);
 const gig = new BomberBat(600, 100, bomb, l1.scale);
 

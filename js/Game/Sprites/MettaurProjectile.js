@@ -38,7 +38,7 @@ export default class MettaurProjectile extends Sprite {
     ) {
         super(
             {},
-            ['mettaur.gif'],
+            ['mettaur.png'],
             [x, y],
             () => {
                 if (toLeft) {
@@ -68,8 +68,8 @@ export default class MettaurProjectile extends Sprite {
         // Launch the projectile
         this.currentAnimation = this.createAnimation(
             0,
-            16,
-            14,
+            116,
+            231,
             4,
             1,
             4,

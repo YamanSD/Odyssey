@@ -180,6 +180,20 @@ export default class CollisionDirection {
     }
 
     /**
+     * @returns {boolean} true if the collision is W or E.
+     */
+    get horizontal() {
+        return this.isWest || this.isEast;
+    }
+
+    /**
+     * @returns {boolean} true if the collision is N or S.
+     */
+    get vertical() {
+        return this.isNorth || this.isSouth;
+    }
+
+    /**
      * @returns {HitBox} primary colliding HitBox.
      */
     get collider() {
