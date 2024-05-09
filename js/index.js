@@ -19,7 +19,7 @@ import {
     IrisField,
     Bomb,
     Mettaur,
-    SuicideDrone, BomberBat
+    SuicideDrone, BomberBat, Dejira
 } from "./Game/Sprites";
 
 
@@ -147,7 +147,7 @@ Sprite.player = x;
 const bomb = new Bomb(l1, 0, 0, 2);
 const field = new IrisField(0, 0, 0, l1.scale);
 const d = new Iris(700, 500, field, l1.scale);
-const b = new Mettaur(1000, 500, l1.scale);
+const b = new Dejira(1000, 500, l1.scale);
 const b2 = new IrisBeam(700, 400, l1.scale, true);
 const gig = new BomberBat(600, 100, bomb, l1.scale);
 
@@ -165,7 +165,7 @@ const expl = new Explosion(
 // b.currentAnimation = b.animations.attack;
 
 const sp = new ShockProjectile(0, 0, 2, 3);
-l1.sprites.push(field, expl, b, b2, d, sp, bomb, gig);
+l1.sprites.push(field, expl, b2, d, sp, bomb, gig);
 
 
 
@@ -196,17 +196,22 @@ const keyPressHandler = (e) => {
             moveVector[0] = speed;
             break;
         case 'x':
+            d.damage(2);
             // d.spawnDrones();
             // d.laserGrid();
             // b.start();
             // b2.start();
             // gman.throwGrenade();
-            x.states.set(ShootingState, ShootingState.shoot);
+            // x.states.set(ShootingState, ShootingState.shoot);
             break;
         case 'e':
             // d.laserGrid();
-            gig.releaseBomb();
-            // d.spawnCrystal();
+            // gig.releaseBomb()xxx;
+            d.spawnCrystal();
+            // d.form();
+            break;
+        case 'q':
+            d.form();
             break;
         case 'h':
             g.showHitBoxes = !g.showHitBoxes;

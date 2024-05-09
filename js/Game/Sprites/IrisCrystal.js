@@ -38,6 +38,7 @@ export default class IrisCrystal extends Sprite {
      * @param x {number} x-coordinate of the hero.
      * @param y {number} y-coordinate of the hero.
      * @param scale {number} scale of IrisCrystal.
+     * @param beam {IrisBeam?} beam being fired.
      * @param hitBoxBrush {{
      *    borderWidth?: number,
      *    borderColor?: string,
@@ -49,6 +50,7 @@ export default class IrisCrystal extends Sprite {
         x,
         y,
         scale,
+        beam,
         hitBoxBrush
     ) {
         super(
@@ -58,6 +60,11 @@ export default class IrisCrystal extends Sprite {
             () => {
                 if (this.#moveToInstructions) {
                     super.moveTo(...this.#moveToInstructions);
+
+                    if (beam) {
+                        beam.x = this.x + this.width + 17;
+                        beam.y = this.y - beam.width;
+                    }
                 }
 
                 this.moveCurrentAnimation();
@@ -303,7 +310,10 @@ export default class IrisCrystal extends Sprite {
     moveTo(x, y, speed, onArrival) {
         this.#moveToInstructions = [x, y, speed, () => {
             this.#moveToInstructions = undefined;
-            onArrival();
+
+            if (onArrival) {
+                onArrival();
+            }
         }];
     }
 

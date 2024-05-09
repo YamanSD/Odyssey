@@ -21,3 +21,5 @@ export {default as BomberBat} from './BomberBat.js';
 export {default as VerticalMeteor} from './VerticalMeteor.js';
 export {default as MettaurProjectile} from './MettaurProjectile.js';
 export {default as Mettaur} from './Mettaur.js';
+export {default as DejiraProjectile} from './DejiraProjectile.js';
+export {default as Dejira} from './Dejira.js';

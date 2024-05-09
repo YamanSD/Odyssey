@@ -1216,9 +1216,10 @@ export default class Sprite {
      * @param y {number} y-coordinate of the top-left corner of the destination.
      * @param ctx {CanvasRenderingContext2D} 2d canvas element context.
      * @param scale {number?} scale of the animation. If not given, the sprite scale is used.
+     * @param flip {boolean?} if true the animation is flipped horizontally.
      * @protected
      */
-    drawAnimation(id, x, y, ctx, scale) {
+    drawAnimation(id, x, y, ctx, scale, flip) {
         this.drawAnimationFrame(
             x,
             y,
@@ -1227,7 +1228,8 @@ export default class Sprite {
             undefined,
             undefined,
             undefined,
-            scale ?? this.scale
+            scale ?? this.scale,
+            flip
         );
     }
 
@@ -1305,6 +1307,7 @@ export default class Sprite {
      * @param width {number?} width to map the image to.
      * @param height {number?} height to map the image to.
      * @param scale {number?} scale of the final image.
+     * @param flip {boolean?} if true the animation is flipped horizontally. Does not override the flip data field.
      * @protected
      */
     drawAnimationFrame(
@@ -1315,7 +1318,8 @@ export default class Sprite {
         forceLoad,
         width,
         height,
-        scale
+        scale,
+        flip
     ) {
         // Save the context
         ctx.save();
@@ -1326,13 +1330,16 @@ export default class Sprite {
             scale = 1;
         }
 
+        // Set the flip variable
+        flip = this.flip || (flip ?? false);
+
         // Flip the sprite
-        if (this.flip) {
+        if (flip) {
             ctx.scale(-1, 1);
         }
 
         // Translate coordinates
-        ctx.translate((this.flip ? -scale * anim.singleWidth - x : x), y);
+        ctx.translate((flip ? -scale * anim.singleWidth - x : x), y);
 
         // Rotate the image
         ctx.rotate(this.#radRotation);
