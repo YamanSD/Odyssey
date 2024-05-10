@@ -38,7 +38,7 @@ class Sigma extends Sprite {
     ) {
         super(
             {},
-            ['sigma_man_0.gif'],
+            ['sigma_0.gif', 'sigma_1.png', 'sigma_2.png', 'sigma_3.png'],
             [x, y],
             () => {
 

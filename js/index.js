@@ -7,6 +7,7 @@ let speed = 40;
 
 let moveVector = [0, 0];
 
+
 const txt = new Text(
     {
         bottomLeftCoords: [0, 0],
@@ -34,6 +35,23 @@ const ShootingState = {
 
 
 const l1 = new Level_1([txt]);
+
+
+const s1 = new SigmaShockProjectile(
+    l1,
+    500,
+    300,
+    2,
+    true,
+);
+
+const s2 = new SigmaShockProjectile(
+    l1,
+    500,
+    300,
+    2,
+    false,
+);
 
 const x = new Player(500, 300, l1.scale, (ignored) => {
     // if (x.states.get(ShootingState) === ShootingState.shoot) {
@@ -143,7 +161,7 @@ const expl = new Explosion(
 // b.currentAnimation = b.animations.attack;
 
 const sp = new ShockProjectile(0, 0, 2, 3);
-l1.sprites.push(field, expl, b2, d, sp, bomb, gig);
+l1.sprites.push(field, expl, b2, d, sp, s1, s2, bomb, gig);
 
 
 
