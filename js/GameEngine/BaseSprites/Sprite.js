@@ -565,16 +565,26 @@ class Sprite {
     get type() {}
 
     /**
-     * @Abstract
-     * @returns {number} width of the sprite.
+     * @returns {number} current width of the animation.
      */
-    get width() {}
+    get width() {
+        if (this.currentAnimation === undefined) {
+            return 0;
+        }
+
+        return this.scale * this.getAnimation(this.currentAnimation).singleWidth;
+    }
 
     /**
-     * @Abstract
-     * @returns {number} height of the sprite.
+     * @returns {number} current height of the animation.
      */
-    get height() {}
+    get height() {
+        if (this.currentAnimation === undefined) {
+            return 0;
+        }
+
+        return this.scale * this.getAnimation(this.currentAnimation).singleHeight;
+    }
 
     /**
      * @returns {number} rightmost x-coordinate.

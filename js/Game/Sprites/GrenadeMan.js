@@ -174,28 +174,6 @@ class GrenadeMan extends Sprite {
     }
 
     /**
-     * @returns {number} current width of the animation.
-     */
-    get width() {
-        if (this.currentAnimation === undefined) {
-            return 0;
-        }
-
-        return this.scale * this.getAnimation(this.currentAnimation).singleWidth;
-    }
-
-    /**
-     * @returns {number} current height of the animation.
-     */
-    get height() {
-        if (this.currentAnimation === undefined) {
-            return 0;
-        }
-
-        return this.scale * this.getAnimation(this.currentAnimation).singleHeight;
-    }
-
-    /**
      * Draws the rectangle in the 2d context.
      *
      * @param context {CanvasRenderingContext2D} 2d canvas element context.

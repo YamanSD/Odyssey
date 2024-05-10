@@ -187,28 +187,6 @@ class IrisField extends Sprite {
     }
 
     /**
-     * @returns {number} current width of the animation.
-     */
-    get width() {
-        if (this.currentAnimation === undefined) {
-            return 0;
-        }
-
-        return this.scale * this.getAnimation(this.currentAnimation).singleWidth;
-    }
-
-    /**
-     * @returns {number} current height of the animation.
-     */
-    get height() {
-        if (this.currentAnimation === undefined) {
-            return 0;
-        }
-
-        return this.scale * this.getAnimation(this.currentAnimation).singleHeight;
-    }
-
-    /**
      * @param value {number} new bottommost y-coordinate.
      */
     set by(value) {

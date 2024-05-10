@@ -1,28 +1,28 @@
 'use strict'
 
 /**
- * @exports ShockProjectile
+ * @exports Sigma
  */
 
+
 /**
- * @class ShockProjectile
+ * @class Sigma
  *
- * Class representing the shock projectile.
+ * Class representing the sigma boss.
  */
-class ShockProjectile extends Sprite {
+class Sigma extends Sprite {
     /**
-     * Speed vector.
+     * Object containing the animations of Sigma.
      *
-     * @type {[number, number]}
+     * @type {Object<string, number>}
      * @private
      */
-    #speedVector;
+    #animations;
 
     /**
      * @param x {number} x-coordinate of the hero.
      * @param y {number} y-coordinate of the hero.
-     * @param scale {number} scale of ShockProjectile.
-     * @param speed {number?} speed of the projectile.
+     * @param scale {number} scale of Sigma.
      * @param hitBoxBrush {{
      *    borderWidth?: number,
      *    borderColor?: string,
@@ -34,16 +34,14 @@ class ShockProjectile extends Sprite {
         x,
         y,
         scale,
-        speed = 3,
         hitBoxBrush
     ) {
         super(
             {},
-            ['trap_blast.gif'],
+            ['sigma_man_0.gif'],
             [x, y],
             () => {
-                this.x += this.#speedVector[0];
-                this.y += this.#speedVector[1];
+
                 this.moveCurrentAnimation();
             },
             undefined,
@@ -54,28 +52,25 @@ class ShockProjectile extends Sprite {
             scale
         );
 
-        // Initialize the speed vector
-        this.#speedVector = this.moveTo(this.player.x, this.player.y, speed);
+        // Create the animations
+        this.#animations = {
 
-        this.currentAnimation = this.createAnimation(
-            0,
-            187,
-            154,
-            1,
-            4,
-            4,
-            20,
-            25,
-            0,
-            1,
-            3,
-        );
+        };
+
+        this.currentAnimation = this.animations.idle;
+    }
+
+    /**
+     * @returns {Object<string, number>} animations object.
+     */
+    get animations() {
+        return this.#animations;
     }
 
     /**
      * @returns {{
      *   topLeftCoords: [number, number]
-     * }} description of ShockProjectile.
+     * }} description of Sigma.
      */
     get desc() {
         return super.desc;
@@ -85,14 +80,12 @@ class ShockProjectile extends Sprite {
      * @returns {HitBox[]} the smallest rectangle that surrounds the shape.
      */
     get defaultHitBox() {
-        const anim = this.getAnimation(this.currentAnimation);
-
         return this.convertHitBoxes([
             {
-                x: this.x,
+                x: this.x + 5,
                 y: this.y,
-                width: anim.singleWidth,
-                height: anim.singleHeight
+                width: 45,
+                height: 55
             }
         ]);
     }
@@ -107,31 +100,16 @@ class ShockProjectile extends Sprite {
     }
 
     /**
-     * Explodes the shock.
-     */
-    explode() {
-        const exp = new Explosion(
-            this.x - 50,
-            this.y - 50,
-            this.scale,
-        );
-
-        exp.start();
-        this.game.insertSprite(exp);
-        this.game.removeSprite(this);
-    }
-
-    /**
      * @returns {string} the type of the sprite.
      */
     static get type() {
-        return "enemyProjectile";
+        return "boss";
     }
 
     /**
      * @returns {string} the type of the sprite.
      */
     get type() {
-        return ShockProjectile.type;
+        return Sigma.type;
     }
 }
