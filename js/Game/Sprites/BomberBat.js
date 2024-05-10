@@ -226,13 +226,6 @@ class BomberBat extends Sprite {
     }
 
     /**
-     * @returns {Sprite} a clone of this sprite.
-     */
-    get clone() {
-        return undefined;
-    }
-
-    /**
      * @param v
      */
     set x(v) {

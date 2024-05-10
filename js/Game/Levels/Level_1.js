@@ -217,15 +217,6 @@ class Level_1 extends Level {
     }
 
     /**
-     * @returns {Sprite} a clone of this sprite.
-     */
-    get clone() {
-        return new Level_1(
-            this.sprites,
-        );
-    }
-
-    /**
      * Draws the sprite in the 2d context.
      *
      * @param context {CanvasRenderingContext2D} 2d canvas element context.

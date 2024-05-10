@@ -116,21 +116,6 @@ class Text extends Sprite {
     }
 
     /**
-     * @returns {Sprite} a clone of this sprite.
-     */
-    get clone() {
-        return new Text(
-            this.desc,
-            this.onUpdate,
-            this.brush,
-            this.hitBoxBrush,
-            this.relativePoint,
-            this.ignorable,
-            this.static
-        );
-    }
-
-    /**
      * @returns {string} the text data.
      */
     get text() {

@@ -32,10 +32,6 @@ class BusterShot extends Sprite {
         this.flip = left;
     }
 
-    get clone() {
-        return undefined;
-    }
-
     get defaultHitBox() {
         return this.convertHitBoxes([
             {

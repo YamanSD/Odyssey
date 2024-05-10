@@ -642,12 +642,6 @@ class Sprite {
     get text() {}
 
     /**
-     * @returns {Sprite} a clone of this sprite.
-     * @Abstract
-     */
-    get clone() {}
-
-    /**
      * @returns {number} a usable animation ID.
      * @private
      */

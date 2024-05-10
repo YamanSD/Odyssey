@@ -83,15 +83,6 @@ class Void extends Sprite {
     }
 
     /**
-     * Cannot clone Void.
-     *
-     * @returns {Sprite} a clone of this sprite.
-     */
-    get clone() {
-        return undefined;
-    }
-
-    /**
      * Needed because we must override both getter and setter.
      *
      * @param onUpdate {

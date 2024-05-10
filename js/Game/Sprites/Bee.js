@@ -243,18 +243,6 @@ class Bee extends Sprite {
     }
 
     /**
-     * @returns {Sprite} a clone of this sprite.
-     */
-    get clone() {
-        return new Bee(
-            this.x,
-            this.y,
-            this.scale,
-            this.hitBoxBrush
-        );
-    }
-
-    /**
      * Draws the rectangle in the 2d context.
      *
      * @param context {CanvasRenderingContext2D} 2d canvas element context.

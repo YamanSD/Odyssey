@@ -200,19 +200,6 @@ class Segment extends Sprite {
     }
 
     /**
-     * @returns {Sprite} a clone of this sprite.
-     */
-    get clone() {
-        return new Segment(
-            this.desc,
-            this.onUpdate,
-            this.brush,
-            this.relativePoint,
-            this.static
-        );
-    }
-
-    /**
      * @returns {number} the slope of the segment.
      */
     get slope() {

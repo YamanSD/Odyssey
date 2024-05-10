@@ -254,14 +254,6 @@ class Rocket extends Sprite {
 
         return this.scale * this.getAnimation(this.currentAnimation).singleHeight;
     }
-
-    /**
-     * @returns {Sprite} a clone of this sprite.
-     */
-    get clone() {
-        return undefined;
-    }
-
     /**
      * Draws the rectangle in the 2d context.
      *
