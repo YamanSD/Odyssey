@@ -1083,6 +1083,43 @@ class Sprite {
     }
 
     /**
+     * @param angleRef {{
+     *      value?: number,
+     *      initValue?: number,
+     * }}
+     * @param x {number} x-coordinate of the center of path.
+     * @param y {number} y-coordinate of the center of path.
+     * @param angularSpeed {number} in degrees.
+     * @param onCycle {function()?} called on each cycle.
+     */
+    circleAround(angleRef, x, y, angularSpeed, onCycle) {
+        if (angleRef.value === undefined) {
+            angleRef.value = angleRef.initValue = 0;
+        } else if (angleRef.initValue === undefined) {
+            angleRef.initValue = angularSpeed > 0 ? angleRef.value : Math.abs(angleRef.value);
+        }
+
+        // Radius of the movement
+        const radius = this.euclideanDistancePt(
+            [this.x, this.y],
+            [x, y]
+        );
+
+        this.x = x + radius * Math.cos(this.degToRadians(angleRef.value));
+        this.y = y + radius * Math.sin(this.degToRadians(angleRef.value));
+
+        // Rotate
+        angleRef.value += angularSpeed;
+
+        // Call onCycle
+        if (angularSpeed > 0 ? angleRef.value : Math.abs(angleRef.value) >= 360 + angleRef.initValue && onCycle) {
+            onCycle();
+        }
+
+        angleRef.value %= 360 + angleRef.initValue;
+    }
+
+    /**
      * Applies linear interpolation to accelerate this sprite to the destination.
      *
      * @param movement {MovementType} object controlling the sprite motion. Modified.
@@ -1343,15 +1380,15 @@ class Sprite {
         }
 
         // Translate coordinates
-        ctx.translate((flip ? -scale * anim.singleWidth - x : x), y);
+        ctx.translate((flip ? Math.floor(-scale * anim.singleWidth - x) : x), y);
 
         // Rotate the image
         ctx.rotate(this.#radRotation);
 
         ctx.drawImage(
             SpriteSheet.load(this.sheets[anim.sheetInd], forceLoad, width, height),
-            (anim.singleWidth + anim.cSpace) * anim.currentCol + anim.startX,
-            (anim.singleHeight + anim.rSpace) * anim.currentRow + anim.startY,
+            Math.floor((anim.singleWidth + anim.cSpace) * anim.currentCol + anim.startX),
+            Math.floor((anim.singleHeight + anim.rSpace) * anim.currentRow + anim.startY),
             anim.singleWidth,
             anim.singleHeight,
             0, // Already translated
