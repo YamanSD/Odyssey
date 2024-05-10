@@ -572,7 +572,7 @@ class Sprite {
             return 0;
         }
 
-        return this.scale * this.getAnimation(this.currentAnimation).singleWidth;
+        return Math.floor(this.scale * this.getAnimation(this.currentAnimation).singleWidth);
     }
 
     /**
@@ -583,7 +583,7 @@ class Sprite {
             return 0;
         }
 
-        return this.scale * this.getAnimation(this.currentAnimation).singleHeight;
+        return Math.floor(this.scale * this.getAnimation(this.currentAnimation).singleHeight);
     }
 
     /**
@@ -1356,8 +1356,8 @@ class Sprite {
             anim.singleHeight,
             0, // Already translated
             0, // Already translated
-            scale * anim.singleWidth,
-            scale * anim.singleHeight,
+            Math.floor(scale * anim.singleWidth),
+            Math.floor(scale * anim.singleHeight),
         );
 
         // Restore the context
