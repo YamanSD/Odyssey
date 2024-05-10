@@ -142,7 +142,7 @@ Sprite.player = x;
 
 const bomb = new Bomb(l1, 0, 0, 2);
 const field = new IrisField(0, 0, 0, l1.scale);
-const d = new Iris(700, 500, field, l1.scale);
+const d = new Sigma(700, 400, [0, 1000], l1.scale);
 const b = new Dejira(1000, 500, l1.scale);
 const b2 = new IrisBeam(700, 400, l1.scale, true);
 const gig = new BomberBat(600, 100, bomb, l1.scale);
@@ -203,11 +203,11 @@ const keyPressHandler = (e) => {
         case 'e':
             // d.laserGrid();
             // gig.releaseBomb()xxx;
-            d.spawnCrystal();
+            d.startCycle();
             // d.form();
             break;
         case 'q':
-            d.form();
+            d.changeStage();
             break;
         case 'h':
             g.showHitBoxes = !g.showHitBoxes;

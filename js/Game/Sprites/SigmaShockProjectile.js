@@ -71,14 +71,14 @@ class SigmaShockProjectile extends Sprite {
 
                             // Subtract or add due to difference in widths between hit box and animation width
                             if (toLeft) {
-                                this.x = col.collided.rx - 18;
+                                this.x = col.collided.rx;
                             } else {
-                                this.rx = col.collided.x + 18;
+                                this.rx = col.collided.x;
                             }
                             break;
                         case SigmaShockProjectileState.down:
                             this.states.set(SigmaShockProjectileState, SigmaShockProjectileState.horizontal);
-                            this.by = col.collided.y;
+                            this.by = col.collided.y - 1;
                             break;
                         case SigmaShockProjectileState.vertical:
                             this.game.removeSprite(this);
@@ -100,13 +100,13 @@ class SigmaShockProjectile extends Sprite {
         this.states.set(SigmaShockProjectileState, SigmaShockProjectileState.down);
         this.currentAnimation = this.createAnimation(
             0,
-            48,
-            139,
-            6,
+            234,
+            152,
+            3,
             1,
-            6,
-            57,
-            54,
+            3,
+            32,
+            30,
             1,
             0,
             2,
@@ -128,10 +128,10 @@ class SigmaShockProjectile extends Sprite {
     get defaultHitBox() {
         return this.convertHitBoxes([
             {
-                x: this.x + 10,
-                y: this.y + 9,
-                width: 38,
-                height: 36
+                x: this.x,
+                y: this.y,
+                width: 32,
+                height: 30
             }
         ]);
     }
