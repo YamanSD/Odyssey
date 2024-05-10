@@ -1,11 +1,15 @@
 'use strict';
 
 /**
+ * @exports Timeout
+ */
+
+/**
  * @class Timeout
  *
  * Used as an interface between the user and the timeout events.
  */
-export default class Timeout {
+class Timeout {
     /**
      * @type {Void} void instance that represents the timeout.
      * @private

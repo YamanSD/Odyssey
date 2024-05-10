@@ -1,14 +1,15 @@
 'use strict';
 
-import {Vector} from "./index.js";
-
+/**
+ * @exports DLine
+ */
 
 /**
  * @class DLine
  *
  * Line class used by hit boxes.
  */
-export default class DLine {
+class DLine {
     /**
      * @type {Vector} vector representing the origin point of the Line.
      * @private

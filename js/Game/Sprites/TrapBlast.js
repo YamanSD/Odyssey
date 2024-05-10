@@ -1,6 +1,8 @@
-import {Sprite} from "../../GameEngine";
-import ShockProjectile from "./ShockProjectile.js";
+'use strict'
 
+/**
+ * @exports TrapBlast
+ */
 
 /**
  * State for the activation of the trap.
@@ -17,7 +19,7 @@ const ActiveState = {
  *
  * Class representing the grenade man enemy.
  */
-export default class TrapBlast extends Sprite {
+class TrapBlast extends Sprite {
     /**
      * Object containing the animations of TrapBlast.
      *

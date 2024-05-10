@@ -1,12 +1,15 @@
-import {Sprite} from "../../GameEngine";
+'use strict'
 
+/**
+ * @exports Bee
+ */
 
 /**
  * @class Bee
  *
  * Class representing the bee enemy.
  */
-export default class Bee extends Sprite {
+class Bee extends Sprite {
     /**
      * Object containing the animations of Bee.
      *

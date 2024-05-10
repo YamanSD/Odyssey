@@ -1,14 +1,16 @@
 'use strict';
 
-import Level from "./Level.js";
 
+/**
+ * @exports Level_2
+ */
 
 /**
  * @class Level_2
  *
  * Second level in the game.
  */
-export default class Level_2 extends Level {
+class Level_2 extends Level {
     /**
      * @param sprites {Sprite[]} array of sprites to be loaded to the map.
      */

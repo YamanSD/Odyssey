@@ -1,5 +1,8 @@
-import {Sprite} from "../../GameEngine";
+'use strict'
 
+/**
+ * @exports BomberBat
+ */
 
 /**
  * Bomb release state.
@@ -16,7 +19,7 @@ const BombState = {
  *
  * Class representing the bomber bat enemy.
  */
-export default class BomberBat extends Sprite {
+class BomberBat extends Sprite {
     /**
      * Object containing the animations of BomberBat.
      *

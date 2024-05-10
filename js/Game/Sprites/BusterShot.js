@@ -1,6 +1,10 @@
-import {Sprite} from "../../GameEngine";
+'use strict'
 
-export default class BusterShot extends Sprite {
+/**
+ * @exports BusterShot
+ */
+
+class BusterShot extends Sprite {
     constructor(x, y, left, power, onUpdate, hitBoxBrush) {
         super(
             {},

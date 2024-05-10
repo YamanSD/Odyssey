@@ -1,6 +1,8 @@
-import {Sprite} from "../../GameEngine";
-import Explosion from "./Explosion.js";
+'use strict'
 
+/**
+ * @exports SuicideDrone
+ */
 
 /**
  * State for the drone deployment.
@@ -18,7 +20,7 @@ const DeploymentState = {
  *
  * Class representing the suicide drones of Iris.
  */
-export default class SuicideDrone extends Sprite {
+class SuicideDrone extends Sprite {
     /**
      * Object containing the animations of IrisCrystal.
      *

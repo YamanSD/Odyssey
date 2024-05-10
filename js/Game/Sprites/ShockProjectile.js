@@ -1,12 +1,15 @@
-import {Sprite} from "../../GameEngine";
+'use strict'
 
+/**
+ * @exports ShockProjectile
+ */
 
 /**
  * @class ShockProjectile
  *
  * Class representing the shock projectile.
  */
-export default class ShockProjectile extends Sprite {
+class ShockProjectile extends Sprite {
     /**
      * Speed vector.
      *

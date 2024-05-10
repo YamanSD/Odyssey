@@ -1,7 +1,8 @@
-import {Sprite} from "../../GameEngine";
-import IrisBeam from "./IrisBeam.js";
-import IrisCrystal, {CrystalState} from "./IrisCrystal.js";
-import SuicideDrone from "./SuicideDrone.js";
+'use strict'
+
+/**
+ * @exports Iris
+ */
 
 
 /**
@@ -9,7 +10,7 @@ import SuicideDrone from "./SuicideDrone.js";
  *
  * @type {{forming: number, active: number, ready: number}}
  */
-const ActState = {
+const IrisActState = {
     forming: 0,
     active: 1,
     ready: 2,
@@ -31,7 +32,7 @@ const FieldState = {
  *
  * @type {{none: number, forwardRush: number, laserGrid: number, laserGridWait: number}}
  */
-const AttackState = {
+const IrisAttackState = {
     none: 0,
     forwardRush: 1,
     laserGrid: 2,
@@ -61,7 +62,7 @@ const CrystalAttackState = {
  *
  * Class representing the Iris boss.
  */
-export default class Iris extends Sprite {
+class Iris extends Sprite {
     /**
      * Object containing the animations of Iris.
      *
@@ -142,22 +143,22 @@ export default class Iris extends Sprite {
                 }
 
                 // Handle activity states
-                switch (this.states.get(ActState)) {
-                    case ActState.ready:
+                switch (this.states.get(IrisActState)) {
+                    case IrisActState.ready:
                         break;
-                    case ActState.active:
-                        this.states.set(ActState, ActState.forming);
+                    case IrisActState.active:
+                        this.states.set(IrisActState, IrisActState.forming);
 
                         this.game.setTimeout(() => {
                             // Change to idle from idleGlow
                             this.x += 6;
                             this.y += 6;
 
-                            this.states.set(ActState, ActState.ready);
+                            this.states.set(IrisActState, IrisActState.ready);
                             this.currentAnimation = this.animations.idle;
                         }, 20);
                         break;
-                    case ActState.forming:
+                    case IrisActState.forming:
                         // If formed
                         switch (this.#crystal.states.get(CrystalState)) {
                             case CrystalState.formed:
@@ -176,25 +177,25 @@ export default class Iris extends Sprite {
                 }
 
                 // Handle attack states
-                switch (this.states.get(AttackState)) {
-                    case AttackState.forwardRush:
+                switch (this.states.get(IrisAttackState)) {
+                    case IrisAttackState.forwardRush:
                         this.moveTo(this.player.x, this.player.y - this.player.height, 1);
                         break;
-                    case AttackState.laserGrid:
-                        this.states.set(AttackState, AttackState.laserGridWait);
+                    case IrisAttackState.laserGrid:
+                        this.states.set(IrisAttackState, IrisAttackState.laserGridWait);
                         break;
-                    case AttackState.goUp:
+                    case IrisAttackState.goUp:
                         this.moveTo(
                             this.x,
                             this.initY - 500,
                             4,
                             () => {
                                 this.currentAnimation = this.animations.goBackwards;
-                                this.states.set(AttackState, AttackState.goBack);
+                                this.states.set(IrisAttackState, IrisAttackState.goBack);
                             }
                         );
                         break;
-                    case AttackState.goDown:
+                    case IrisAttackState.goDown:
                         this.moveTo(
                             this.x,
                             this.initY,
@@ -204,14 +205,14 @@ export default class Iris extends Sprite {
                             }
                         )
                         break;
-                    case AttackState.goBack:
+                    case IrisAttackState.goBack:
                         this.moveTo(
                             this.initX,
                             this.y,
                             4,
                             () => {
                                 this.currentAnimation = this.animations.moveDown;
-                                this.states.set(AttackState, AttackState.goDown);
+                                this.states.set(IrisAttackState, IrisAttackState.goDown);
                             }
                         );
                         break;
@@ -522,7 +523,7 @@ export default class Iris extends Sprite {
                     this.x -= 14;
                     this.y -= 40;
 
-                    this.states.set(ActState, ActState.active);
+                    this.states.set(IrisActState, IrisActState.active);
                     this.currentAnimation = this.animations.idleGlow;
 
                     if (this.states.get(FieldState) === FieldState.created) {
@@ -646,8 +647,8 @@ export default class Iris extends Sprite {
             4
         );
 
-        this.states.set(ActState, ActState.forming);
-        this.states.set(AttackState, AttackState.none);
+        this.states.set(IrisActState, IrisActState.forming);
+        this.states.set(IrisAttackState, IrisAttackState.none);
         this.states.set(FieldState, FieldState.deformed);
         this.states.set(CrystalAttackState, CrystalAttackState.notReady);
 
@@ -721,7 +722,7 @@ export default class Iris extends Sprite {
     draw(context) {
         this.drawCurrentAnimation(this.x, this.y, context);
 
-        if (this.states.get(AttackState) === AttackState.laserGridWait) {
+        if (this.states.get(IrisAttackState) === IrisAttackState.laserGridWait) {
             this.drawAnimation(
                 this.#energyField,
                 this.x - 70,
@@ -742,7 +743,7 @@ export default class Iris extends Sprite {
     }
 
     moveCurrentAnimation() {
-        if (this.states.get(AttackState) === AttackState.laserGridWait) {
+        if (this.states.get(IrisAttackState) === IrisAttackState.laserGridWait) {
             this.moveAnimation(this.#energyField);
         }
 
@@ -753,9 +754,9 @@ export default class Iris extends Sprite {
      * Starts the forward rush attack.
      */
     forwardRush() {
-        if (this.states.get(ActState) === ActState.ready) {
+        if (this.states.get(IrisActState) === IrisActState.ready) {
             this.currentAnimation = this.animations.moveForward;
-            this.states.set(AttackState, AttackState.forwardRush);
+            this.states.set(IrisAttackState, IrisAttackState.forwardRush);
         }
     }
 
@@ -764,7 +765,7 @@ export default class Iris extends Sprite {
      */
     fallback() {
         // Set to going up
-        this.states.set(AttackState, AttackState.goUp);
+        this.states.set(IrisAttackState, IrisAttackState.goUp);
 
         this.currentAnimation = this.animations.prepareBackwards;
     }
@@ -773,9 +774,9 @@ export default class Iris extends Sprite {
      * Starts the laser grid attack.
      */
     laserGrid() {
-        if (this.states.get(ActState) === ActState.ready) {
+        if (this.states.get(IrisActState) === IrisActState.ready) {
             this.currentAnimation = this.animations.shootBeam;
-            this.states.set(AttackState, AttackState.laserGrid);
+            this.states.set(IrisAttackState, IrisAttackState.laserGrid);
 
             // Reference
             const hBeam = this.#beams.h;
@@ -802,7 +803,7 @@ export default class Iris extends Sprite {
      * Spawns drones when dashing.
      */
     spawnDrones() {
-        if (this.states.get(AttackState) === AttackState.forwardRush) {
+        if (this.states.get(IrisAttackState) === IrisAttackState.forwardRush) {
             this.game.insertSprites(
                 new SuicideDrone(
                     this.x + this.width / 2 - 10,
@@ -831,12 +832,12 @@ export default class Iris extends Sprite {
     spawnCrystal() {
         const crystal = this.#crystal;
 
-        if (this.states.get(ActState) === ActState.ready) {
+        if (this.states.get(IrisActState) === IrisActState.ready) {
             // TODO finish this
             this.currentAnimation = this.animations.idleGlow;
 
             // Stop attacks
-            this.states.set(AttackState, AttackState.none);
+            this.states.set(IrisAttackState, IrisAttackState.none);
 
             crystal.x = this.x + this.width / 2 - crystal.width / 2;
             crystal.y = this.y + 50;

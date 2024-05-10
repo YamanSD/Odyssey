@@ -1,12 +1,15 @@
-import {Sprite} from "../../GameEngine";
+'use strict'
 
+/**
+ * @exports Explosion
+ */
 
 /**
  * @class Explosion
  *
  * Class representing explosions.
  */
-export default class Explosion extends Sprite {
+class Explosion extends Sprite {
     /**
      * Object containing the animations of Explosion.
      *

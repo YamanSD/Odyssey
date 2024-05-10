@@ -1,5 +1,8 @@
-import {Sprite} from "../../GameEngine";
-import DejiraProjectile from "./DejiraProjectile.js";
+'use strict'
+
+/**
+ * @exports Dejira
+ */
 
 
 /**
@@ -18,7 +21,7 @@ const FlipState = {
  *
  * @type {{noAttack: number, attack: number}}
  */
-const AttackState = {
+const DejiraAttackState = {
     noAttack: 0,
     attack: 1,
 };
@@ -39,7 +42,7 @@ const ShootState = {
  *
  * Class representing the dejira enemy.
  */
-export default class Dejira extends Sprite {
+class Dejira extends Sprite {
     /**
      * Object containing the animations of Dejira.
      *
@@ -78,15 +81,15 @@ export default class Dejira extends Sprite {
             ['dejira.gif'],
             [x, y],
             (tick) => {
-                switch (this.states.get(AttackState)) {
-                    case AttackState.noAttack:
+                switch (this.states.get(DejiraAttackState)) {
+                    case DejiraAttackState.noAttack:
                         if (this.manhattanDistance(this.player) < 400) {
                             this.attack();
                         }
 
                         this.moveTo(this.player.x, this.y, 5);
                         break;
-                    case AttackState.attack:
+                    case DejiraAttackState.attack:
                         if (this.#attackCounter === 5 && this.states.get(FlipState) === FlipState.left) {
                             this.retreat();
                         }
@@ -146,7 +149,7 @@ export default class Dejira extends Sprite {
                     this.states.set(FlipState, FlipState.flipping);
                 },
                 () => {
-                    this.states.set(AttackState, AttackState.attack);
+                    this.states.set(DejiraAttackState, DejiraAttackState.attack);
                     this.states.set(FlipState, FlipState.left);
                     this.currentAnimation = this.animations.idleFlipped;
                 }
@@ -231,7 +234,7 @@ export default class Dejira extends Sprite {
 
         this.#attackCounter = 0;
         this.states.set(ShootState, ShootState.noShot);
-        this.states.set(AttackState, AttackState.noAttack);
+        this.states.set(DejiraAttackState, DejiraAttackState.noAttack);
         this.states.set(FlipState, FlipState.left);
         this.currentAnimation = this.animations.idleLeft;
     }
@@ -356,7 +359,7 @@ export default class Dejira extends Sprite {
     shoot() {
         if (
             this.states.get(FlipState) !== FlipState.flipping
-            && this.states.get(AttackState) === AttackState.attack
+            && this.states.get(DejiraAttackState) === DejiraAttackState.attack
         ) {
             this.states.set(ShootState, ShootState.shot);
 

@@ -1,11 +1,14 @@
-import {Sprite} from "../../GameEngine";
+'use strict'
 
+/**
+ * @exports IrisCrystal
+ */
 
 /**
  * State for the crystal.
  * @type {{forming: number, formed: number, deformed: number, attacking: number}}
  */
-export const CrystalState = {
+const CrystalState = {
     deformed: 0,
     forming: 1,
     formed: 2,
@@ -17,7 +20,7 @@ export const CrystalState = {
  *
  * Class representing IrisCrystals.
  */
-export default class IrisCrystal extends Sprite {
+class IrisCrystal extends Sprite {
     /**
      * Object containing the animations of IrisCrystal.
      *

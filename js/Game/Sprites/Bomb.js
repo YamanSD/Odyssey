@@ -1,6 +1,8 @@
-import {Sprite} from "../../GameEngine";
-import Explosion from "./Explosion.js";
+'use strict'
 
+/**
+ * @exports Bomb
+ */
 
 /**
  * Falling state.
@@ -17,7 +19,7 @@ const FallState = {
  *
  * Class representing the bomb projectile.
  */
-export default class Bomb extends Sprite {
+class Bomb extends Sprite {
     /**
      * Speed vector.
      *

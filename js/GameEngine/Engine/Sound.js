@@ -1,18 +1,22 @@
 'use strict';
 
 /**
+ * @exports Sound
+ */
+
+/**
  * @class Sound
  *
  * Static class used to load sound effects.
  */
-export default class Sound {
+class Sound {
     /**
      * Continuation of the path, add to the beginning of each name.
      *
      * @type {string}
      * @private
      */
-    static #pathContinuation = '/assets/sounds/';
+    static #pathContinuation = './assets/sounds/';
 
     /**
      * Maps loaded file names to their respective loaded sounds.

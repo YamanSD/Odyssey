@@ -1,9 +1,16 @@
+'use strict'
+
+
+/**
+ * @exports CollisionDirection
+ */
+
 /**
  * @class CollisionDirection
  *
  * Class used as an enum for collision direction.
  */
-export default class CollisionDirection {
+class CollisionDirection {
     /**
      * @type {number} Direction of the collision.
      * @private

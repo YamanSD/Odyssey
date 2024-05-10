@@ -1,4 +1,8 @@
-import {Sprite} from "../../GameEngine";
+'use strict'
+
+/**
+ * @exports DejiraProjectile
+ */
 
 
 /**
@@ -6,7 +10,7 @@ import {Sprite} from "../../GameEngine";
  *
  * Class representing the dejira projectile.
  */
-export default class DejiraProjectile extends Sprite {
+class DejiraProjectile extends Sprite {
     /**
      * Counter for the number of moves the projectile can make.
      *

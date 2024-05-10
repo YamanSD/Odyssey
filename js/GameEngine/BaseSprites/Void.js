@@ -1,14 +1,20 @@
 'use strict';
 
-import {Sprite} from "./index.js";
 
+/**
+ * @exports Void
+ */
+
+/**
+ * @typedef {import('./Sprite.js').Sprite} Sprite
+ */
 
 /**
  * @class Void
  *
  * Class used to schedule independent timeout events.
  */
-export default class Void extends Sprite {
+class Void extends Sprite {
     /**
      * @type {boolean} true if the event is canceled.
      * @private

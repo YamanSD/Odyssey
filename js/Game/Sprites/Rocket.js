@@ -1,6 +1,8 @@
-import {Sprite} from "../../GameEngine";
-import Explosion from "./Explosion.js";
+'use strict'
 
+/**
+ * @exports Rocket
+ */
 
 /**
  * State for the rocket launch.
@@ -18,7 +20,7 @@ const LaunchState = {
  *
  * Class representing the rocket projectile.
  */
-export default class Rocket extends Sprite {
+class Rocket extends Sprite {
     /**
      * Object containing the animations of Spiky.
      *

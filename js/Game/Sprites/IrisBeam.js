@@ -1,4 +1,8 @@
-import {Sprite} from "../../GameEngine";
+'use strict'
+
+/**
+ * @exports IrisBeam
+ */
 
 
 /**
@@ -17,7 +21,7 @@ const PowerState = {
  *
  * Class representing the beams of Iris.
  */
-export default class IrisBeam extends Sprite {
+class IrisBeam extends Sprite {
     /**
      * Object containing the animations of IrisCrystal.
      *

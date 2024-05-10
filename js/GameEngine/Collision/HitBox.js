@@ -1,7 +1,8 @@
 'use strict';
 
-import Vector from './Vector.js';
-import DLine from './DLine.js';
+/**
+ * @exports HitBox
+ */
 
 
 /**
@@ -9,7 +10,7 @@ import DLine from './DLine.js';
  *
  * Class representing hit boxes in canvas.
  */
-export default class HitBox {
+class HitBox {
     /**
      * @type {Sprite} owner of this instance hit-box.
      * @private

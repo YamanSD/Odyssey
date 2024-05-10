@@ -1,4 +1,8 @@
-import {Sprite} from "../../GameEngine";
+'use strict'
+
+/**
+ * @exports Player
+ */
 
 
 /**
@@ -6,7 +10,7 @@ import {Sprite} from "../../GameEngine";
  *
  * Class representing the playable character Player.
  */
-export default class Player extends Sprite {
+class Player extends Sprite {
     /**
      * Object containing the animations of Player.
      *

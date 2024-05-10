@@ -1,4 +1,8 @@
-import {Sprite} from "../../GameEngine";
+'use strict'
+
+/**
+ * @exports MettaurProjectile
+ */
 
 
 /**
@@ -6,7 +10,7 @@ import {Sprite} from "../../GameEngine";
  *
  * Class representing the mettaur projectile.
  */
-export default class MettaurProjectile extends Sprite {
+class MettaurProjectile extends Sprite {
     /**
      * Object containing the animations of Spiky.
      *

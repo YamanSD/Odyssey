@@ -1,11 +1,15 @@
 'use strict';
 
 /**
+ * @exports RelativePoint
+ */
+
+/**
  * @class RelativePoint
  *
  * Class used for setting the relative points of Sprites.
  */
-export default class RelativePoint {
+class RelativePoint {
     /**
      * @type {[number, number]} coordinates of the point.
      * @private

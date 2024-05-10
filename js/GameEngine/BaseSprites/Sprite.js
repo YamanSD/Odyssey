@@ -1,9 +1,9 @@
 'use strict';
 
-import {HitBox, CollisionDirection} from "../Collision";
-import {RelativePoint, Sound} from "../Engine";
-import SpriteSheet from "./SpriteSheet.js";
 
+/**
+ * @exports Sprite
+ */
 
 /**
  * @Abstract
@@ -11,7 +11,7 @@ import SpriteSheet from "./SpriteSheet.js";
  *
  * Should be treated as an abstract class.
  */
-export default class Sprite {
+class Sprite {
     /**
      * @typedef {{
      *     x: number,

@@ -1,5 +1,8 @@
-import {Sprite} from "../../GameEngine";
-import Grenade from "./Grenade.js";
+'use strict'
+
+/**
+ * @exports GrenadeMan
+ */
 
 
 /**
@@ -7,7 +10,7 @@ import Grenade from "./Grenade.js";
  *
  * Class representing the grenade man enemy.
  */
-export default class GrenadeMan extends Sprite {
+class GrenadeMan extends Sprite {
     /**
      * Object containing the animations of GrenadeMan.
      *

@@ -1,11 +1,15 @@
 'use strict';
 
 /**
+ * @exports Vector
+ */
+
+/**
  * @class Vector
  *
  * Vector class used by hit boxes.
  */
-export default class Vector {
+class Vector {
     /**
      * @type {[number, number]} components of the vector.
      * @private

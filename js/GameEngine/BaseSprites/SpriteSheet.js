@@ -1,16 +1,20 @@
 /**
+ * @exports SpriteSheet
+ */
+
+/**
  * @class SpriteSheet
  *
  * Static class used for loading sprite sheet images.
  */
-export default class SpriteSheet {
+class SpriteSheet {
     /**
      * Continuation of the path, add to the beginning of each name.
      *
      * @type {string}
      * @private
      */
-    static #pathContinuation = '/assets/images/';
+    static #pathContinuation = './assets/images/';
 
     /**
      * Maps loaded file names to their respective loaded images.

@@ -1,5 +1,8 @@
-import {Sprite} from "../../GameEngine";
-import Explosion from "./Explosion.js";
+'use strict'
+
+/**
+ * @exports Grenade
+ */
 
 
 /**
@@ -7,7 +10,7 @@ import Explosion from "./Explosion.js";
  *
  * Class representing the grenade projectile.
  */
-export default class Grenade extends Sprite {
+class Grenade extends Sprite {
     /**
      * Speed vector.
      *

@@ -1,7 +1,9 @@
 'use strict';
 
-import Sprite from "./Sprite.js";
 
+/**
+ * @exports Segment
+ */
 
 /**
  * @class Segment
@@ -10,7 +12,7 @@ import Sprite from "./Sprite.js";
  * Used for detecting when a sprite passes a certain coordinate.
  * Shown only when hit boxes are enabled in the Game instance.
  */
-export default class Segment extends Sprite {
+class Segment extends Sprite {
     /**
      * Error tolerance for checks involving floating points.
      * Used to avoid unexpected bugs with floating point precision.

@@ -1,4 +1,8 @@
-import {Sprite} from "../../GameEngine";
+'use strict'
+
+/**
+ * @exports IrisField
+ */
 
 
 /**
@@ -6,7 +10,7 @@ import {Sprite} from "../../GameEngine";
  *
  * @type {{dormant: number, active: number}}
  */
-const ActState = {
+const IrisFieldActState = {
     dormant: 0,
     active: 1
 };
@@ -16,7 +20,7 @@ const ActState = {
  *
  * Class representing IrisFields.
  */
-export default class IrisField extends Sprite {
+class IrisField extends Sprite {
     /**
      * Object containing the animations of IrisField.
      *
@@ -148,7 +152,7 @@ export default class IrisField extends Sprite {
             ),
         };
 
-        this.states.set(ActState, ActState.dormant);
+        this.states.set(IrisFieldActState, IrisFieldActState.dormant);
         this.by = by;
     }
 
@@ -224,7 +228,7 @@ export default class IrisField extends Sprite {
      * @param context {CanvasRenderingContext2D} 2d canvas element context.
      */
     draw(context) {
-        if (this.states.get(ActState) === ActState.active) {
+        if (this.states.get(IrisFieldActState) === IrisFieldActState.active) {
             this.drawAnimation(
                 this.animations.connection_0,
                 this.x + this.width / 2 - 32,
@@ -241,7 +245,7 @@ export default class IrisField extends Sprite {
      * Deactivates the animation.
      */
     deactivate() {
-        this.states.set(ActState, ActState.dormant);
+        this.states.set(IrisFieldActState, IrisFieldActState.dormant);
         this.game.removeSprite(this);
     }
 
@@ -249,7 +253,7 @@ export default class IrisField extends Sprite {
      * Moves the current animation.
      */
     moveCurrentAnimation() {
-        if (this.states.get(ActState) === ActState.active) {
+        if (this.states.get(IrisFieldActState) === IrisFieldActState.active) {
             for (const id of Object.values(this.animations)) {
                 if (id !== this.currentAnimation) {
                     this.moveAnimation(id);
@@ -264,7 +268,7 @@ export default class IrisField extends Sprite {
      * Starts the energy field formation process.
      */
     activate() {
-        this.states.set(ActState, ActState.active);
+        this.states.set(IrisFieldActState, IrisFieldActState.active);
         this.currentAnimation = this.animations.idleAbove;
     }
 

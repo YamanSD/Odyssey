@@ -1,5 +1,8 @@
-import {Sprite} from "../../GameEngine";
-import Explosion from "./Explosion.js";
+'use strict'
+
+/**
+ * @exports VerticalMeteor
+ */
 
 
 /**
@@ -27,7 +30,7 @@ const DirState = {
  *
  * Class representing the meteor projectile.
  */
-export default class VerticalMeteor extends Sprite {
+class VerticalMeteor extends Sprite {
     /**
      * Speed vector.
      *

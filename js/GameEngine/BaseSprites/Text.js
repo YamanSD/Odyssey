@@ -1,14 +1,15 @@
 'use strict';
 
-import Sprite from "./Sprite.js";
-
+/**
+ * @exports Text
+ */
 
 /**
  * @class Text
  *
  * Class representing texts in canvas.
  */
-export default class Text extends Sprite {
+class Text extends Sprite {
     /**
      * @type {TextMetrics | undefined} stores geometric text info.
      */

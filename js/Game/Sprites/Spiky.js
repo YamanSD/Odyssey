@@ -1,12 +1,15 @@
-import {Sprite} from "../../GameEngine";
+'use strict'
 
+/**
+ * @exports Spiky
+ */
 
 /**
  * @class Spiky
  *
  * Class representing the spiky enemy.
  */
-export default class Spiky extends Sprite {
+class Spiky extends Sprite {
     /**
      * Object containing the animations of Spiky.
      *

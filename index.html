@@ -2,7 +2,6 @@
 <html class="no-js" lang="">
 
 <head>
-  <!-- To convert icons: https://www.freeconvert.com/png-to-ico -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Game Engine</title>
@@ -22,6 +21,57 @@
 
 <body>
   <canvas id="mainCanvas"></canvas>
-  <script type="module" src="yamansd.github.io/js/index.js"></script>
+  <!-- GameEngine/Collision -->
+  <script src="./js/GameEngine/Collision/Vector.js"></script>
+  <script src="./js/GameEngine/Collision/DLine.js"></script>
+  <script src="./js/GameEngine/Collision/HitBox.js"></script>
+  <script src="./js/GameEngine/Collision/CollisionDirection.js"></script>
+
+  <!-- GameEngine/Engine -->
+  <script src="./js/GameEngine/Engine/Sound.js"></script>
+  <script src="./js/GameEngine/Engine/RelativePoint.js"></script>
+
+  <!-- GameEngine/BaseSprites -->
+  <script src="./js/GameEngine/BaseSprites/SpriteSheet.js"></script>
+  <script src="./js/GameEngine/BaseSprites/Sprite.js"></script>
+  <script src="./js/GameEngine/BaseSprites/Void.js"></script>
+  <script src="./js/GameEngine/BaseSprites/Segment.js"></script>
+  <script src="./js/GameEngine/BaseSprites/Text.js"></script>
+  <script src="./js/GameEngine/BaseSprites/Timeout.js"></script>
+
+  <!-- GameEngine/Engine -->
+  <script src="./js/GameEngine/Engine/Game.js"></script>
+
+  <!-- Game/Levels -->
+  <script src="./js/Game/Levels/Level.js"></script>
+  <script src="./js/Game/Levels/Level_1.js"></script>
+  <script src="./js/Game/Levels/Level_2.js"></script>
+
+  <!-- Game/Sprites -->
+  <script src="./js/Game/Sprites/Explosion.js"></script>
+  <script src="./js/Game/Sprites/BusterShot.js"></script>
+  <script src="./js/Game/Sprites/Player.js"></script>
+  <script src="./js/Game/Sprites/Bomb.js"></script>
+  <script src="./js/Game/Sprites/Rocket.js"></script>
+  <script src="./js/Game/Sprites/DejiraProjectile.js"></script>
+  <script src="./js/Game/Sprites/MettaurProjectile.js"></script>
+  <script src="./js/Game/Sprites/ShockProjectile.js"></script>
+  <script src="./js/Game/Sprites/VerticalMeteor.js"></script>
+  <script src="./js/Game/Sprites/Bee.js"></script>
+  <script src="./js/Game/Sprites/BomberBat.js"></script>
+  <script src="./js/Game/Sprites/Dejira.js"></script>
+  <script src="./js/Game/Sprites/GigaDeath.js"></script>
+  <script src="./js/Game/Sprites/GrenadeMan.js"></script>
+  <script src="./js/Game/Sprites/Mettaur.js"></script>
+  <script src="./js/Game/Sprites/Spiky.js"></script>
+  <script src="./js/Game/Sprites/SuicideDrone.js"></script>
+  <script src="./js/Game/Sprites/TrapBlast.js"></script>
+  <script src="./js/Game/Sprites/IrisBeam.js"></script>
+  <script src="./js/Game/Sprites/IrisCrystal.js"></script>
+  <script src="./js/Game/Sprites/IrisField.js"></script>
+  <script src="./js/Game/Sprites/Iris.js"></script>
+
+  <!-- Root file -->
+  <script src="./js/index.js"></script>
 </body>
 </html>

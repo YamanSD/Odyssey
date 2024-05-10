@@ -1,7 +1,9 @@
 'use strict';
 
-import {Game, Sprite} from "../../GameEngine";
 
+/**
+ * @exports Level
+ */
 
 /**
  * @class Level
@@ -9,7 +11,7 @@ import {Game, Sprite} from "../../GameEngine";
  *
  * Class for level creation.
  */
-export default class Level extends Sprite {
+class Level extends Sprite {
     /**
      * List of sprites inside the level.
      *

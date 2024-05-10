@@ -1,15 +1,16 @@
 'use strict';
 
-import {Sprite, Timeout, Void, SpriteSheet} from "../BaseSprites";
-import Sound from "./Sound.js";
 
+/**
+ * @exports Game
+ */
 
 /**
  * @class Game
  *
  * Class encapsulating the Odyssey game engine.
  */
-export default class Game {
+class Game {
     /**
      * @type {number} ID counter for the event handlers.
      * @protected

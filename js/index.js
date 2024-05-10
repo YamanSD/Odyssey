@@ -1,27 +1,5 @@
 'use strict';
 
-import {Game, Sprite, Text} from './GameEngine';
-// import {BusterShot, Player} from "./Game/Sprites";
-import {Level_1} from "./Game/Levels";
-import {
-    IrisBeam,
-    IrisCrystal,
-    TrapBlast,
-    ShockProjectile,
-    Bee,
-    BusterShot,
-    Explosion,
-    GrenadeMan,
-    Rocket,
-    X,
-    GigaDeath,
-    Iris,
-    IrisField,
-    Bomb,
-    Mettaur,
-    SuicideDrone, BomberBat, Dejira
-} from "./Game/Sprites";
-
 
 const baseSpeed = 10;
 const altSpeed = 40;
@@ -57,7 +35,7 @@ const ShootingState = {
 
 const l1 = new Level_1([txt]);
 
-const x = new X(500, 300, l1.scale, (ignored) => {
+const x = new Player(500, 300, l1.scale, (ignored) => {
     // if (x.states.get(ShootingState) === ShootingState.shoot) {
     //     x.currentAnimation = x.animations.shoot;
     //     const m = new BusterShot(

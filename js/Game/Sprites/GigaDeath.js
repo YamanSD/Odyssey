@@ -1,5 +1,8 @@
-import {Sprite} from "../../GameEngine";
-import Rocket from './Rocket.js';
+'use strict'
+
+/**
+ * @exports GigaDeath
+ */
 
 
 /**
@@ -17,7 +20,7 @@ const ShotState = {
  *
  * Class representing the giga death enemy.
  */
-export default class GigaDeath extends Sprite {
+class GigaDeath extends Sprite {
     /**
      * Cool down period.
      *
