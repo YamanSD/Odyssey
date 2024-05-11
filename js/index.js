@@ -37,13 +37,13 @@ const ShootingState = {
 const l1 = new Level_1([txt]);
 
 
-const s1 = new SigmaSickle(
-    l1,
-    500,
-    300,
-    2,
-    false,
-);
+// const s1 = new SigmaSickle(
+//     l1,
+//     500,
+//     300,
+//     2,
+//     false,
+// );
 
 // const s2 = new SigmaShockProjectile(
 //     l1,
@@ -161,7 +161,7 @@ const expl = new Explosion(
 // b.currentAnimation = b.animations.attack;
 
 const sp = new ShockProjectile(0, 0, 2, 3);
-l1.sprites.push(field, expl, b2, d, sp, s1, bomb, gig);
+l1.sprites.push(field, expl, b2, d, sp, bomb, gig);
 
 
 
@@ -203,7 +203,7 @@ const keyPressHandler = (e) => {
         case 'e':
             // d.laserGrid();
             // gig.releaseBomb()xxx;
-            d.startCycle();
+            d.laser();
             // d.form();
             break;
         case 'q':

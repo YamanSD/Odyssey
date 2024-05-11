@@ -1204,7 +1204,7 @@ class Sprite {
             onStart,
             onEnd,
             hitBox,
-            currentCycle: 1, // Skip the first cycle
+            currentCycle: 1, // Skips the first cycle
             currentRow: 0,
             currentCol: 0
         };

@@ -36,6 +36,7 @@ class SigmaSickle extends Sprite {
      * @param scale {number} scale of SigmaSickle.
      * @param toLeft {boolean} if true goes to the left.
      * @param speed {number?} speed of the projectile.
+     * @param onCycle {function()?} called when the cycle is done.
      * @param hitBoxBrush {{
      *    borderWidth?: number,
      *    borderColor?: string,
@@ -49,6 +50,7 @@ class SigmaSickle extends Sprite {
         y,
         scale,
         toLeft,
+        onCycle,
         speed = 5,
         hitBoxBrush
     ) {
@@ -61,9 +63,13 @@ class SigmaSickle extends Sprite {
                     this.#angleRef,
                     this.initX + (toLeft ? -200 : 200),
                     this.initY + 200,
-                    toLeft ? Math.abs(speed) : -Math.abs(speed),
+                    toLeft ? -Math.abs(speed) : Math.abs(speed),
                     () => {
                         this.game.removeSprite(this);
+
+                        if (onCycle) {
+                            onCycle();
+                        }
                     }
                 )
 
@@ -77,12 +83,14 @@ class SigmaSickle extends Sprite {
             scale
         );
 
+        // Initialize the level
+        this.level = level;
+
         // Angle reference
         this.#angleRef = {
             value: -70 + (toLeft ? 0 : -90),
         };
 
-        this.level = level;
         this.states.set(SigmaSickleState, SigmaSickleState.down);
         this.currentAnimation = this.createAnimation(
             0,

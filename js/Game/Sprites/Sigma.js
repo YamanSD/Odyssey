@@ -18,12 +18,15 @@ const SigmaStageState = {
 /**
  * State for Sigma's attacks.
  *
- * @type {{energyOrb: number, none: number, dash: number}}
+ * @type {{land: number, sickle: number, energyOrb: number, none: number, dash: number}}
  */
 const SigmaAttackState = {
     none: 0,
     energyOrb: 1,
     dash: 2,
+    sickle: 3,
+    land: 4,
+    laser: 5,
 };
 
 /**
@@ -50,6 +53,14 @@ class Sigma extends Sprite {
      * @private
      */
     #animations;
+
+    /**
+     * Object containing the animations of Sigma for stage 2.
+     *
+     * @type {Object<string, number>}
+     * @private
+     */
+    #animations2;
 
     /**
      * Used for counting the number of spawned orb pairs.
@@ -131,6 +142,41 @@ class Sigma extends Sprite {
                         }
                         break;
                     case SigmaStageState.stage2:
+                        switch (this.states.get(SigmaAttackState)) {
+                            case SigmaAttackState.sickle:
+                                this.moveTo(
+                                    this.middleBound,
+                                    this.initY - 300,
+                                    14,
+                                    () => {
+                                        this.throwSickle();
+
+                                        // Wait for the sickle
+                                        this.states.set(SigmaAttackState, SigmaAttackState.none);
+                                    }
+                                )
+                                break;
+                            case SigmaAttackState.land:
+                                this.moveTo(
+                                    this.x,
+                                    this.initY,
+                                    25,
+                                    () => {
+                                        this.spawnOrbs();
+                                        this.currentAnimation = this.animations.land;
+                                        this.states.set(SigmaAttackState, SigmaAttackState.none);
+
+                                        this.game.setTimeout(() => {
+                                            // Start the laser attack
+                                            this.laser();
+                                        }, 40);
+                                    }
+                                );
+                                break;
+                            case SigmaAttackState.laser:
+                                // TODO
+                                break;
+                        }
                         break;
                 }
 
@@ -217,6 +263,225 @@ class Sigma extends Sprite {
                 3,
             )
         };
+        this.#animations2 = {
+            idle: this.createAnimation(
+                2,
+                118,
+                395,
+                1,
+                1,
+                1,
+                68,
+                98,
+                0,
+                0,
+                1
+            ),
+            prepareLaser: this.createAnimation(
+                2,
+                480,
+                276,
+                2,
+                1,
+                2,
+                54,
+                97,
+                1,
+                0,
+                16,
+                undefined,
+                () => {
+                    this.currentAnimation = this.animations.laser;
+                }
+            ),
+            laser: this.createAnimation(
+                2,
+                605,
+                285,
+                2,
+                1,
+                2,
+                94,
+                88,
+                1,
+                0,
+                3
+            ),
+            prepareJump: this.createAnimation(
+                2,
+                2,
+                300,
+                3,
+                1,
+                3,
+                95,
+                74,
+                1,
+                0,
+                3,
+                undefined,
+                () => {
+                    this.currentAnimation = this.animations.jump;
+                }
+            ),
+            jump: this.createAnimation(
+                2,
+                310,
+                280,
+                1,
+                1,
+                1,
+                70,
+                92,
+                0,
+                0,
+                1
+            ),
+            prepareSickle_0: this.createAnimation(
+                2,
+                84,
+                31,
+                2,
+                1,
+                2,
+                84,
+                98,
+                1,
+                0,
+                4,
+                undefined,
+                () => {
+                    this.states.set(SigmaAttackState, SigmaAttackState.sickle);
+                    this.currentAnimation = this.animations.prepareSickle_1;
+                }
+            ),
+            prepareSickle_1: this.createAnimation(
+                2,
+                270,
+                7,
+                1,
+                1,
+                1,
+                69,
+                120,
+                0,
+                0,
+                4
+            ),
+            prepareSickle_2: this.createAnimation(
+                2,
+                352,
+                35,
+                2,
+                1,
+                2,
+                135,
+                92,
+                1,
+                0,
+                4,
+                undefined,
+                () => {
+                    // Recenter character
+                    this.x -= 30 * this.scale;
+                    this.y -= 20 * this.scale;
+
+                    this.currentAnimation = this.animations.prepareSickle_3;
+                }
+            ),
+            prepareSickle_3: this.createAnimation(
+                2,
+                26,
+                146,
+                2,
+                1,
+                2,
+                146,
+                118,
+                1,
+                0,
+                3,
+                undefined,
+                () => {
+                    // Recenter character
+                    this.x += 20 * this.scale;
+                    this.y += 21 * this.scale;
+
+                    this.game.insertSprite(
+                        new SigmaSickle(
+                            this.level,
+                            this.x,
+                            this.y,
+                            2,
+                            !this.flip,
+                            () => {
+                                this.currentAnimation = this.animations.getSickle;
+                            }
+                        )
+                    );
+                    this.currentAnimation = this.animations.waitForSickle;
+                }
+            ),
+            waitForSickle: this.createAnimation(
+                2,
+                351,
+                155,
+                1,
+                1,
+                1,
+                70,
+                96,
+                0,
+                0,
+            ),
+            getSickle: this.createAnimation(
+                2,
+                644,
+                106,
+                2,
+                1,
+                2,
+                70,
+                119,
+                1,
+                0,
+                4,
+                undefined,
+                () => {
+                    this.states.set(SigmaAttackState, SigmaAttackState.land);
+                }
+            ),
+            land: this.createAnimation(
+                2,
+                795,
+                128,
+                2,
+                1,
+                2,
+                87,
+                98,
+                1,
+                0,
+                4,
+                undefined,
+                () => {
+                    this.currentAnimation = this.animations.idle;
+                }
+            ),
+            laserCollision: this.createAnimation(
+                1,
+                555,
+                226,
+                4,
+                1,
+                4,
+                39,
+                28,
+                1,
+                0,
+                2,
+            )
+        };
 
         this.#bounds = bounds;
         this.#orbAttackCounter = 1;
@@ -233,7 +498,7 @@ class Sigma extends Sprite {
      * @returns {Object<string, number>} animations object.
      */
     get animations() {
-        return this.#animations;
+        return this.states.get(SigmaStageState) === SigmaStageState.stage1 ? this.#animations : this.#animations2;
     }
 
     /**
@@ -274,10 +539,17 @@ class Sigma extends Sprite {
     }
 
     /**
-     * Starts the attacking cycles.
+     * @returns {number} the middle of the two bounds.
+     */
+    get middleBound() {
+        return (this.#bounds[0] + this.#bounds[1]) / 2;
+    }
+
+    /**
+     * Starts the attacking cycle.
      */
     startCycle() {
-        this.x = (this.#bounds[0] + this.#bounds[1]) / 2;
+        this.x = this.middleBound;
         this.y = this.initY - 200;
         this.currentAnimation = this.animations.idle;
         this.states.set(SigmaAttackState, SigmaAttackState.none);
@@ -285,6 +557,13 @@ class Sigma extends Sprite {
         this.game.setTimeout(() => {
             this.startOrbAttack();
         }, 100);
+    }
+
+    /**
+     * Starts the attacking cycle for stage 2.
+     */
+    startCycle2() {
+        // TODO
     }
 
     /**
@@ -309,7 +588,7 @@ class Sigma extends Sprite {
      * Starts the orb attack.
      */
     startOrbAttack() {
-        this.x = (this.#bounds[0] + this.#bounds[1]) / 2;
+        this.x = this.middleBound;
         this.y = this.initY - 200;
         this.currentAnimation = this.animations.discharging;
         this.states.set(SigmaAttackState, SigmaAttackState.energyOrb);
@@ -369,9 +648,36 @@ class Sigma extends Sprite {
      */
     changeStage() {
         this.states.set(SigmaStageState, SigmaStageState.stage2);
-        this.states.set(SigmaStageState, SigmaAttackState.none);
+        this.states.set(SigmaAttackState, SigmaAttackState.none);
         this.flip = false;
-        this.currentAnimation = this.animations.idle; // TODO change
+
+        // This state is for the stage 2 animations (Different from the previous idle)
+        this.currentAnimation = this.animations.idle;
+
+        // TODO change
+    }
+
+    /**
+     * Starts the sickle swipe attack.
+     */
+    sickleSwipe() {
+        this.currentAnimation = this.animations.prepareSickle_0;
+    }
+
+    /**
+     * Starts the laser attack.
+     */
+    laser() {
+        this.flip = this.player.x <= this.x;
+        this.currentAnimation = this.animations.prepareLaser;
+        this.states.set(SigmaAttackState, SigmaAttackState.laser);
+    }
+
+    /**
+     * Throws the sickle.
+     */
+    throwSickle() {
+        this.currentAnimation = this.animations.prepareSickle_2;
     }
 
     /**
