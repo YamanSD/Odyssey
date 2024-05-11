@@ -668,10 +668,28 @@ class Sigma extends Sprite {
         this.states.set(SigmaAttackState, SigmaAttackState.none);
         this.flip = false;
 
-        // This state is for the stage 2 animations (Different from the previous idle)
-        this.currentAnimation = this.animations.idle;
+        for (let i = 1; i <= 6; i++) {
+            this.game.setTimeout(() => {
+                const e = new Explosion(
+                    this.x + (Math.random() - 0.5) * 100,
+                    this.y + (Math.random() - 0.6) * 100,
+                    Math.max(5, Math.random() * 6),
+                );
 
-        // TODO spawn explosions then change to stage 2
+                this.game.insertSprite(e);
+
+                e.start()
+            }, 10 * i);
+        }
+
+        this.game.setTimeout(() => {
+            // This state is for the stage 2 animations (Different from the previous idle)
+            this.currentAnimation = this.animations.idle;
+
+            this.game.setTimeout(() => {
+                this.startCycle2();
+            }, 40);
+        }, 60);
     }
 
     /**
