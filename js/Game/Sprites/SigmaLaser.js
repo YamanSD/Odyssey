@@ -17,6 +17,14 @@ class SigmaLaser extends Sprite {
     #coords1;
 
     /**
+     * True if the laser is red (and thus more deadly).
+     *
+     * @type {boolean}
+     * @private
+     */
+    #red;
+
+    /**
      * @param x {number} starting x-coordinate of the laser.
      * @param y {number} starting y-coordinate of the laser.
      * @param groundY {number} y-coordinate of the ground.
@@ -24,7 +32,8 @@ class SigmaLaser extends Sprite {
      * @param toLeft {boolean} if true the laser shoots to the left.
      * @param onEnd {function()?} callback function when the laser ends.
      * @param speed {number?} speed of rotation of the laser from staring point to end point.
-     * @param duration {number?} duration of the laser after reaching its destination.
+     * @param duration {number?} duration of the laser after reaching its destination. Does not end if not given.
+     * @param red {boolean?} true if the laser is red and thus more deadly.
      * @param hitBoxBrush {{
      *    borderWidth?: number,
      *    borderColor?: string,
@@ -40,7 +49,8 @@ class SigmaLaser extends Sprite {
         toLeft,
         onEnd,
         speed = 2,
-        duration = 1,
+        duration,
+        red,
         hitBoxBrush
     ) {
         if (!toLeft) {
@@ -65,7 +75,7 @@ class SigmaLaser extends Sprite {
 
                 this.moveCurrentAnimation();
 
-                if (this.rotation === maxRotation && !haveTimeout) {
+                if (duration !== undefined && this.rotation === maxRotation && !haveTimeout) {
                     haveTimeout = true;
 
                     this.game.setTimeout(() => {
@@ -78,7 +88,7 @@ class SigmaLaser extends Sprite {
                 }
             },
             {
-                fillColor: "#E888D8EE",
+                fillColor: red ? "#C70E20EE" : "#E888D8EE",
             },
             hitBoxBrush,
             undefined,
@@ -89,6 +99,7 @@ class SigmaLaser extends Sprite {
 
         // Initialize the coordinates
         this.#coords1 = [this.x, groundY];
+        this.#red = red;
 
         // Stores the rotation
         this.rotation = 0;
@@ -96,7 +107,7 @@ class SigmaLaser extends Sprite {
         this.currentAnimation = this.createAnimation(
             0,
             555,
-            226,
+            this.#red ? 255 : 226,
             4,
             1,
             4,
@@ -137,7 +148,7 @@ class SigmaLaser extends Sprite {
      * @returns {number} width of the laser.
      */
     get width() {
-        return 2;
+        return this.#red ? 3 : 2;
     }
 
     /**

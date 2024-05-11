@@ -1119,7 +1119,7 @@ class Sprite {
         angleRef.value += angularSpeed;
 
         // Call onCycle
-        if (angularSpeed > 0 ? angleRef.value : Math.abs(angleRef.value) >= 360 + angleRef.initValue && onCycle) {
+        if (Math.abs(angleRef.value) >= 360 + angleRef.initValue && onCycle) {
             onCycle();
         }
 

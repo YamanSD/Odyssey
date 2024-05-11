@@ -18,7 +18,7 @@ const SigmaStageState = {
 /**
  * State for Sigma's attacks.
  *
- * @type {{land: number, sickle: number, energyOrb: number, none: number, dash: number}}
+ * @type {{restartCycle: number, longLaser: number, laser: number, land: number, sickle: number, energyOrb: number, none: number, dash: number}}
  */
 const SigmaAttackState = {
     none: 0,
@@ -27,6 +27,9 @@ const SigmaAttackState = {
     sickle: 3,
     land: 4,
     laser: 5,
+    longLaser: 6,
+    restartCycleInit: 7,
+    restartCycle: 8
 };
 
 /**
@@ -37,7 +40,7 @@ const SigmaAttackState = {
 const SigmaDashDirection = {
     none: 0,
     left: 1,
-    right: 2,
+    right: 2
 };
 
 /**
@@ -162,19 +165,35 @@ class Sigma extends Sprite {
                                     this.initY,
                                     25,
                                     () => {
-                                        this.spawnOrbs();
+                                        this.flip = this.player.x >= this.x;
+                                        this.spawnOrbs(12);
                                         this.currentAnimation = this.animations.land;
                                         this.states.set(SigmaAttackState, SigmaAttackState.none);
 
                                         this.game.setTimeout(() => {
                                             // Start the laser attack
-                                            this.laser();
+                                            if (this.x === this.#bounds[0] || this.x === this.#bounds[1]) {
+                                                this.longLaser();
+                                            } else {
+                                                this.laser();
+                                            }
                                         }, 40);
                                     }
                                 );
                                 break;
                             case SigmaAttackState.laser:
-                                // TODO
+                                // No use for the state. Might be useful later.
+                                this.states.set(SigmaAttackState, SigmaAttackState.none);
+                                break;
+                            case SigmaAttackState.restartCycle:
+                                this.moveTo(
+                                    this.#bounds[this.player.x >= this.x ? 0 : 1],
+                                    this.initY - 400,
+                                    20,
+                                    () => {
+                                        this.states.set(SigmaAttackState, SigmaAttackState.land);
+                                    }
+                                );
                                 break;
                         }
                         break;
@@ -291,6 +310,7 @@ class Sigma extends Sprite {
                 16,
                 undefined,
                 () => {
+                    this.spawnLasers();
                     this.currentAnimation = this.animations.laser;
                 }
             ),
@@ -321,7 +341,11 @@ class Sigma extends Sprite {
                 3,
                 undefined,
                 () => {
-                    this.currentAnimation = this.animations.jump;
+                    if (this.states.get(SigmaAttackState) === SigmaAttackState.restartCycleInit) {
+                        this.flip = this.player.x < this.x;
+                        this.states.set(SigmaAttackState, SigmaAttackState.restartCycle);
+                        this.currentAnimation = this.animations.jump;
+                    }
                 }
             ),
             jump: this.createAnimation(
@@ -335,7 +359,7 @@ class Sigma extends Sprite {
                 92,
                 0,
                 0,
-                1
+                1,
             ),
             prepareSickle_0: this.createAnimation(
                 2,
@@ -383,7 +407,7 @@ class Sigma extends Sprite {
                 undefined,
                 () => {
                     // Recenter character
-                    this.x -= 30 * this.scale;
+                    this.x -= 30 * this.scale * (this.flip ? -1 : 1);
                     this.y -= 20 * this.scale;
 
                     this.currentAnimation = this.animations.prepareSickle_3;
@@ -404,7 +428,7 @@ class Sigma extends Sprite {
                 undefined,
                 () => {
                     // Recenter character
-                    this.x += 20 * this.scale;
+                    this.x += 20 * this.scale * (this.flip ? 2 : 1);
                     this.y += 21 * this.scale;
 
                     this.game.insertSprite(
@@ -433,6 +457,7 @@ class Sigma extends Sprite {
                 96,
                 0,
                 0,
+                1
             ),
             getSickle: this.createAnimation(
                 2,
@@ -550,7 +575,8 @@ class Sigma extends Sprite {
      * Starts the attacking cycle for stage 2.
      */
     startCycle2() {
-        // TODO
+        this.currentAnimation = this.animations.prepareJump;
+        this.states.set(SigmaAttackState, SigmaAttackState.restartCycleInit);
     }
 
     /**
@@ -607,8 +633,10 @@ class Sigma extends Sprite {
 
     /**
      * Performs the Orbs Attack.
+     *
+     * @param speed {number?} speed of the orbs.
      */
-    spawnOrbs() {
+    spawnOrbs(speed) {
         this.#orbAttackCounter++;
         const x = this.orbX + 40, y = this.orbY + 20;
 
@@ -618,14 +646,16 @@ class Sigma extends Sprite {
                 x,
                 y,
                 2,
-                true
+                true,
+                speed,
             ),
             new SigmaShockProjectile(
                 this.level,
                 x,
                 y,
                 2,
-                false
+                false,
+                speed,
             ),
         )
     }
@@ -641,7 +671,7 @@ class Sigma extends Sprite {
         // This state is for the stage 2 animations (Different from the previous idle)
         this.currentAnimation = this.animations.idle;
 
-        // TODO change
+        // TODO spawn explosions then change to stage 2
     }
 
     /**
@@ -652,12 +682,102 @@ class Sigma extends Sprite {
     }
 
     /**
+     * Spawns the lasers from Sigma's eyes.
+     * When the lasers finish, a cycle starts.
+     */
+    spawnLasers() {
+        const long = this.states.get(SigmaAttackState) === SigmaAttackState.longLaser;
+
+        // Necessary state change
+        if (long) {
+            this.states.set(SigmaAttackState, SigmaAttackState.none);
+        }
+
+        const x = this.flip ? this.x + 120 : this.rx - 24,
+            y = this.y + 40,
+            bottom = this.by - 60,
+            close = (long ? 10 : 0) + 60,
+            far = (long ? 10 : 0) + 70,
+            slow = long ? 2.5 : 2,
+            fast = long ? 3 : 2.5,
+            duration = 120;
+
+        const l0 = new SigmaLaser(
+            x,
+            this.flip ? y : y + 2,
+            bottom,
+            this.flip ? far : close,
+            this.flip,
+            undefined,
+            this.flip ? fast : slow
+        );
+
+        // Head laser
+        const hl = new SigmaLaser(
+            x + (this.flip ? 4 : 7),
+            y - (this.flip ? 11 : 10),
+            bottom,
+            85,
+            this.flip,
+            undefined,
+            1,
+            undefined,
+            true
+        );
+
+        const l1 = new SigmaLaser(
+            x + 10,
+            this.flip ? y : y + 3,
+            bottom,
+            this.flip ? close : far,
+            this.flip,
+            () => {
+                // L1 is automatically removed by duration
+                this.game.removeSprite(l0);
+
+                if (long) {
+                    this.game.removeSprite(hl);
+                }
+
+                this.flip = this.player.x > this.x;
+                this.currentAnimation = this.animations.idle;
+
+                // Start the cycle iff not long
+                if (!long) {
+                    this.startCycle2();
+                } else {
+                    this.sickleSwipe();
+                }
+            },
+            this.flip ? slow : fast,
+            duration
+        );
+
+        // Insert the sprite into the game
+        this.game.insertSprites(l0, l1);
+
+        if (long) {
+            // Insert the head laser
+            this.game.insertSprite(hl);
+        }
+    }
+
+    /**
      * Starts the laser attack.
      */
     laser() {
         this.flip = this.player.x <= this.x;
-        this.currentAnimation = this.animations.prepareLaser;
         this.states.set(SigmaAttackState, SigmaAttackState.laser);
+        this.currentAnimation = this.animations.prepareLaser;
+    }
+
+    /**
+     * Starts the long laser attack.
+     */
+    longLaser() {
+        this.flip = this.player.x <= this.x;
+        this.states.set(SigmaAttackState, SigmaAttackState.longLaser);
+        this.currentAnimation = this.animations.prepareLaser;
     }
 
     /**
