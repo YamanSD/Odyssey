@@ -478,6 +478,13 @@ class Sprite {
     }
 
     /**
+     * @returns {number} rotation in radians.
+     */
+    get radRotation() {
+        return this.#radRotation;
+    }
+
+    /**
      * @returns {number} scaled x-coordinate.
      */
     get scaledX() {
@@ -1241,11 +1248,12 @@ class Sprite {
      * @param x {number} x-coordinate of the top-left corner of the destination.
      * @param y {number} y-coordinate of the top-left corner of the destination.
      * @param ctx {CanvasRenderingContext2D} 2d canvas element context.
+     * @param scale {number?} scale of the animation. Defaults to the sprite scale.
      * @protected
      */
-    drawCurrentAnimation(x, y, ctx) {
+    drawCurrentAnimation(x, y, ctx, scale) {
         if (this.currentAnimation !== undefined) {
-            this.drawAnimation(this.currentAnimation, x, y, ctx, this.scale);
+            this.drawAnimation(this.currentAnimation, x, y, ctx, scale ?? this.scale);
         }
     }
 
@@ -1383,7 +1391,7 @@ class Sprite {
         ctx.translate((flip ? Math.floor(-scale * anim.singleWidth - x) : x), y);
 
         // Rotate the image
-        ctx.rotate(this.#radRotation);
+        ctx.rotate(this.radRotation);
 
         ctx.drawImage(
             SpriteSheet.load(this.sheets[anim.sheetInd], forceLoad, width, height),

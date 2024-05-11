@@ -144,6 +144,9 @@ const bomb = new Bomb(l1, 0, 0, 2);
 const field = new IrisField(0, 0, 0, l1.scale);
 const d = new Sigma(700, 400, [0, 1000], l1.scale);
 const b = new Dejira(1000, 500, l1.scale);
+const l = new SigmaLaser(700, 500, 700, 60, true, 2, undefined, {
+    fillColor: '#00ff0055'
+});
 const b2 = new IrisBeam(700, 400, l1.scale, true);
 const gig = new BomberBat(600, 100, bomb, l1.scale);
 
@@ -161,7 +164,7 @@ const expl = new Explosion(
 // b.currentAnimation = b.animations.attack;
 
 const sp = new ShockProjectile(0, 0, 2, 3);
-l1.sprites.push(field, expl, b2, d, sp, bomb, gig);
+l1.sprites.push(field, expl, b2, d, sp, bomb, gig, l);
 
 
 

@@ -467,19 +467,6 @@ class Sigma extends Sprite {
                 () => {
                     this.currentAnimation = this.animations.idle;
                 }
-            ),
-            laserCollision: this.createAnimation(
-                1,
-                555,
-                226,
-                4,
-                1,
-                4,
-                39,
-                28,
-                1,
-                0,
-                2,
             )
         };
 
