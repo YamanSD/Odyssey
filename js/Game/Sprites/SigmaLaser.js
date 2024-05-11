@@ -22,8 +22,9 @@ class SigmaLaser extends Sprite {
      * @param groundY {number} y-coordinate of the ground.
      * @param maxRotation {number} maxRotation to rotate by.
      * @param toLeft {boolean} if true the laser shoots to the left.
-     * @param speed {number} speed of rotation of the laser from staring point to end point.
      * @param onEnd {function()?} callback function when the laser ends.
+     * @param speed {number?} speed of rotation of the laser from staring point to end point.
+     * @param duration {number?} duration of the laser after reaching its destination.
      * @param hitBoxBrush {{
      *    borderWidth?: number,
      *    borderColor?: string,
@@ -37,13 +38,17 @@ class SigmaLaser extends Sprite {
         groundY,
         maxRotation,
         toLeft,
-        speed,
         onEnd,
+        speed = 2,
+        duration = 1,
         hitBoxBrush
     ) {
         if (!toLeft) {
             maxRotation *= -1;
         }
+
+        // Used to not set multiple timeout timers
+        let haveTimeout=  false;
 
         super(
             {},
@@ -59,6 +64,18 @@ class SigmaLaser extends Sprite {
                 this.x1 = -Math.tan(this.radRotation) * (this.y1 - this.y) + this.x;
 
                 this.moveCurrentAnimation();
+
+                if (this.rotation === maxRotation && !haveTimeout) {
+                    haveTimeout = true;
+
+                    this.game.setTimeout(() => {
+                        this.game.removeSprite(this);
+
+                        if (onEnd) {
+                            onEnd();
+                        }
+                    }, duration);
+                }
             },
             {
                 fillColor: "#E888D8EE",

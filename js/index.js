@@ -144,7 +144,7 @@ const bomb = new Bomb(l1, 0, 0, 2);
 const field = new IrisField(0, 0, 0, l1.scale);
 const d = new Sigma(700, 400, [0, 1000], l1.scale);
 const b = new Dejira(1000, 500, l1.scale);
-const l = new SigmaLaser(700, 500, 700, 60, true, 2, undefined, {
+const l = new SigmaLaser(700, 500, 700, 60, true, undefined, undefined, 200, {
     fillColor: '#00ff0055'
 });
 const b2 = new IrisBeam(700, 400, l1.scale, true);
