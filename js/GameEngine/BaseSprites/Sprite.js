@@ -40,6 +40,8 @@ class Sprite {
      *     currentCol: number,
      *     moveDur: number,
      *     currentCycle: number,
+     *     moves: number,
+     *     linkedTo?: Set<number>,
      *     onEnd?: function(),
      *     onStart?: function(),
      *     hitBox?: (function(number, number): BasicHitBox[]) | undefined
@@ -716,23 +718,16 @@ class Sprite {
      * @param id {number} new ID of the next animation to play.
      */
     set currentAnimation(id) {
-        if (this.currentAnimation === id) {
-            return; // Do not do anything if is current
-        }
+        this.setCurrentAnimation(id, false);
+    }
 
-        // Reset the current animation
-        if (this.currentAnimation !== undefined) {
-            this.resetAnimation(this.currentAnimation);
-        }
-
-        this.#currentAnimation = id;
-        const anim = this.getAnimation(id);
-
-        if (anim.hitBox) {
-            this.hitBox = anim.hitBox(this.x, this.y);
-        } else {
-            this.hitBox = undefined;
-        }
+    /**
+     * Resets the animation if the same.
+     *
+     * @param id {number} new ID of the next animation to play.
+     */
+    set currentAnimationReset(id) {
+        this.setCurrentAnimation(id, true);
     }
 
     /**
@@ -1190,7 +1185,7 @@ class Sprite {
         moveDur = 1,
         onStart,
         onEnd,
-        hitBox
+        hitBox,
     ) {
         // Generate an animation ID
         const id = this.animationId;
@@ -1211,7 +1206,9 @@ class Sprite {
             onStart,
             onEnd,
             hitBox,
+            linkedTo: undefined,
             currentCycle: 1, // Skips the first cycle
+            moves: 0,
             currentRow: 0,
             currentCol: 0
         };
@@ -1283,6 +1280,29 @@ class Sprite {
     }
 
     /**
+     * Links the animations to each other.
+     * When transitioning from one to the other, the move order is preserved.
+     *
+     * @param a0 {number} ID of the first animation.
+     * @param a1 {number} ID of the second animation.
+     */
+    linkAnimations(a0, a1) {
+        const anim0 = this.getAnimation(a0), anim1 = this.getAnimation(a1);
+
+        if (!anim0.linkedTo) {
+            anim0.linkedTo = new Set();
+        }
+
+        if (!anim1.linkedTo) {
+            anim1.linkedTo = new Set();
+        }
+
+        // Link the animations
+        anim0.linkedTo.add(a0);
+        anim1.linkedTo.add(a1);
+    }
+
+    /**
      * Resets the animation to its original state.
      *
      * @param id {number} ID of the animation to reset.
@@ -1292,7 +1312,7 @@ class Sprite {
         // Reference to the animation
         const anim = this.#animations[id];
 
-        anim.currentRow = anim.currentCol = 0;
+        anim.currentRow = anim.currentCol = anim.moves = 0;
     }
 
     /**
@@ -1322,6 +1342,9 @@ class Sprite {
                 anim.currentCol = 0;
                 anim.currentRow++;
             }
+
+            // Increment the number of moves
+            anim.moves++;
 
             // In case of overflow, reset the animation
             if (anim.currentRow >= anim.rows) {
@@ -1357,7 +1380,7 @@ class Sprite {
      * @param height {number?} height to map the image to.
      * @param scale {number?} scale of the final image.
      * @param flip {boolean?} if true the animation is flipped horizontally. Does not override the flip data field.
-     * @protected
+     * @private
      */
     drawAnimationFrame(
         x,
@@ -1407,5 +1430,39 @@ class Sprite {
 
         // Restore the context
         ctx.restore();
+    }
+
+    /**
+     * @param id {number} ID of the next animation to play.
+     * @param reset {boolean} if true, the animation is reset, even if the animation is the same as current.
+     * @private
+     */
+    setCurrentAnimation(id, reset) {
+        if (!reset && this.currentAnimation === id) {
+            return; // Do not do anything if is current
+        }
+
+        // Reset the current animation
+        if (this.currentAnimation !== undefined) {
+            const curAnim = this.getAnimation(this.currentAnimation);
+
+            // If the animations are linked, move the same amount of steps
+            if (curAnim.linkedTo?.has(id)) {
+                for (let i = 0; i < curAnim.moves; i++) {
+                    this.moveAnimation(id);
+                }
+            }
+
+            this.resetAnimation(this.currentAnimation);
+        }
+
+        this.#currentAnimation = id;
+        const anim = this.getAnimation(id);
+
+        if (anim.hitBox) {
+            this.hitBox = anim.hitBox(this.x, this.y);
+        } else {
+            this.hitBox = undefined;
+        }
     }
 }

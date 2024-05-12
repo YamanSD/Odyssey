@@ -125,6 +125,8 @@ const x = new Player(500, 300, l1.scale, (ignored) => {
     //     x.states.set(JumpState, JumpState.idle);
     // }
 
+    // x.currentAnimation = x.animations.idle;
+
     if (x.states.get(ShootingState) !== ShootingState.idle) {
         x.states.set(ShootingState, ShootingState.idle);
 

@@ -98,6 +98,16 @@ class Explosion extends Sprite {
                 undefined,
                 () => {
                     this.currentAnimation = this.animations.middle;
+                },
+                (x, y) => {
+                    return [
+                        {
+                            x,
+                            y,
+                            width: 64,
+                            height: 62
+                        }
+                    ];
                 }
             ),
             middle: this.createAnimation(
@@ -115,6 +125,16 @@ class Explosion extends Sprite {
                 undefined,
                 () => {
                     this.currentAnimation = this.animations.end;
+                },
+                (x, y) => {
+                    return [
+                        {
+                            x,
+                            y,
+                            width: 61,
+                            height: 45
+                        }
+                    ];
                 }
             ),
             end: this.createAnimation(
@@ -136,6 +156,9 @@ class Explosion extends Sprite {
                     } else {
                         this.game.removeSprite(this);
                     }
+                },
+                () => {
+                    return [];
                 }
             )
         };
@@ -161,16 +184,7 @@ class Explosion extends Sprite {
      * @returns {HitBox[]} the smallest rectangle that surrounds the shape.
      */
     get defaultHitBox() {
-        const anim = this.getAnimation(this.currentAnimation);
-
-        return this.convertHitBoxes([
-            {
-                x: this.x,
-                y: this.y,
-                width: anim.singleWidth,
-                height: anim.singleHeight
-            }
-        ]);
+        return [];
     }
 
     /**
