@@ -98,16 +98,6 @@ class Explosion extends Sprite {
                 undefined,
                 () => {
                     this.currentAnimation = this.animations.middle;
-                },
-                (x, y) => {
-                    return [
-                        {
-                            x,
-                            y,
-                            width: 64,
-                            height: 62
-                        }
-                    ];
                 }
             ),
             middle: this.createAnimation(
@@ -125,16 +115,6 @@ class Explosion extends Sprite {
                 undefined,
                 () => {
                     this.currentAnimation = this.animations.end;
-                },
-                (x, y) => {
-                    return [
-                        {
-                            x,
-                            y,
-                            width: 61,
-                            height: 45
-                        }
-                    ];
                 }
             ),
             end: this.createAnimation(
@@ -156,9 +136,6 @@ class Explosion extends Sprite {
                     } else {
                         this.game.removeSprite(this);
                     }
-                },
-                () => {
-                    return [];
                 }
             )
         };
