@@ -42,6 +42,14 @@ class Rocket extends Sprite {
     #shockwaveAnimation;
 
     /**
+     * X-coordinate of the target.
+     *
+     * @type {number}
+     * @private
+     */
+    #target;
+
+    /**
      * @param level {Level} level containing the rocket.
      * @param x {number} x-coordinate of the hero.
      * @param y {number} y-coordinate of the hero.
@@ -69,10 +77,12 @@ class Rocket extends Sprite {
             () => {
                 // Accelerate to the boundaries of the map
                 this.accelerateTo({
-                    x: toLeft ? 0 : this.game.width,
+                    x: toLeft
+                        ? (this.player.x <= this.x ? this.#target : 0)
+                        : (this.player.x > this.x ? this.#target : this.game.width),
                     y: y + 10,
                     speed_0: 1,
-                    acceleration: 0.025,
+                    acceleration: 0.05,
                     max_speed: 16,
                 }, () => {
                     this.explode();
@@ -99,6 +109,9 @@ class Rocket extends Sprite {
 
         // Add the rocket to the level
         this.level = level;
+
+        // Rocket target
+        this.#target = this.player.x;
 
         // Create the animations
         this.#animations = {
