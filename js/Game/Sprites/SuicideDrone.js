@@ -50,7 +50,7 @@ class SuicideDrone extends Sprite {
     ) {
         super(
             {},
-            ['iris_0.gif'],
+            ['iris_0.png'],
             [x, y],
             () => {
                 if (this.states.get(DeploymentState) === DeploymentState.deployed) {

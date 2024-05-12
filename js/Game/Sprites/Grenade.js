@@ -42,7 +42,7 @@ class Grenade extends Sprite {
     ) {
         super(
             {},
-            ['grenade_man_0.gif'],
+            ['grenade_man_0.png'],
             [x, y],
             () => {
                 // Decelerate

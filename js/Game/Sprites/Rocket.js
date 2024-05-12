@@ -72,7 +72,7 @@ class Rocket extends Sprite {
     ) {
         super(
             {},
-            ['gigadeath.gif'],
+            ['gigadeath.png'],
             [x, y],
             () => {
                 // Accelerate to the boundaries of the map

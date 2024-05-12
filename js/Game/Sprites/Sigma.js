@@ -102,7 +102,7 @@ class Sigma extends Sprite {
     ) {
         super(
             {},
-            ['sigma_0.gif', 'sigma_1.png', 'sigma_2.png', 'sigma_3.png'],
+            ['sigma_0.png', 'sigma_1.png', 'sigma_2.png', 'sigma_3.png'],
             [x, y],
             (tick) => {
                 switch (this.states.get(SigmaStageState)) {
@@ -148,7 +148,7 @@ class Sigma extends Sprite {
                         switch (this.states.get(SigmaAttackState)) {
                             case SigmaAttackState.sickle:
                                 this.moveTo(
-                                    this.middleBound,
+                                    (this.flip ? -this.width : 0) + this.middleBound,
                                     this.initY - 300,
                                     14,
                                     () => {
@@ -434,7 +434,7 @@ class Sigma extends Sprite {
                     this.game.insertSprite(
                         new SigmaSickle(
                             this.level,
-                            this.x,
+                            this.flip ? this.x + 50 : this.x,
                             this.y,
                             2,
                             !this.flip,

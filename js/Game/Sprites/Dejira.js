@@ -78,7 +78,7 @@ class Dejira extends Sprite {
     ) {
         super(
             {},
-            ['dejira.gif'],
+            ['dejira.png'],
             [x, y],
             (tick) => {
                 switch (this.states.get(DejiraAttackState)) {

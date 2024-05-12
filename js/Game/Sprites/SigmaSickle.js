@@ -88,7 +88,7 @@ class SigmaSickle extends Sprite {
 
         // Angle reference
         this.#angleRef = {
-            value: -70 + (toLeft ? 0 : -90),
+            value: -70 + (toLeft ? 0 : -50),
         };
 
         this.states.set(SigmaSickleState, SigmaSickleState.down);

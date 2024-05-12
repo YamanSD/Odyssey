@@ -49,7 +49,7 @@ class Bomb extends Sprite {
     ) {
         super(
             {},
-            ['bomberbat.gif'],
+            ['bomberbat.png'],
             [x, y],
             () => {
                 switch (this.states.get(FallState)) {

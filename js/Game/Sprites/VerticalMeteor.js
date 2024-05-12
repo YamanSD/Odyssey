@@ -60,7 +60,7 @@ class VerticalMeteor extends Sprite {
     ) {
         super(
             {},
-            ['meteor_man_0.gif'],
+            ['meteor_man_0.png'],
             [x, y],
             () => {
                 switch (this.states.get(MovementState)) {

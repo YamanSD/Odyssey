@@ -57,7 +57,7 @@ class SigmaShockProjectile extends Sprite {
                     case SigmaShockProjectileState.vertical:
                         this.y -= speed;
 
-                        if (this.by < 0) {
+                        if (this.y < 0) {
                             this.game.removeSprite(this);
                             return;
                         }

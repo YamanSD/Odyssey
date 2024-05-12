@@ -63,7 +63,7 @@ class TrapBlast extends Sprite {
     ) {
         super(
             {},
-            ['trap_blast.gif'],
+            ['trap_blast.png'],
             [x, y],
             (tick) => {
                 if (this.player) {

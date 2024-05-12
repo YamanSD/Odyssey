@@ -8,7 +8,7 @@ class BusterShot extends Sprite {
     constructor(x, y, left, power, onUpdate, hitBoxBrush) {
         super(
             {},
-            ['Buster.gif'],
+            ['Buster.png'],
             [x, y],
             onUpdate,
             undefined,

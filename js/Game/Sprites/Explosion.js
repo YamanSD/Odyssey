@@ -59,7 +59,7 @@ class Explosion extends Sprite {
     ) {
         super(
             {},
-            ['explosion.gif'],
+            ['explosion.png'],
             [x, y],
             () => {
                 if (

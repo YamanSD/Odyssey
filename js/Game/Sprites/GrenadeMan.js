@@ -38,7 +38,7 @@ class GrenadeMan extends Sprite {
     ) {
         super(
             {},
-            ['grenade_man_0.gif'],
+            ['grenade_man_0.png'],
             [x, y],
             () => {
                 if (this.player && this) // TODO finish AI

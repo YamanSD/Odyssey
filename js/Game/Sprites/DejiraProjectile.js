@@ -48,7 +48,7 @@ class DejiraProjectile extends Sprite {
     ) {
         super(
             {},
-            ['dejira.gif'],
+            ['dejira.png'],
             [x, y],
             () => {
                 if (this.#moves > 0) {

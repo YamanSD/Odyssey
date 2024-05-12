@@ -50,7 +50,7 @@ class GigaDeath extends Sprite {
     ) {
         super(
             {},
-            ['gigadeath.gif'],
+            ['gigadeath.png'],
             [x, y],
             () => {
                 const py = this.player.y;

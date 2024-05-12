@@ -39,7 +39,7 @@ class ShockProjectile extends Sprite {
     ) {
         super(
             {},
-            ['trap_blast.gif'],
+            ['trap_blast.png'],
             [x, y],
             () => {
                 this.x += this.#speedVector[0];
