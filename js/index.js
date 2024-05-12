@@ -12,6 +12,7 @@ let moveVector = [0, 0];
  *
  * - Implement player & boss health bar.
  * - Implement last level.
+ * - Fix first level falling rocks.
  * - Adjust hit boxes for enemies, player, & levels.
  * - Adjust attack damage.
  * - Update enemy logic.
