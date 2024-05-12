@@ -891,6 +891,7 @@ class Iris extends Sprite {
     damage(value) {
         // TODO
         this.spawnDrones();
+        super.damage(value);
     }
 
     /**

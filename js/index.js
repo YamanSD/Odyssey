@@ -22,6 +22,8 @@ let moveVector = [0, 0];
  * - Place the enemies in levels.
  * - Implement main menu and pause menu.
  * - Implement zero (if there is time).
+ *
+ * Finally remove all unused features and reduce bloat.
  */
 
 

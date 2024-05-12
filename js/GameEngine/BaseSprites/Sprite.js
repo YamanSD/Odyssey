@@ -257,6 +257,12 @@ class Sprite {
     #prevCoords;
 
     /**
+     * @type {number | undefined} hit points of the sprite.
+     * @private
+     */
+    #hp;
+
+    /**
      * @type {[number, number]} initial coordinates.
      * @protected
      */
@@ -354,6 +360,7 @@ class Sprite {
      *  @param ignorable {boolean?} true if the instance does not have collisions. Default false.
      *  @param isStatic {boolean?} true indicates that the sprite does not update. Default false.
      *  @param scale {number?} scale of the sprite.
+     *  @param hp {number?} hit points of the sprite. Undefined means it has no HP.
      */
     constructor(
         description,
@@ -365,7 +372,8 @@ class Sprite {
         relativePoint,
         ignorable,
         isStatic,
-        scale
+        scale,
+        hp
     ) {
         this.#id = Sprite.#spriteId();
         this.#scale = scale ?? 1;
@@ -379,6 +387,7 @@ class Sprite {
         this.#rotation = this.#radRotation = 0;
         this.#states = new Map();
         this.#level = undefined;
+        this.#hp = hp;
         this.#flip = false; // Do not use the setter, might cause issues
         this.brush = brush;
         this.hitBoxBrush = hitBoxBrush;
@@ -393,6 +402,20 @@ class Sprite {
 
         // Store the sprite reference into the sprites map
         Sprite.sprites[this.id] = this;
+    }
+
+    /**
+     * @returns {number|undefined} HP of the sprite.
+     */
+    get hp() {
+        return this.#hp;
+    }
+
+    /**
+     * @returns {boolean} true if the sprite is alive.
+     */
+    get isAlive() {
+        return this.hp === undefined || this.hp > 0;
     }
 
     /**
@@ -417,7 +440,7 @@ class Sprite {
     }
 
     /**
-     * @returns {number} Initial y-coordiante.
+     * @returns {number} Initial y-coordinate.
      */
     get initY() {
         return this.#initCoords[1];
@@ -869,6 +892,13 @@ class Sprite {
      */
     playAudio(audio) {
         Sound.playAudio(audio);
+    }
+
+    /**
+     * @param value {number} damages the sprite by the given value.
+     */
+    damage(value) {
+        this.#hp -= value;
     }
 
     /**

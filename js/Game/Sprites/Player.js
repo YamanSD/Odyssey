@@ -499,6 +499,7 @@ class Player extends Sprite {
 
     damage(value) {
         console.log(`DAMAGED BY: ${value}`);
+        super.damage(value);
     }
 
     /**
