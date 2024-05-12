@@ -600,20 +600,6 @@ class Game {
     }
 
     /**
-     * Waits for the game to finish loading the assets.
-     */
-    waitForLoading() {
-        while (true) {
-            // Wait for the game to finish loading
-            const temp = Game.loading;
-
-            if (!temp) {
-                break;
-            }
-        }
-    }
-
-    /**
      * {@link DLine} links the Line class.
      * @param r0 {HitBox} first hit box.
      * @param r1 {HitBox} second hit box.
@@ -1419,10 +1405,22 @@ class Game {
     }
 
     /**
+     * Waits for the game to finish loading the assets.
+     */
+    #waitForLoading() {
+        while (Game.loading) {
+            // Wait for the game to finish loading
+        }
+    }
+
+    /**
      * Starts the game for the first time.
      * @private
      */
     #start() {
+        // Load all the resources
+        this.#waitForLoading();
+
         // Initialize the game loop
         this.#requestAnimationFrame();
     }

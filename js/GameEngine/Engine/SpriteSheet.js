@@ -30,7 +30,7 @@ class SpriteSheet {
      * @type {number}
      * @private
      */
-    static #loading;
+    static #loading = 0;
 
     /**
      * @returns {number} number of loading assets.
@@ -45,6 +45,15 @@ class SpriteSheet {
      */
     static source(name) {
         return `${this.#pathContinuation}${name}`;
+    }
+
+    /**
+     * Loads all sprites in the image directory.
+     */
+    static loadAll() {
+        fetch('/').then(r => {
+            console.log(r);
+        });
     }
 
     /**

@@ -388,7 +388,10 @@ class Sprite {
         this.#states = new Map();
         this.#level = undefined;
         this.#hp = hp;
-        this.#flip = false; // Do not use the setter, might cause issues
+
+        // Do not use the setter, causes issues due to abstract nature of width
+        this.#flip = false;
+
         this.brush = brush;
         this.hitBoxBrush = hitBoxBrush;
         this.onUpdate = onUpdate;

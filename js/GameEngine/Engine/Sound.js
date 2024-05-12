@@ -32,7 +32,7 @@ class Sound {
      * @type {number}
      * @private
      */
-    static #loading;
+    static #loading = 0;
 
     /**
      * @returns {number} number of loading audio assets.

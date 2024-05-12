@@ -22,6 +22,7 @@ let moveVector = [0, 0];
  * - Place the enemies in levels.
  * - Implement main menu and pause menu.
  * - Implement zero (if there is time).
+ * - Remove sprite bound frames.
  *
  * Finally remove all unused features and reduce bloat.
  */
@@ -260,12 +261,12 @@ const keyLiftHandler = (e) => {
             break;
     }
 }
-
-g.follow(x);
-g.addEventListener('keydown', keyPressHandler);
-g.addEventListener('keyup', keyLiftHandler);
-
-g.insertSprite(l1);
-// console.log(g.areColliding(x, x));
-l1.load();
-g.resume();
+SpriteSheet.loadAll();
+// g.follow(x);
+// g.addEventListener('keydown', keyPressHandler);
+// g.addEventListener('keyup', keyLiftHandler);
+//
+// g.insertSprite(l1);
+// // console.log(g.areColliding(x, x));
+// l1.load();
+// g.resume();
