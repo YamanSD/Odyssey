@@ -732,8 +732,8 @@ class Sigma extends Sprite {
 
         // Head laser
         const hl = new SigmaLaser(
-            x + (this.flip ? 4 : 7),
-            y - (this.flip ? 11 : 10),
+            x + (this.flip ? 2 : 7),
+            y - (this.flip ? 12 : 10),
             bottom,
             85,
             this.flip,

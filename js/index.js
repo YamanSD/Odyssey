@@ -7,6 +7,22 @@ let speed = 40;
 
 let moveVector = [0, 0];
 
+/**
+ * TODO List
+ *
+ * - Implement player & boss health bar.
+ * - Implement last level.
+ * - Adjust hit boxes for enemies, player, & levels.
+ * - Adjust attack damage.
+ * - Update enemy logic.
+ * - Implement X animations + attacks.
+ * - Add sound effects and OST.
+ * - Implement dialog.
+ * - Place the enemies in levels.
+ * - Implement main menu and pause menu.
+ * - Implement zero (if there is time).
+ */
+
 
 const txt = new Text(
     {
@@ -132,6 +148,12 @@ const x = new Player(500, 300, l1.scale, (ignored) => {
 
         const r = new Rocket(l1, x.x + 100, x.y + 100, false, 2);
         x.game.insertSprite(r);
+    }
+
+    if (moveVector[0] < 0) {
+        x.flip = true;
+    } else if (moveVector[0] > 0) {
+        x.flip = false;
     }
 
     x.rx += moveVector[0];

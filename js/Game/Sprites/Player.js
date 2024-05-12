@@ -40,7 +40,7 @@ class Player extends Sprite {
     ) {
         super(
             {},
-            ['x.png'],
+            ['x_0.png', 'x_1.png'],
             [x, y],
             onUpdate,
             undefined,
@@ -51,7 +51,8 @@ class Player extends Sprite {
             scale
         );
 
-        // TODO Implement a shoot loop
+        // TODO Add rest of animations and update buster
+        // TODO add zero (not vital)
 
         // Create the animations
         this.#animations = {
