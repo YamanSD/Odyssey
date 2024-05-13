@@ -16,7 +16,6 @@ let moveVector = [0, 0];
 /**
  * TODO List
  *
- * - Add a sounds creation system similar to animations in Sprite.
  * - Implement player & boss health bar.
  * - Implement last level.
  * - Fix first level falling rocks.
@@ -30,6 +29,7 @@ let moveVector = [0, 0];
  * - Implement main menu and pause menu.
  * - Implement zero (if there is time).
  * - Remove sprite bound frames.
+ * - Deploy.
  *
  * Finally remove all unused features and reduce bloat.
  */
