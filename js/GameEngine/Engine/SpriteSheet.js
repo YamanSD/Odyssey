@@ -17,6 +17,15 @@ class SpriteSheet {
     static #pathContinuation = './assets/images/';
 
     /**
+     * If true, the user is warned in the console for late loading.
+     * Useful if we forget to add a class to the list of sprites.
+     *
+     * @type {boolean}
+     * @private
+     */
+    static #warn = false;
+
+    /**
      * Maps loaded file names to their respective loaded images.
      *
      * @type {Object<string, HTMLImageElement>}
@@ -48,12 +57,10 @@ class SpriteSheet {
     }
 
     /**
-     * Loads all sprites in the image directory.
+     * Call after loading all resources.
      */
-    static loadAll() {
-        fetch('/').then(r => {
-            console.log(r);
-        });
+    static finishLoading() {
+        this.#warn = true;
     }
 
     /**
@@ -66,6 +73,14 @@ class SpriteSheet {
     static load(name, forceLoad = false, width, height) {
         if (!forceLoad && name in this.#loaded) {
             return this.#loaded[name];
+        }
+
+        // Warn the user
+        if (this.#warn) {
+            console.log(name);
+            console.log(Object.keys(this.#loaded));
+            console.log(name in this.#loaded);
+            console.warn(`Late loading ${name}`);
         }
 
         // Load the image

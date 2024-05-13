@@ -40,7 +40,6 @@ class Player extends Sprite {
     ) {
         super(
             {},
-            ['x_0.png', 'x_1.png'],
             [x, y],
             onUpdate,
             undefined,
@@ -514,5 +513,33 @@ class Player extends Sprite {
      */
     get type() {
         return Player.type;
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    static get sheets() {
+        return ['x_0.png', 'x_1.png'];
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    static get sounds() {
+        return [];
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    get sheets() {
+        return Player.sheets;
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    get sounds() {
+        return Player.sounds;
     }
 }

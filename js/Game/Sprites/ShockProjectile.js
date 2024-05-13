@@ -39,7 +39,6 @@ class ShockProjectile extends Sprite {
     ) {
         super(
             {},
-            ['trap_blast.png'],
             [x, y],
             () => {
                 this.x += this.#speedVector[0];
@@ -133,5 +132,33 @@ class ShockProjectile extends Sprite {
      */
     get type() {
         return ShockProjectile.type;
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    static get sheets() {
+        return ['trap_blast.png'];
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    static get sounds() {
+        return [];
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    get sheets() {
+        return ShockProjectile.sheets;
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    get sounds() {
+        return ShockProjectile.sounds;
     }
 }

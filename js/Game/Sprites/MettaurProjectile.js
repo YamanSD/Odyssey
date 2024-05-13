@@ -42,7 +42,6 @@ class MettaurProjectile extends Sprite {
     ) {
         super(
             {},
-            ['mettaur.png'],
             [x, y],
             () => {
                 if (toLeft) {
@@ -140,5 +139,33 @@ class MettaurProjectile extends Sprite {
      */
     get type() {
         return MettaurProjectile.type;
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    static get sheets() {
+        return ['mettaur.png'];
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    static get sounds() {
+        return [];
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    get sheets() {
+        return MettaurProjectile.sheets;
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    get sounds() {
+        return MettaurProjectile.sounds;
     }
 }

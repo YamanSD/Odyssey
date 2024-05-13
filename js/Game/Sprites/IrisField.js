@@ -58,7 +58,6 @@ class IrisField extends Sprite {
     ) {
         super(
             {},
-            ['iris_0.png'],
             [x, y],
             () => {
                 this.moveCurrentAnimation();
@@ -255,5 +254,33 @@ class IrisField extends Sprite {
      */
     get type() {
         return IrisField.type;
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    static get sheets() {
+        return ['iris_0.png'];
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    static get sounds() {
+        return [];
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    get sheets() {
+        return IrisField.sheets;
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    get sounds() {
+        return IrisField.sounds;
     }
 }

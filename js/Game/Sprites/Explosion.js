@@ -59,7 +59,6 @@ class Explosion extends Sprite {
     ) {
         super(
             {},
-            ['explosion.png'],
             [x, y],
             () => {
                 if (
@@ -206,5 +205,33 @@ class Explosion extends Sprite {
      */
     get type() {
         return Explosion.type;
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    static get sheets() {
+        return ['explosion.png'];
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    static get sounds() {
+        return [];
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    get sheets() {
+        return Explosion.sheets;
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    get sounds() {
+        return Explosion.sounds;
     }
 }

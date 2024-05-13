@@ -56,7 +56,6 @@ class SigmaSickle extends Sprite {
     ) {
         super(
             {},
-            ['sigma_2.png'],
             [x, y],
             () => {
                 this.circleAround(
@@ -151,5 +150,33 @@ class SigmaSickle extends Sprite {
      */
     get type() {
         return SigmaSickle.type;
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    static get sheets() {
+        return ['sigma_2.png'];
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    static get sounds() {
+        return [];
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    get sheets() {
+        return SigmaSickle.sheets;
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    get sounds() {
+        return SigmaSickle.sounds;
     }
 }

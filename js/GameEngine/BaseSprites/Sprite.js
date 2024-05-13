@@ -6,7 +6,7 @@
  */
 
 /**
- * @Abstract
+ * @abstract
  * @class Sprite
  *
  * Should be treated as an abstract class.
@@ -119,12 +119,6 @@ class Sprite {
      * @private
      */
     #radRotation;
-
-    /**
-     * @type {string[]} list of sprite sheet paths.
-     * @private
-     */
-    #sheet;
 
     /**
      * Current animation ID.
@@ -263,6 +257,12 @@ class Sprite {
     #hp;
 
     /**
+     * @type {number | undefined} initial hit points of the sprite.
+     * @private
+     */
+    #initHp
+
+    /**
      * @type {[number, number]} initial coordinates.
      * @protected
      */
@@ -315,6 +315,18 @@ class Sprite {
     }
 
     /**
+     * @abstract
+     * @returns {string[]} list of sprite sheets.
+     */
+    static get sheets() {}
+
+    /**
+     * @abstract
+     * @returns {string[]} list of sound files.
+     */
+    static get sounds() {}
+
+    /**
      * @param id {number} the ID of the sprite.
      * @returns {Sprite | undefined} the sprite associated with the ID if present.
      *          Otherwise, undefined.
@@ -339,7 +351,6 @@ class Sprite {
 
     /**
      * @param description {any} sprite geometric description.
-     * @param sheets {string[]} list of sprite sheets.
      * @param coords {[number, number]} the coordinates of the sprite.
      * @param onUpdate {(function(number): any)?} called on each update cycle,
      *                                                         given all hit-boxes and current tick.
@@ -364,7 +375,6 @@ class Sprite {
      */
     constructor(
         description,
-        sheets,
         coords,
         onUpdate,
         brush,
@@ -378,7 +388,6 @@ class Sprite {
         this.#id = Sprite.#spriteId();
         this.#scale = scale ?? 1;
         this.#desc = description;
-        this.#sheet = sheets;
         this.#coords = coords;
         this.#initCoords = [...coords];
         this.#prevCoords = [...coords];
@@ -387,7 +396,7 @@ class Sprite {
         this.#rotation = this.#radRotation = 0;
         this.#states = new Map();
         this.#level = undefined;
-        this.#hp = hp;
+        this.#hp = this.#initHp = hp;
 
         // Do not use the setter, causes issues due to abstract nature of width
         this.#flip = false;
@@ -573,7 +582,7 @@ class Sprite {
     /**
      * A child class must implement it to provide type hints.
      *
-     * @Abstract
+     * @abstract
      * @returns {any} the sprite description.
      */
     get desc() {
@@ -581,20 +590,25 @@ class Sprite {
     }
 
     /**
+     * @abstract
      * @returns {string[]} list of sprite sheets of the Sprite.
      */
-    get sheets() {
-        return this.#sheet;
-    }
+    get sheets() {}
 
     /**
-     * @Abstract
+     * @abstract
+     * @returns {string[]} list of sound files.
+     */
+    get sounds() {}
+
+    /**
+     * @abstract
      * @returns {string} string representing the type of the sprite.
      */
     static get type() {}
 
     /**
-     * @Abstract
+     * @abstract
      * @returns {string} string representing the type of the sprite.
      */
     get type() {}
@@ -880,12 +894,12 @@ class Sprite {
     }
 
     /**
-     * @param src {string} path to the sound file to play.
+     * @param index {string} index of the sound file in the sounds array.
      * @param reload {boolean} true to reload sound file.
      * @returns {HTMLAudioElement} Audio instance for use.
      */
-    getSound(src, reload = false) {
-        return Sound.load(src, reload);
+    getSound(index, reload = false) {
+        return Sound.load(this.sounds[index], reload);
     }
 
     /**
@@ -893,7 +907,7 @@ class Sprite {
      *
      * @param audio {HTMLAudioElement} to play.
      */
-    playAudio(audio) {
+    playSound(audio) {
         Sound.playAudio(audio);
     }
 
@@ -902,6 +916,15 @@ class Sprite {
      */
     damage(value) {
         this.#hp -= value;
+    }
+
+    /**
+     * HP can exceed the initial HP value.
+     *
+     * @param value {number} heals the sprite by the given value.
+     */
+    heal(value) {
+        this.#hp += value;
     }
 
     /**
@@ -1067,7 +1090,7 @@ class Sprite {
     /**
      * The returned hit box is used in collision detection.
      *
-     * @Abstract
+     * @abstract
      * @returns {HitBox[]} a list of hit boxes that represent the default hit-boxes of the sprite.
      */
     get defaultHitBox() {}
@@ -1075,7 +1098,7 @@ class Sprite {
     /**
      * Draws the sprite in the 2d context.
      *
-     * @Abstract
+     * @abstract
      * @param context {CanvasRenderingContext2D} 2d canvas element context.
      */
     draw(context) {}

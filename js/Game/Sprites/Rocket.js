@@ -72,7 +72,6 @@ class Rocket extends Sprite {
     ) {
         super(
             {},
-            ['gigadeath.png'],
             [x, y],
             () => {
                 // Accelerate to the boundaries of the map
@@ -308,5 +307,33 @@ class Rocket extends Sprite {
      */
     get type() {
         return Rocket.type;
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    static get sheets() {
+        return ['gigadeath.png'];
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    static get sounds() {
+        return [];
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    get sheets() {
+        return Rocket.sheets;
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    get sounds() {
+        return Rocket.sounds;
     }
 }

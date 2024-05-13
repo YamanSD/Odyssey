@@ -57,7 +57,6 @@ class BomberBat extends Sprite {
     ) {
         super(
             {},
-            ['bomberbat.png'],
             [x, y],
             () => {
                 switch (this.states.get(BombState)) {
@@ -255,5 +254,33 @@ class BomberBat extends Sprite {
      */
     get type() {
         return BomberBat.type;
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    static get sheets() {
+        return ['bomberbat.png'];
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    static get sounds() {
+        return [];
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    get sheets() {
+        return BomberBat.sheets;
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    get sounds() {
+        return BomberBat.sounds;
     }
 }

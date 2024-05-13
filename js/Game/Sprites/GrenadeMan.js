@@ -38,7 +38,6 @@ class GrenadeMan extends Sprite {
     ) {
         super(
             {},
-            ['grenade_man_0.png'],
             [x, y],
             () => {
                 if (this.player && this) // TODO finish AI
@@ -198,5 +197,33 @@ class GrenadeMan extends Sprite {
      */
     get type() {
         return GrenadeMan.type;
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    static get sheets() {
+        return ['grenade_man_0.png'];
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    static get sounds() {
+        return [];
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    get sheets() {
+        return GrenadeMan.sheets;
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    get sounds() {
+        return GrenadeMan.sounds;
     }
 }

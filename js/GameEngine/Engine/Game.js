@@ -747,10 +747,6 @@ class Game {
         // Reset the canvas and its data fields
         this.clearScreen();
 
-        // Clear the sounds and sprite sheets cache
-        Sound.clear();
-        SpriteSheet.clear();
-
         // Remove all sprites from the Sprite class
         if (this.#sprites) {
             for (const sprite of this.#sprites) {

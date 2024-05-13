@@ -63,7 +63,6 @@ class TrapBlast extends Sprite {
     ) {
         super(
             {},
-            ['trap_blast.png'],
             [x, y],
             (tick) => {
                 if (this.player) {
@@ -299,5 +298,33 @@ class TrapBlast extends Sprite {
      */
     get type() {
         return TrapBlast.type;
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    static get sheets() {
+        return ['trap_blast.png'];
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    static get sounds() {
+        return [];
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    get sheets() {
+        return TrapBlast.sheets;
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    get sounds() {
+        return TrapBlast.sounds;
     }
 }

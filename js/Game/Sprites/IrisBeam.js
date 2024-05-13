@@ -55,7 +55,6 @@ class IrisBeam extends Sprite {
     ) {
         super(
             {},
-            ['iris_0.png'],
             [x, y],
             () => {
                 if (
@@ -209,5 +208,33 @@ class IrisBeam extends Sprite {
      */
     get type() {
         return IrisBeam.type;
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    static get sheets() {
+        return ['iris_0.png'];
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    static get sounds() {
+        return [];
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    get sheets() {
+        return IrisBeam.sheets;
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    get sounds() {
+        return IrisBeam.sounds;
     }
 }

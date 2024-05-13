@@ -69,7 +69,6 @@ class Bee extends Sprite {
     ) {
         super(
             {},
-            ['bee.png'],
             [x, y],
             () => {
                 this.#speedVector[0] = Math.min(this.#accelerationVector[0] + this.#speedVector[0], 5);
@@ -267,4 +266,32 @@ class Bee extends Sprite {
     get type() {
         return Bee.type;
     }
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    static get sheets() {
+        return ['bee.png'];
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    static get sounds() {
+        return [];
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    get sheets() {
+        return Bee.sheets;
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    get sounds() {
+        return Bee.sounds;
+    }
+
 }

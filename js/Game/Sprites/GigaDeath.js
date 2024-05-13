@@ -50,7 +50,6 @@ class GigaDeath extends Sprite {
     ) {
         super(
             {},
-            ['gigadeath.png'],
             [x, y],
             () => {
                 const py = this.player.y;
@@ -177,5 +176,33 @@ class GigaDeath extends Sprite {
      */
     get type() {
         return GigaDeath.type;
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    static get sheets() {
+        return ['gigadeath.png'];
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    static get sounds() {
+        return [];
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    get sheets() {
+        return GigaDeath.sheets;
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    get sounds() {
+        return GigaDeath.sounds;
     }
 }

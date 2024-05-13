@@ -78,7 +78,6 @@ class Dejira extends Sprite {
     ) {
         super(
             {},
-            ['dejira.png'],
             [x, y],
             (tick) => {
                 switch (this.states.get(DejiraAttackState)) {
@@ -367,5 +366,33 @@ class Dejira extends Sprite {
      */
     get type() {
         return Dejira.type;
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    static get sheets() {
+        return ['dejira.png'];
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    static get sounds() {
+        return [];
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    get sheets() {
+        return Dejira.sheets;
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    get sounds() {
+        return Dejira.sounds;
     }
 }

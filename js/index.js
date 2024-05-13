@@ -1,5 +1,10 @@
 'use strict';
 
+// Start loading the resources
+const g = loadGame();
+
+// Initiate the game
+
 
 const baseSpeed = 10;
 const altSpeed = 40;
@@ -10,6 +15,7 @@ let moveVector = [0, 0];
 /**
  * TODO List
  *
+ * - Add a sounds creation system similar to animations in Sprite.
  * - Implement player & boss health bar.
  * - Implement last level.
  * - Fix first level falling rocks.
@@ -197,7 +203,6 @@ l1.sprites.push(field, expl, b2, d, sp, bomb, gig);
 expl.start();
 
 l1.sprites.push(x);
-const g = new Game("mainCanvas", undefined, undefined, false);
 
 
 /**
@@ -261,12 +266,12 @@ const keyLiftHandler = (e) => {
             break;
     }
 }
-SpriteSheet.loadAll();
-// g.follow(x);
-// g.addEventListener('keydown', keyPressHandler);
-// g.addEventListener('keyup', keyLiftHandler);
-//
-// g.insertSprite(l1);
-// // console.log(g.areColliding(x, x));
-// l1.load();
-// g.resume();
+
+g.follow(x);
+g.addEventListener('keydown', keyPressHandler);
+g.addEventListener('keyup', keyLiftHandler);
+
+g.insertSprite(l1);
+// console.log(g.areColliding(x, x));
+l1.load();
+g.resume();

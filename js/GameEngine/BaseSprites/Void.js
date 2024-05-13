@@ -41,7 +41,6 @@ class Void extends Sprite {
     ) {
         super(
             {},
-            [],
             [0, 0],
             (tick) => {
                 if (tick === currentTick + updateAfter) {
@@ -161,5 +160,33 @@ class Void extends Sprite {
      */
     get height() {
         return 0;
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    static get sheets() {
+        return [];
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    static get sounds() {
+        return [];
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    get sheets() {
+        return Void.sheets;
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    get sounds() {
+        return Void.sounds;
     }
 }

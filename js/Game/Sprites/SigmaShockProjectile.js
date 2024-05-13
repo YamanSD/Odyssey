@@ -46,7 +46,6 @@ class SigmaShockProjectile extends Sprite {
     ) {
         super(
             {},
-            ['sigma_3.png'],
             [x, y],
             () => {
                 switch (this.states.get(SigmaShockProjectileState)) {
@@ -160,5 +159,33 @@ class SigmaShockProjectile extends Sprite {
      */
     get type() {
         return SigmaShockProjectile.type;
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    static get sheets() {
+        return ['sigma_3.png'];
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    static get sounds() {
+        return [];
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    get sheets() {
+        return SigmaShockProjectile.sheets;
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    get sounds() {
+        return SigmaShockProjectile.sounds;
     }
 }

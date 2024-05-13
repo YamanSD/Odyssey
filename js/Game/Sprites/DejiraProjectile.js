@@ -48,7 +48,6 @@ class DejiraProjectile extends Sprite {
     ) {
         super(
             {},
-            ['dejira.png'],
             [x, y],
             () => {
                 if (this.#moves > 0) {
@@ -135,5 +134,33 @@ class DejiraProjectile extends Sprite {
      */
     get type() {
         return DejiraProjectile.type;
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    static get sheets() {
+        return ['dejira.png'];
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    static get sounds() {
+        return [];
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    get sheets() {
+        return DejiraProjectile.sheets;
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    get sounds() {
+        return DejiraProjectile.sounds;
     }
 }

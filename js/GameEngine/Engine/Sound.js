@@ -27,6 +27,15 @@ class Sound {
     static #loaded = {};
 
     /**
+     * If true, the user is warned in the console for late loading.
+     * Useful if we forget to add a class to the list of sprites.
+     *
+     * @type {boolean}
+     * @private
+     */
+    static #warn = false;
+
+    /**
      * Number of currently loading audio assets.
      *
      * @type {number}
@@ -50,6 +59,13 @@ class Sound {
     }
 
     /**
+     * Call after loading all resources.
+     */
+    static finishLoading() {
+        this.#warn = true;
+    }
+
+    /**
      * @param name {string} name of the sound file to load.
      * @param forceLoad {boolean} true to force load the file.
      * @returns {HTMLAudioElement} the loaded audio instance.
@@ -57,6 +73,11 @@ class Sound {
     static load(name, forceLoad = false) {
         if (!forceLoad && name in this.#loaded) {
             return this.#loaded[name];
+        }
+
+        // Warn the user
+        if (this.#warn) {
+            console.warn(`Late loading ${name}`);
         }
 
         // Load the sound

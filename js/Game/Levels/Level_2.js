@@ -19,7 +19,6 @@ class Level_2 extends Level {
             sprites,
             6384,
             496,
-            ['level_2.png'],
             {
                 fillColor: '#FFFF0077'
             }
@@ -288,5 +287,33 @@ class Level_2 extends Level {
             context
         );
     }
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    static get sheets() {
+        return ['level_2.png'];
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    static get sounds() {
+        return [];
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    get sheets() {
+        return Level_2.sheets;
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    get sounds() {
+        return Level_2.sounds;
+    }
+
 }
 

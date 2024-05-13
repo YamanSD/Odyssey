@@ -49,7 +49,6 @@ class Text extends Sprite {
     ) {
         super(
             description,
-            [],
             description.bottomLeftCoords,
             onUpdate,
             brush,
@@ -213,5 +212,33 @@ class Text extends Sprite {
             width: this.width * 1.02,
             height: this.height * 1.25
         }]);
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    static get sheets() {
+        return [];
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    static get sounds() {
+        return [];
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    get sheets() {
+        return Text.sheets;
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    get sounds() {
+        return Text.sounds;
     }
 }

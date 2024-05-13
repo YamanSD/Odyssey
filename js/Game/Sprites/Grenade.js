@@ -42,7 +42,6 @@ class Grenade extends Sprite {
     ) {
         super(
             {},
-            ['grenade_man_0.png'],
             [x, y],
             () => {
                 // Decelerate
@@ -146,5 +145,33 @@ class Grenade extends Sprite {
      */
     get type() {
         return Grenade.type;
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    static get sheets() {
+        return ['grenade_man_0.png'];
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    static get sounds() {
+        return [];
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    get sheets() {
+        return Grenade.sheets;
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    get sounds() {
+        return Grenade.sounds;
     }
 }

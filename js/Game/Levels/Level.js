@@ -7,7 +7,7 @@
 
 /**
  * @class Level
- * @Abstract
+ * @abstract
  *
  * Class for level creation.
  */
@@ -27,7 +27,6 @@ class Level extends Sprite {
      * @param sprites {Sprite[]} sprite array.
      * @param width {number} width of the map.
      * @param height {number} height of the map.
-     * @param sheets {string[]} list of sprite sheets. First one must be the background.
      * @param hitBoxBrush {{
      *    borderWidth?: number,
      *    borderColor?: string,
@@ -40,7 +39,6 @@ class Level extends Sprite {
         sprites,
         width,
         height,
-        sheets,
         hitBoxBrush,
         scale,
     ) {
@@ -49,7 +47,6 @@ class Level extends Sprite {
                 height,
                 width,
             },
-            sheets,
             [0, 0],
             undefined,
             undefined,

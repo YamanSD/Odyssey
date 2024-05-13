@@ -60,7 +60,6 @@ class VerticalMeteor extends Sprite {
     ) {
         super(
             {},
-            ['meteor_man_0.png'],
             [x, y],
             () => {
                 switch (this.states.get(MovementState)) {
@@ -163,5 +162,33 @@ class VerticalMeteor extends Sprite {
      */
     get type() {
         return VerticalMeteor.type;
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    static get sheets() {
+        return ['meteor.png'];
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    static get sounds() {
+        return [];
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    get sheets() {
+        return VerticalMeteor.sheets;
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    get sounds() {
+        return VerticalMeteor.sounds;
     }
 }

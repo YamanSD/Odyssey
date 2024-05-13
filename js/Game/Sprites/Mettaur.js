@@ -67,7 +67,6 @@ class Mettaur extends Sprite {
     ) {
         super(
             {},
-            ['mettaur.png'],
             [x, y],
             () => {
                 // Mettaur must run
@@ -364,5 +363,33 @@ class Mettaur extends Sprite {
      */
     get type() {
         return Mettaur.type;
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    static get sheets() {
+        return ['mettaur.png'];
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    static get sounds() {
+        return [];
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    get sheets() {
+        return Mettaur.sheets;
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    get sounds() {
+        return Mettaur.sounds;
     }
 }

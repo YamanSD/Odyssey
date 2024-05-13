@@ -8,7 +8,6 @@ class BusterShot extends Sprite {
     constructor(x, y, left, power, onUpdate, hitBoxBrush) {
         super(
             {},
-            ['Buster.png'],
             [x, y],
             onUpdate,
             undefined,
@@ -61,5 +60,33 @@ class BusterShot extends Sprite {
 
     get width() {
         return this.getAnimation(this.currentAnimation).singleWidth;
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    static get sheets() {
+        return ['x_0.png']; // Might be broken, not finished
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    static get sounds() {
+        return [];
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    get sheets() {
+        return BusterShot.sheets;
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    get sounds() {
+        return BusterShot.sounds;
     }
 }

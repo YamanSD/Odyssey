@@ -119,7 +119,6 @@ class Segment extends Sprite {
     ) {
         super(
             description,
-            [],
             description.p0,
             onUpdate,
             {
@@ -334,4 +333,33 @@ class Segment extends Sprite {
     get height() {
         return 0;
     }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    static get sheets() {
+        return [];
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    static get sounds() {
+        return [];
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    get sheets() {
+        return Segment.sheets;
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    get sounds() {
+        return Segment.sounds;
+    }
+
 }

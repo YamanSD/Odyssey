@@ -37,7 +37,6 @@ class Spiky extends Sprite {
     ) {
         super(
             {},
-            ['spiky.png'],
             [x, y],
             () => {
                 this.x -= 6;
@@ -138,5 +137,33 @@ class Spiky extends Sprite {
      */
     get type() {
         return Spiky.type;
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    static get sheets() {
+        return ['spiky.png'];
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    static get sounds() {
+        return [];
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    get sheets() {
+        return Spiky.sheets;
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    get sounds() {
+        return Spiky.sounds;
     }
 }

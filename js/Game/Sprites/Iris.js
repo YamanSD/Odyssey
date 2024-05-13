@@ -135,7 +135,6 @@ class Iris extends Sprite {
     ) {
         super(
             {},
-            ['iris_0.png'],
             [x, y],
             () => {
                 if (this.states.get(CrystalAttackState) === CrystalAttackState.follow) {
@@ -906,5 +905,33 @@ class Iris extends Sprite {
      */
     get type() {
         return Iris.type;
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    static get sheets() {
+        return ['iris_0.png'];
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    static get sounds() {
+        return [];
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    get sheets() {
+        return Iris.sheets;
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    get sounds() {
+        return Iris.sounds;
     }
 }

@@ -58,7 +58,6 @@ class IrisCrystal extends Sprite {
     ) {
         super(
             {},
-            ['iris_0.png'],
             [x, y],
             () => {
                 if (this.#moveToInstructions) {
@@ -319,5 +318,33 @@ class IrisCrystal extends Sprite {
      */
     get type() {
         return IrisCrystal.type;
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    static get sheets() {
+        return ['iris_0.png'];
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    static get sounds() {
+        return [];
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    get sheets() {
+        return IrisCrystal.sheets;
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    get sounds() {
+        return IrisCrystal.sounds;
     }
 }

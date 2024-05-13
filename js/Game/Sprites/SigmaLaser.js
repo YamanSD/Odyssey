@@ -62,7 +62,6 @@ class SigmaLaser extends Sprite {
 
         super(
             {},
-            ['sigma_1.png'],
             [x, y],
             () => {
                 if (toLeft) {
@@ -241,5 +240,33 @@ class SigmaLaser extends Sprite {
      */
     get type() {
         return SigmaLaser.type;
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    static get sheets() {
+        return ['sigma_1.png'];
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    static get sounds() {
+        return [];
+    }
+
+    /**
+     * @returns {string[]} sprite sheets.
+     */
+    get sheets() {
+        return SigmaLaser.sheets;
+    }
+
+    /**
+     * @returns {string[]} sound files.
+     */
+    get sounds() {
+        return SigmaLaser.sounds;
     }
 }
