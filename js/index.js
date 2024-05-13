@@ -16,8 +16,8 @@ let moveVector = [0, 0];
 /**
  * TODO List
  *
- * - Implement player & boss health bar.
  * - Implement last level.
+ * - Implement damage cool down.
  * - Fix first level falling rocks.
  * - Adjust hit boxes for enemies, player, & levels.
  * - Adjust attack damage.
@@ -187,7 +187,7 @@ const d = new Sigma(700, 400, [0, 1000], l1.scale);
 const b = new Dejira(1000, 500, l1.scale);
 // const l = new SigmaLaser(700, 500, 700, 60, true, undefined, undefined);
 const b2 = new IrisBeam(700, 400, l1.scale, true);
-const gig = new BomberBat(600, 100, bomb, l1.scale);
+const gig = new GrenadeMan(600, 100, l1.scale);
 
 // const gman = new GrenadeMan(600, 400, l1.scale);
 const expl = new Explosion(

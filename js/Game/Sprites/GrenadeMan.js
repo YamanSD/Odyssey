@@ -40,7 +40,11 @@ class GrenadeMan extends Sprite {
             {},
             [x, y],
             () => {
-                if (this.player && this) // TODO finish AI
+                this.flip = this.x < this.player.x;
+
+                if (this.manhattanDistance(this.player) < 400) {
+                    this.throwGrenade();
+                }
 
                 this.moveCurrentAnimation();
             },
@@ -107,6 +111,9 @@ class GrenadeMan extends Sprite {
                 8,
                 undefined,
                 () => {
+                    // Recenter
+                    this.y += 40;
+
                     this.currentAnimation = this.animations.throwGrenadeEnd;
                 }
             ),
@@ -134,6 +141,9 @@ class GrenadeMan extends Sprite {
                     );
                 },
                 () => {
+                    // Recenter
+                    this.y -= 40;
+
                     this.currentAnimation = this.animations.idle;
                 }
             )
@@ -182,7 +192,9 @@ class GrenadeMan extends Sprite {
     }
 
     throwGrenade() {
-        this.currentAnimation = this.animations.throwGrenadeStart;
+        if (this.currentAnimation !== this.animations.throwGrenadeEnd) {
+            this.currentAnimation = this.animations.throwGrenadeStart;
+        }
     }
 
     /**
