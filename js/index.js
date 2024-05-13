@@ -18,7 +18,6 @@ let moveVector = [0, 0];
  *
  * - Implement last level.
  * - Implement damage cool down.
- * - Fix first level falling rocks.
  * - Adjust hit boxes for enemies, player, & levels.
  * - Adjust attack damage.
  * - Implement X animations + attacks.
