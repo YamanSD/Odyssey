@@ -13,6 +13,10 @@ function loadGame() {
      * client-side loading method. Alternatives require a server.
      */
 
+    // Initialize the game here to start the loading screen,
+    // before loading the rest of the resources.
+    const game = new Game("mainCanvas");
+
     /**
      * List of all classes to load the resources for.
      *
@@ -51,7 +55,6 @@ function loadGame() {
         SuicideDrone,
         TrapBlast,
         VerticalMeteor,
-        LoadingScreen
     ];
 
     // Load all the resources for each class
@@ -69,5 +72,5 @@ function loadGame() {
     SpriteSheet.finishLoading();
     Sound.finishLoading();
 
-    return new Game("mainCanvas");
+    return game;
 }
