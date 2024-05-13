@@ -173,6 +173,12 @@ const x = new Player(500, 300, l1.scale, (ignored) => {
     x.moveCurrentAnimation();
 });
 
+const hpB = new HealthBar(
+    HealthBarType.x,
+    x,
+    l1.scale
+);
+
 Sprite.player = x;
 
 const bomb = new Bomb(l1, 0, 0, 2);
@@ -197,7 +203,7 @@ const expl = new Explosion(
 // b.currentAnimation = b.animations.attack;
 
 const sp = new ShockProjectile(0, 0, 2, 3);
-l1.sprites.push(field, expl, b2, d, sp, bomb, gig);
+l1.sprites.push(field, expl, b2, d, sp, bomb, hpB, gig);
 
 
 
@@ -227,7 +233,7 @@ const keyPressHandler = (e) => {
             moveVector[0] = speed;
             break;
         case 'x':
-            d.longLaser();
+            x.damage(10);
             // d.spawnDrones();
             // d.laserGrid();
             // b.start();

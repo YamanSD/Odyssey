@@ -55,6 +55,7 @@ function loadGame() {
         SuicideDrone,
         TrapBlast,
         VerticalMeteor,
+        HealthBar
     ];
 
     // Load all the resources for each class

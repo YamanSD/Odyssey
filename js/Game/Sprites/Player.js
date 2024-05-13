@@ -39,7 +39,9 @@ class Player extends Sprite {
         hitBoxBrush
     ) {
         super(
-            {},
+            {
+                lives: 2,
+            },
             [x, y],
             onUpdate,
             undefined,
@@ -47,7 +49,8 @@ class Player extends Sprite {
             undefined,
             undefined,
             undefined,
-            scale
+            scale,
+            100
         );
 
         // TODO Add rest of animations and update buster
@@ -448,11 +451,25 @@ class Player extends Sprite {
 
     /**
      * @returns {{
-     *   topLeftCoords: [number, number]
+     *   lives: number
      * }} description of Player.
      */
     get desc() {
         return super.desc;
+    }
+
+    /**
+     * @returns {number} number of available lives.
+     */
+    get lives() {
+       return this.desc.lives;
+    }
+
+    /**
+     * @param v {number} new number of lives.
+     */
+    set lives(v) {
+        this.desc.lives = v;
     }
 
     /**

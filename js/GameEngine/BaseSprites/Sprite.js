@@ -459,6 +459,13 @@ class Sprite {
     }
 
     /**
+     * @returns {number|undefined} the initial HP.
+     */
+    get initHp() {
+        return this.#initHp;
+    }
+
+    /**
      * @returns {boolean} true if the sprite is flipped vertically.
      */
     get flip() {
@@ -916,6 +923,7 @@ class Sprite {
      */
     damage(value) {
         this.#hp -= value;
+        this.#hp = Math.max(0, this.#hp);
     }
 
     /**
