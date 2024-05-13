@@ -77,9 +77,6 @@ class SpriteSheet {
 
         // Warn the user
         if (this.#warn) {
-            console.log(name);
-            console.log(Object.keys(this.#loaded));
-            console.log(name in this.#loaded);
             console.warn(`Late loading ${name}`);
         }
 
