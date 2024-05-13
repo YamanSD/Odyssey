@@ -21,7 +21,6 @@ let moveVector = [0, 0];
  * - Fix first level falling rocks.
  * - Adjust hit boxes for enemies, player, & levels.
  * - Adjust attack damage.
- * - Update enemy logic.
  * - Implement X animations + attacks.
  * - Add sound effects and OST.
  * - Implement dialog.

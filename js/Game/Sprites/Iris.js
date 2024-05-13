@@ -803,7 +803,6 @@ class Iris extends Sprite {
         const crystal = this.#crystal;
 
         if (this.states.get(IrisActState) === IrisActState.ready) {
-            // TODO finish this
             this.currentAnimation = this.animations.idleGlow;
 
             // Stop attacks
@@ -888,7 +887,6 @@ class Iris extends Sprite {
      * @param value {number} value of the damage.
      */
     damage(value) {
-        // TODO
         this.spawnDrones();
         super.damage(value);
     }
