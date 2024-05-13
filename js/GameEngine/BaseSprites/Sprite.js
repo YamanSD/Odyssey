@@ -129,12 +129,12 @@ class Sprite {
     #animationId;
 
     /**
-     * True indicates that the sprite must not be collided with.
+     * True if the instance does not pause with the game pause. Default false.
      *
      * @type {boolean}
      * @private
      */
-    #ignorable;
+    #nonPausable;
 
     /**
      * ID of the current dominant animation to draw.
@@ -368,7 +368,7 @@ class Sprite {
      *  }?} object hit-box brush properties.
      *  @param relativePoint {RelativePoint?} relative point of the sprite.
      *  default is TopLeft.
-     *  @param ignorable {boolean?} true if the instance does not have collisions. Default false.
+     *  @param nonPausable {boolean?} true if the instance does not pause with the game pause. Default false.
      *  @param isStatic {boolean?} true indicates that the sprite does not update. Default false.
      *  @param scale {number?} scale of the sprite.
      *  @param hp {number?} hit points of the sprite. Undefined means it has no HP.
@@ -380,7 +380,7 @@ class Sprite {
         brush,
         hitBoxBrush,
         relativePoint,
-        ignorable,
+        nonPausable,
         isStatic,
         scale,
         hp
@@ -405,7 +405,7 @@ class Sprite {
         this.hitBoxBrush = hitBoxBrush;
         this.onUpdate = onUpdate;
         this.relativePoint = relativePoint;
-        this.ignorable = ignorable ?? false;
+        this.nonPausable = nonPausable ?? false;
         this.static = isStatic ?? false;
 
         // Dummy value
@@ -669,8 +669,8 @@ class Sprite {
      *
      * @returns {boolean} true if the sprite does not have collision.
      */
-    get ignorable() {
-        return this.#ignorable;
+    get nonPausable() {
+        return this.#nonPausable;
     }
 
     /**
@@ -773,8 +773,8 @@ class Sprite {
     /**
      * @param value {boolean} true indicates that the sprite does not collide.
      */
-    set ignorable(value) {
-        this.#ignorable = value;
+    set nonPausable(value) {
+        this.#nonPausable = value;
     }
 
     /**

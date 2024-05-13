@@ -3,6 +3,7 @@
 // Start loading the resources
 const g = loadGame();
 
+
 // Initiate the game
 
 
@@ -267,7 +268,7 @@ const keyLiftHandler = (e) => {
     }
 }
 
-g.follow(x);
+// g.follow(x);
 g.addEventListener('keydown', keyPressHandler);
 g.addEventListener('keyup', keyLiftHandler);
 

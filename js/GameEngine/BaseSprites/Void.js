@@ -33,11 +33,13 @@ class Void extends Sprite {
      * @param updateAfter {number} number of ticks to wait before updating.
      * @param currentTick {number} current game tick.
      * @param onUpdate {function()} update function to trigger after the ticks pass.
+     * @param nonPausable {boolean} if true, the sprite updates regardless of the game being paused.
      */
     constructor(
         updateAfter,
         currentTick,
         onUpdate,
+        nonPausable
     ) {
         super(
             {},
@@ -52,7 +54,8 @@ class Void extends Sprite {
             },
             undefined,
             undefined,
-            undefined
+            undefined,
+            nonPausable
         );
 
         // Set canceled to false

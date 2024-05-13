@@ -8,6 +8,8 @@
  * @returns {Game} new game instance.
  */
 function loadGame() {
+    const game = new Game("mainCanvas");
+
     /**
      * @note that this method of loading is the most viable
      * client-side loading method. Alternatives require a server.
@@ -68,5 +70,8 @@ function loadGame() {
     SpriteSheet.finishLoading();
     Sound.finishLoading();
 
-    return new Game("mainCanvas");
+    // Wait for loading
+    // game.waitForLoading();
+
+    return game;
 }

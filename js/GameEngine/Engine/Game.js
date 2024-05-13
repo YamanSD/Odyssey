@@ -12,6 +12,12 @@
  */
 class Game {
     /**
+     * @type {boolean} if true, the loading is locked even if resources are ready.
+     * @private
+     */
+    static #loadingLock = false;
+
+    /**
      * @type {number} ID counter for the event handlers.
      * @protected
      */
@@ -142,6 +148,14 @@ class Game {
     #state;
 
     /**
+     * Loading screen of the game.
+     *
+     * @type {LoadingScreen}
+     * @protected
+     */
+    #loadingScreen;
+
+    /**
      * @type {function(number)} called before ticking the objects,
      *                          given current tick.
      *                          Called even if the game is paused.
@@ -157,10 +171,38 @@ class Game {
     #postTick;
 
     /**
-     * @returns {boolean} true if assets are loading.
+     * @returns {boolean} true if the game is locked at loading.
+     */
+    static get loadingLock() {
+        return this.#loadingLock;
+    }
+
+    /**
+     * @returns {boolean} true if the game is loading.
      */
     static get loading() {
-        return Sound.loading !== 0 && SpriteSheet.loading !== 0;
+        return this.loadingAssets || this.loadingLock;
+    }
+
+    /**
+     * @returns {boolean} true if assets are loading.
+     */
+    static get loadingAssets() {
+        return !(Sound.loading === 0 && SpriteSheet.loading === 0)
+    }
+
+    /**
+     * Activates the loading lock.
+     */
+    static addLock() {
+        this.#loadingLock = true;
+    }
+
+    /**
+     * Deactivates the loading lock.
+     */
+    static removeLock() {
+        this.#loadingLock = false;
     }
 
     /**
@@ -277,6 +319,9 @@ class Game {
 
         // Set quadrant brush
         this.quadrantBrush = quadrantBrush;
+
+        // Create the loading screen
+        this.#loadingScreen = new LoadingScreen();
 
         // Start the game
         this.#start();
@@ -855,14 +900,16 @@ class Game {
     /**
      * @param handler {function()} called after the given ticks pass.
      * @param ticks {number} number of ticks to wait.
+     * @param nonPausable {boolean?} true the timeout progresses even if the game is paused. Default true.
      * @returns {Timeout} a Timeout instance to control the event.
      */
-    setTimeout(handler, ticks) {
+    setTimeout(handler, ticks, nonPausable) {
         // Create the void sprite
         const v = new Void(
             ticks,
             this.currentTick,
-            handler
+            handler,
+            nonPausable ?? false
         );
 
         // Add to the sprites
@@ -924,29 +971,27 @@ class Game {
      * @protected
      */
     update() {
-        // Clear the screen before ticking the game
-        this.clearScreen();
-
         // Call the pre-tick
         this.preTick(this.currentTick);
 
-        // Check if the game is running
-        if (!this.#isRunning) {
+        if (Game.loading) {
+            this.updateSprite(this.#loadingScreen, this.currentTick);
             return;
         }
 
-        // Current tick
-        const curTick = this.#progressTick;
+        // New current tick
+        const curTick = this.#isRunning ? this.#progressTick : this.currentTick;
 
         // Must tick the followed sprite first
-        if (this.followed) {
+        if (this.#isRunning && this.followed) {
             this.updateSprite(this.followed, curTick);
         }
 
         // Trigger the onTick for all sprites
         for (const sprite of this.#sprites) {
             if (
-                sprite !== this.followed
+                (this.#isRunning || sprite.nonPausable)
+                && sprite !== this.followed
                 && !(sprite.static || this.#removedSprites.has(sprite))
             ) {
                 this.updateSprite(sprite, curTick);
@@ -956,8 +1001,10 @@ class Game {
         // Call the post-tick
         this.postTick(this.currentTick);
 
-        // Clear the removed sprites
-        this.#removedSprites.clear();
+        if (this.#isRunning) {
+            // Clear the removed sprites
+            this.#removedSprites.clear();
+        }
     }
 
     /**
@@ -965,6 +1012,14 @@ class Game {
      * @protected
      */
     draw() {
+        // Clear the screen before drawing
+        this.clearScreen();
+
+        if (Game.loading) {
+            this.drawSprite(this.#loadingScreen);
+            return;
+        }
+
         // Iterate over the Sprite objects in reverse and redraw
         for (const sprite of this.sprites) {
             // Do not update a removed sprite
@@ -1401,21 +1456,12 @@ class Game {
     }
 
     /**
-     * Waits for the game to finish loading the assets.
-     */
-    #waitForLoading() {
-        while (Game.loading) {
-            // Wait for the game to finish loading
-        }
-    }
-
-    /**
      * Starts the game for the first time.
      * @private
      */
     #start() {
-        // Load all the resources
-        this.#waitForLoading();
+        // Insert the loading screen
+        this.insertSprite(this.#loadingScreen);
 
         // Initialize the game loop
         this.#requestAnimationFrame();
