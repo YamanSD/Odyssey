@@ -188,7 +188,7 @@ const x = new Player(100 * l1.scale, 100 * l1.scale, l1.scale, (ignored) => {
 });
 
 const hpB = new HealthBar(
-    HealthBarType.zero,
+    HealthBarType.x,
     x,
     l1.scale
 );

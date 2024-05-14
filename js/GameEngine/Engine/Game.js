@@ -231,6 +231,13 @@ class Game {
             element.style.padding = element.style.margin = '0';
             element.style.verticalAlign = 'middle';
             element.style.overflowY = element.style.overflowX = 'hidden';
+
+            // Specify background color for smaller display.
+            if (name === "body") {
+                element.style.backgroundColor = '#000';
+            } else {
+                element.style.backgroundColor = '#FFF';
+            }
         }
     }
 
