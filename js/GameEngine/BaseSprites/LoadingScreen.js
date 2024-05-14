@@ -13,18 +13,21 @@
 class LoadingScreen extends Sprite {
     /**
      * Constructor for the loading screen.
+     *
+     * @param isFalseLoading {boolean?} if true, the loading screen does not lock the game.
      */
-    constructor() {
+    constructor(isFalseLoading) {
         // Add the loading lock
-        Game.addLock();
+        if (!isFalseLoading) {
+            Game.addLock();
+        }
 
         super(
             {},
             [0, 0],
             () => {
-                if (!Game.loadingAssets) {
+                if (!isFalseLoading && !Game.loadingAssets) {
                     Game.removeLock();
-                    this.game.follow(this.player);
                     this.game.removeSprite(this);
                 }
 
