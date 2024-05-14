@@ -17,8 +17,8 @@ class Level_3 extends Level {
     constructor(sprites) {
         super(
             sprites,
-            6384,
-            496,
+            320,
+            240,
             {
                 fillColor: '#FFFF0077'
             },
@@ -26,9 +26,19 @@ class Level_3 extends Level {
             true
         );
 
-
-
-        const height = 200;
+        this.currentAnimation = this.createAnimation(
+            0,
+            0,
+            0,
+            3,
+            1,
+            0,
+            320,
+            240,
+            0,
+            0,
+            1
+        );
 
         this.hitBox = this.convertHitBoxes([
 

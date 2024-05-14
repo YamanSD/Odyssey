@@ -28,6 +28,7 @@ function loadGame() {
         Void,
         Level_1,
         Level_2,
+        Level_3,
         Bee,
         Bomb,
         BomberBat,

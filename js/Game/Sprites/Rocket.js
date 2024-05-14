@@ -74,9 +74,7 @@ class Rocket extends Sprite {
             () => {
                 // Accelerate to the boundaries of the map
                 this.accelerateTo({
-                    x: toLeft
-                        ? (this.player.x <= this.x ? this.#target : 0)
-                        : (this.player.x > this.x ? this.#target : this.game.width),
+                    x: toLeft ? 0 : this.game.width,
                     y: y + 10,
                     speed_0: 1,
                     acceleration: 0.05,

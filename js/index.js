@@ -179,35 +179,6 @@ const hpB = new HealthBar(
 );
 
 Sprite.player = x;
-
-const bomb = new Bomb(0, 0, 2);
-const field = new IrisField(0, 0, 0, l1.scale);
-const d = new Sigma(700, 400, [0, 1000], l1.scale);
-const b = new Dejira(1000, 500, l1.scale);
-// const l = new SigmaLaser(700, 500, 700, 60, true, undefined, undefined);
-const b2 = new IrisBeam(700, 400, l1.scale, true);
-const gig = new GrenadeMan(600, 100, l1.scale);
-
-// const gman = new GrenadeMan(600, 400, l1.scale);
-const expl = new Explosion(
-    500,
-    100,
-    2,
-    false,
-    true,
-    (e) => {
-        e.start()
-    }
-);
-// b.currentAnimation = b.animations.attack;
-
-const sp = new ShockProjectile(0, 0, 2, 3);
-l1.insertSprites(field, expl, b2, d, sp, bomb, hpB, gig);
-
-
-
-expl.start();
-
 l1.insertSprite(x);
 
 
@@ -231,23 +202,11 @@ const keyPressHandler = (e) => {
         case 'd':
             moveVector[0] = speed;
             break;
-        case 'x':
+        case 'q':
             x.damage(10);
-            // d.spawnDrones();
-            // d.laserGrid();
-            // b.start();
-            // b2.start();
-            // gman.throwGrenade();
-            // x.states.set(ShootingState, ShootingState.shoot);
             break;
         case 'e':
-            // d.laserGrid();
-            // gig.releaseBomb()xxx;
-            d.laser();
-            // d.form();
-            break;
-        case 'q':
-            d.changeStage();
+            x.heal(10);
             break;
         case 'h':
             g.showHitBoxes = !g.showHitBoxes;
@@ -273,7 +232,8 @@ const keyLiftHandler = (e) => {
     }
 }
 
-// g.follow(x);
+l1.insertSprite(hpB);
+
 g.addEventListener('keydown', keyPressHandler);
 g.addEventListener('keyup', keyLiftHandler);
 
