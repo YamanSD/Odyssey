@@ -114,6 +114,14 @@ class GrenadeMan extends Sprite {
                     // Recenter
                     this.y += 40;
 
+                    this.level.insertSprite(
+                        new Grenade(
+                            this.x,
+                            this.y,
+                            !this.flip,
+                            this.scale
+                        )
+                    );
                     this.currentAnimation = this.animations.throwGrenadeEnd;
                 }
             ),
@@ -129,17 +137,7 @@ class GrenadeMan extends Sprite {
                 1,
                 0,
                 8,
-                () => {
-                    this.game.insertSprite(
-                        new Grenade(
-                            this.level,
-                            this.x,
-                            this.y,
-                            !this.flip,
-                            this.scale
-                        )
-                    );
-                },
+                undefined,
                 () => {
                     // Recenter
                     this.y -= 40;

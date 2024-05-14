@@ -265,9 +265,8 @@ class Mettaur extends Sprite {
                     }
                 },
                 () => {
-                    this.game.insertSprite(
+                    this.level.insertSprite(
                         new MettaurProjectile(
-                            this.level,
                             this.x,
                             this.y + this.height / 2 + 10,
                             !this.flip,

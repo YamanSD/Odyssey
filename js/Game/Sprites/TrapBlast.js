@@ -275,7 +275,7 @@ class TrapBlast extends Sprite {
      * Fires a shock projectile.
      */
     fire() {
-        this.game.insertSprite(
+        this.level.insertSprite(
             new ShockProjectile(
                 this.x,
                 this.y,

@@ -146,16 +146,14 @@ class GigaDeath extends Sprite {
         // Update the shot state
         this.states.set(ShotState, ShotState.shot);
 
-        this.game.insertSprites(
+        this.level.insertSprites(
             new Rocket(
-                this.level,
                 this.x,
                 this.y + 46 * this.scale,
                 !this.flip,
                 2
             ),
             new Rocket(
-                this.level,
                 this.x,
                 this.y + 51 * this.scale,
                 !this.flip,

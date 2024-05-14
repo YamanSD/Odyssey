@@ -216,7 +216,7 @@ class IrisField extends Sprite {
      */
     deactivate() {
         this.states.set(IrisFieldActState, IrisFieldActState.dormant);
-        this.game.removeSprite(this);
+        this.level.removeSprite(this);
     }
 
     /**

@@ -13,13 +13,12 @@
  */
 class Level extends Sprite {
     /**
-     * List of sprites inside the level.
+     * Set of sprites inside the level.
      *
-     * @type {Sprite[]}
+     * @type {Set<Sprite>}
      * @private
      */
     #sprites;
-
 
     /**
      * Each instance must initialize its hit-box.
@@ -34,6 +33,7 @@ class Level extends Sprite {
      *    font?: string
      * }?} object hit-box brush properties.
      * @param scale {number?} scale of the sprite. Default is [2.67].
+     * @param noBaseAnimation {boolean?} if true, the constructor does not create a base animation.
      */
     constructor(
         sprites,
@@ -41,6 +41,7 @@ class Level extends Sprite {
         height,
         hitBoxBrush,
         scale,
+        noBaseAnimation
     ) {
         super(
             {
@@ -58,20 +59,22 @@ class Level extends Sprite {
         );
 
         // Sprite array
-        this.#sprites = sprites;
+        this.#sprites = new Set(sprites);
 
-        this.currentAnimation = this.createAnimation(
-            0,
-            0,
-            0,
-            1,
-            1,
-            1,
-            width,
-            height,
-            0,
-            0
-        );
+        if (!noBaseAnimation) {
+            this.currentAnimation = this.createAnimation(
+                0,
+                0,
+                0,
+                1,
+                1,
+                1,
+                width,
+                height,
+                0,
+                0
+            );
+        }
     }
 
     /**
@@ -115,7 +118,7 @@ class Level extends Sprite {
     }
 
     /**
-     * @returns {Sprite[]} reference to the sprites array.
+     * @returns {Set<Sprite>} reference to the sprites array.
      */
     get sprites() {
         return this.#sprites;
@@ -129,6 +132,33 @@ class Level extends Sprite {
     }
 
     /**
+     * @param sprites {Sprite} to be inserted into the level & game.
+     */
+    insertSprites(...sprites) {
+        sprites.forEach(s => {
+            this.insertSprite(s);
+        });
+    }
+
+    /**
+     * @param sprite {Sprite} added to the level and game.
+     */
+    insertSprite(sprite) {
+        sprite.level = this;
+        this.game.insertSprite(sprite);
+        this.sprites.add(sprite);
+    }
+
+    /**
+     * @param sprite {Sprite} removes the sprite from the level & game.
+     */
+    removeSprite(sprite) {
+        sprite.level = undefined;
+        this.game.removeSprite(sprite);
+        this.sprites.delete(sprite);
+    }
+
+    /**
      * Load the level sprites.
      */
     load() {
@@ -136,8 +166,7 @@ class Level extends Sprite {
             this.game.resize(this.width, this.height);
 
             this.sprites.forEach(s => {
-                s.level = this;
-                this.game.insertSprite(s);
+                this.insertSprite(s);
             });
         }
     }
@@ -148,7 +177,7 @@ class Level extends Sprite {
     offload() {
         if (this.game) {
             this.sprites.forEach(s => {
-                this.game.removeSprite(s);
+                this.removeSprite(s);
             });
 
             this.game.removeSprite(this);

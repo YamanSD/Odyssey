@@ -50,7 +50,6 @@ class Rocket extends Sprite {
     #target;
 
     /**
-     * @param level {Level} level containing the rocket.
      * @param x {number} x-coordinate of the hero.
      * @param y {number} y-coordinate of the hero.
      * @param toLeft {boolean} true to throw the rocket to the left.
@@ -63,7 +62,6 @@ class Rocket extends Sprite {
      *  }?} object hit-box brush properties.
      */
     constructor(
-        level,
         x,
         y,
         toLeft,
@@ -105,9 +103,6 @@ class Rocket extends Sprite {
         if (!toLeft) {
             this.flip = true;
         }
-
-        // Add the rocket to the level
-        this.level = level;
 
         // Rocket target
         this.#target = this.player.x;
@@ -291,8 +286,8 @@ class Rocket extends Sprite {
         );
 
         exp.start();
-        this.game.insertSprite(exp);
-        this.game.removeSprite(this);
+        this.level.insertSprite(exp);
+        this.level.removeSprite(this);
     }
 
     /**

@@ -133,7 +133,7 @@ class Explosion extends Sprite {
                     if (onEnd) {
                         onEnd(this);
                     } else {
-                        this.game.removeSprite(this);
+                        this.level.removeSprite(this);
                     }
                 }
             )

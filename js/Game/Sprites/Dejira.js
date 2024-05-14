@@ -102,7 +102,7 @@ class Dejira extends Sprite {
                 switch (this.states.get(FlipState)) {
                     case FlipState.right:
                         this.moveTo(this.game.width, 0, 5, () => {
-                            this.game.removeSprite(this);
+                            this.level.removeSprite(this);
                         });
                         break;
                 }
@@ -328,7 +328,7 @@ class Dejira extends Sprite {
         ) {
             this.states.set(ShootState, ShootState.shot);
 
-            this.game.insertSprite(
+            this.level.insertSprite(
                 new DejiraProjectile(
                     this.x + this.width / 2 - 10,
                     this.y + this.height / 2 - 14,

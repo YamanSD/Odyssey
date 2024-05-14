@@ -430,9 +430,8 @@ class Sigma extends Sprite {
                     this.x += 20 * this.scale * (this.flip ? 2 : 1);
                     this.y += 21 * this.scale;
 
-                    this.game.insertSprite(
+                    this.level.insertSprite(
                         new SigmaSickle(
-                            this.level,
                             this.flip ? this.x + 50 : this.x,
                             this.y,
                             2,
@@ -639,9 +638,8 @@ class Sigma extends Sprite {
         this.#orbAttackCounter++;
         const x = this.orbX + 40, y = this.orbY + 20;
 
-        this.game.insertSprites(
+        this.level.insertSprites(
             new SigmaShockProjectile(
-                this.level,
                 x,
                 y,
                 2,
@@ -649,7 +647,6 @@ class Sigma extends Sprite {
                 speed,
             ),
             new SigmaShockProjectile(
-                this.level,
                 x,
                 y,
                 2,
@@ -675,7 +672,7 @@ class Sigma extends Sprite {
                     Math.max(5, Math.random() * 6),
                 );
 
-                this.game.insertSprite(e);
+                this.level.insertSprite(e);
 
                 e.start()
             }, 10 * i);
@@ -750,10 +747,10 @@ class Sigma extends Sprite {
             this.flip,
             () => {
                 // L1 is automatically removed by duration
-                this.game.removeSprite(l0);
+                this.level.removeSprite(l0);
 
                 if (long) {
-                    this.game.removeSprite(hl);
+                    this.level.removeSprite(hl);
                 }
 
                 this.flip = this.player.x > this.x;
@@ -771,11 +768,11 @@ class Sigma extends Sprite {
         );
 
         // Insert the sprite into the game
-        this.game.insertSprites(l0, l1);
+        this.level.insertSprites(l0, l1);
 
         if (long) {
             // Insert the head laser
-            this.game.insertSprite(hl);
+            this.level.insertSprite(hl);
         }
     }
 

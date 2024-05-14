@@ -30,7 +30,6 @@ class SigmaSickle extends Sprite {
     #angleRef;
 
     /**
-     * @param level {Level} level of the projectile.
      * @param x {number} x-coordinate of the hero.
      * @param y {number} y-coordinate of the hero.
      * @param scale {number} scale of SigmaSickle.
@@ -45,7 +44,6 @@ class SigmaSickle extends Sprite {
      *  }?} object hit-box brush properties.
      */
     constructor(
-        level,
         x,
         y,
         scale,
@@ -64,7 +62,7 @@ class SigmaSickle extends Sprite {
                     this.initY + 200,
                     toLeft ? -Math.abs(speed) : Math.abs(speed),
                     () => {
-                        this.game.removeSprite(this);
+                        this.level.removeSprite(this);
 
                         if (onCycle) {
                             onCycle();
@@ -81,9 +79,6 @@ class SigmaSickle extends Sprite {
             undefined,
             scale
         );
-
-        // Initialize the level
-        this.level = level;
 
         // Angle reference
         this.#angleRef = {

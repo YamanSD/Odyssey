@@ -116,8 +116,8 @@ class ShockProjectile extends Sprite {
         );
 
         exp.start();
-        this.game.insertSprite(exp);
-        this.game.removeSprite(this);
+        this.level.insertSprite(exp);
+        this.level.removeSprite(this);
     }
 
     /**

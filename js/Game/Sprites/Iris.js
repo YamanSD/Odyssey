@@ -762,10 +762,10 @@ class Iris extends Sprite {
                 vBeam.start();
                 this.states.set(CrystalAttackState, CrystalAttackState.attacking);
 
-                this.game.insertSprite(vBeam);
+                this.level.insertSprite(vBeam);
             }
 
-            this.game.insertSprite(hBeam);
+            this.level.insertSprite(hBeam);
         }
     }
 
@@ -774,7 +774,7 @@ class Iris extends Sprite {
      */
     spawnDrones() {
         if (this.states.get(IrisAttackState) === IrisAttackState.forwardRush) {
-            this.game.insertSprites(
+            this.level.insertSprites(
                 new SuicideDrone(
                     this.x + this.width / 2 - 10,
                     this.y + this.height / 2,
@@ -810,7 +810,7 @@ class Iris extends Sprite {
 
             crystal.x = this.x + this.width / 2 - crystal.width / 2;
             crystal.y = this.y + 50;
-            this.game.insertSprite(crystal);
+            this.level.insertSprite(crystal);
 
             // Pauses the attacks
             this.states.set(CrystalAttackState, CrystalAttackState.spawning);
@@ -829,7 +829,7 @@ class Iris extends Sprite {
 
             crystal.x = this.x + this.width / 2 - crystal.width / 2;
             crystal.y = this.y - 47;
-            this.game.insertSprite(crystal);
+            this.level.insertSprite(crystal);
 
             crystal.moveTo(
                 crystal.x,
@@ -853,7 +853,7 @@ class Iris extends Sprite {
             this.y,
             2,
             () => {
-                this.game.removeSprite(this.#crystal);
+                this.level.removeSprite(this.#crystal);
                 this.states.set(FieldState, FieldState.despawned);
                 this.states.set(CrystalAttackState, CrystalAttackState.notReady);
 

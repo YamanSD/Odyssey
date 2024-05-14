@@ -22,7 +22,6 @@ const SigmaShockProjectileState = {
  */
 class SigmaShockProjectile extends Sprite {
     /**
-     * @param level {Level} level of the projectile.
      * @param x {number} x-coordinate of the hero.
      * @param y {number} y-coordinate of the hero.
      * @param scale {number} scale of SigmaShockProjectile.
@@ -36,7 +35,6 @@ class SigmaShockProjectile extends Sprite {
      *  }?} object hit-box brush properties.
      */
     constructor(
-        level,
         x,
         y,
         scale,
@@ -57,7 +55,7 @@ class SigmaShockProjectile extends Sprite {
                         this.y -= speed;
 
                         if (this.by < 0) {
-                            this.game.removeSprite(this);
+                            this.level.removeSprite(this);
                             return;
                         }
 
@@ -67,7 +65,7 @@ class SigmaShockProjectile extends Sprite {
                         break;
                 }
 
-                const col = this.colliding(level);
+                const col = this.colliding(this.level);
 
                 if (col) {
                     switch (this.states.get(SigmaShockProjectileState)) {
@@ -98,7 +96,6 @@ class SigmaShockProjectile extends Sprite {
             scale
         );
 
-        this.level = level;
         this.states.set(SigmaShockProjectileState, SigmaShockProjectileState.down);
         this.currentAnimation = this.createAnimation(
             0,

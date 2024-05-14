@@ -151,7 +151,7 @@ class IrisBeam extends Sprite {
                 },
                 () => {
                     // Remove the beam on end
-                    this.game.removeSprite(this);
+                    this.level.removeSprite(this);
                 }
             ),
         };

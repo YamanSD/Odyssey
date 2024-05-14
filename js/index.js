@@ -60,6 +60,7 @@ const ShootingState = {
 
 
 const l1 = new Level_1([txt]);
+g.insertSprite(l1);
 
 
 // const s1 = new SigmaSickle(
@@ -155,8 +156,8 @@ const x = new Player(500, 300, l1.scale, (ignored) => {
     if (x.states.get(ShootingState) !== ShootingState.idle) {
         x.states.set(ShootingState, ShootingState.idle);
 
-        const r = new Rocket(l1, x.x + 100, x.y + 100, false, 2);
-        x.game.insertSprite(r);
+        const r = new Rocket(x.x + 100, x.y + 100, false, 2);
+        x.level.insertSprite(r);
     }
 
     if (moveVector[0] < 0) {
@@ -179,7 +180,7 @@ const hpB = new HealthBar(
 
 Sprite.player = x;
 
-const bomb = new Bomb(l1, 0, 0, 2);
+const bomb = new Bomb(0, 0, 2);
 const field = new IrisField(0, 0, 0, l1.scale);
 const d = new Sigma(700, 400, [0, 1000], l1.scale);
 const b = new Dejira(1000, 500, l1.scale);
@@ -201,13 +202,13 @@ const expl = new Explosion(
 // b.currentAnimation = b.animations.attack;
 
 const sp = new ShockProjectile(0, 0, 2, 3);
-l1.sprites.push(field, expl, b2, d, sp, bomb, hpB, gig);
+l1.insertSprites(field, expl, b2, d, sp, bomb, hpB, gig);
 
 
 
 expl.start();
 
-l1.sprites.push(x);
+l1.insertSprite(x);
 
 
 /**
@@ -276,7 +277,6 @@ const keyLiftHandler = (e) => {
 g.addEventListener('keydown', keyPressHandler);
 g.addEventListener('keyup', keyLiftHandler);
 
-g.insertSprite(l1);
 // console.log(g.areColliding(x, x));
 l1.load();
 g.resume();

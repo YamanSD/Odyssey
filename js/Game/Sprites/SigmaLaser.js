@@ -78,7 +78,7 @@ class SigmaLaser extends Sprite {
                     haveTimeout = true;
 
                     this.game.setTimeout(() => {
-                        this.game.removeSprite(this);
+                        this.level.removeSprite(this);
 
                         if (onEnd) {
                             onEnd();

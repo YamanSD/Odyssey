@@ -20,7 +20,6 @@ class Grenade extends Sprite {
     #speedVector;
 
     /**
-     * @param level {Level} level containing the grenade.
      * @param x {number} x-coordinate of the hero.
      * @param y {number} y-coordinate of the hero.
      * @param toLeft {boolean} true to throw the grenade to the left.
@@ -33,7 +32,6 @@ class Grenade extends Sprite {
      *  }?} object hit-box brush properties.
      */
     constructor(
-        level,
         x,
         y,
         toLeft,
@@ -65,9 +63,6 @@ class Grenade extends Sprite {
 
         // Initialize the speed vector
         this.#speedVector = [toLeft ? -10 : 10, -15];
-
-        // Add the grenade to the level
-        this.level = level;
 
         this.currentAnimation = this.createAnimation(
             0,
@@ -129,8 +124,8 @@ class Grenade extends Sprite {
         );
 
         exp.start();
-        this.game.insertSprite(exp);
-        this.game.removeSprite(this);
+        this.level.insertSprite(exp);
+        this.level.removeSprite(this);
     }
 
     /**

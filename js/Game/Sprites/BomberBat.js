@@ -62,7 +62,7 @@ class BomberBat extends Sprite {
                 switch (this.states.get(BombState)) {
                     case BombState.released:
                         this.moveTo(0, 0, 3, () => {
-                            this.game.removeSprite(this);
+                            this.level.removeSprite(this);
                         });
                         break;
                     case BombState.held:

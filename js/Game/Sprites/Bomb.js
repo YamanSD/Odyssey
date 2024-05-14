@@ -29,7 +29,6 @@ class Bomb extends Sprite {
     #speedVector;
 
     /**
-     * @param level {Level} level containing the bomb.
      * @param x {number} x-coordinate of the hero.
      * @param y {number} y-coordinate of the hero.
      * @param scale {number} scale of Bomb.
@@ -41,7 +40,6 @@ class Bomb extends Sprite {
      *  }?} object hit-box brush properties.
      */
     constructor(
-        level,
         x,
         y,
         scale,
@@ -76,9 +74,6 @@ class Bomb extends Sprite {
 
         // Initialize the speed vector
         this.#speedVector = [0, 0];
-
-        // Add the bomb to the level
-        this.level = level;
 
         this.currentAnimation = this.createAnimation(
             0,
@@ -145,8 +140,8 @@ class Bomb extends Sprite {
         );
 
         exp.start();
-        this.game.insertSprite(exp);
-        this.game.removeSprite(this);
+        this.level.insertSprite(exp);
+        this.level.removeSprite(this);
     }
 
     /**

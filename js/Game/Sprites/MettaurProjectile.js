@@ -20,7 +20,6 @@ class MettaurProjectile extends Sprite {
     #animations;
 
     /**
-     * @param level {Level} level containing the projectile.
      * @param x {number} x-coordinate of the hero.
      * @param y {number} y-coordinate of the hero.
      * @param toLeft {boolean} true to throw the projectile to the left.
@@ -33,7 +32,6 @@ class MettaurProjectile extends Sprite {
      *  }?} object hit-box brush properties.
      */
     constructor(
-        level,
         x,
         y,
         toLeft,
@@ -64,9 +62,6 @@ class MettaurProjectile extends Sprite {
         if (toLeft) {
             this.flip = true;
         }
-
-        // Add the projectile to the level
-        this.level = level;
 
         // Launch the projectile
         this.currentAnimation = this.createAnimation(
