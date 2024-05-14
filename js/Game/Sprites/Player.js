@@ -50,7 +50,8 @@ class Player extends Sprite {
             undefined,
             undefined,
             scale,
-            100
+            100,
+            30
         );
 
         // TODO Add rest of animations and update buster

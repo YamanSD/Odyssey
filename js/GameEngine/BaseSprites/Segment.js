@@ -361,5 +361,4 @@ class Segment extends Sprite {
     get sounds() {
         return Segment.sounds;
     }
-
 }

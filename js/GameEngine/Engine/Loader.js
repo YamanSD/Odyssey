@@ -23,6 +23,7 @@ function loadGame() {
      * @type {(typeof Sprite)[]}
      */
     const SpriteClasses = [
+        Sprite,
         Segment,
         Text,
         Void,

@@ -89,6 +89,14 @@ class Sprite {
     static #player=  undefined;
 
     /**
+     * Decides the damage flash interval length.
+     *
+     * @type {number}
+     * @private
+     */
+    static #damageFrameIntervals = 5;
+
+    /**
      * @type {any} sprite geometric description.
      * @private
      */
@@ -269,6 +277,26 @@ class Sprite {
     #initCoords;
 
     /**
+     * @type {number} damage cool down.
+     * @protected
+     */
+    #damageCoolDown;
+
+    /**
+     * Initial damage cool down period.
+     *
+     * @type {number}
+     * @protected
+     */
+    #initDamageCoolDown;
+
+    /**
+     * @type {number} counter for the damage frames.
+     * @protected
+     */
+    #damageFrames;
+
+    /**
      * @returns {number} a usable sprite ID.
      * @private
      */
@@ -315,16 +343,18 @@ class Sprite {
     }
 
     /**
-     * @abstract
      * @returns {string[]} list of sprite sheets.
      */
-    static get sheets() {}
+    static get sheets() {
+        return ['damage.png'];
+    }
 
     /**
-     * @abstract
      * @returns {string[]} list of sound files.
      */
-    static get sounds() {}
+    static get sounds() {
+        return [];
+    }
 
     /**
      * @param id {number} the ID of the sprite.
@@ -372,6 +402,7 @@ class Sprite {
      *  @param isStatic {boolean?} true indicates that the sprite does not update. Default false.
      *  @param scale {number?} scale of the sprite.
      *  @param hp {number?} hit points of the sprite. Undefined means it has no HP.
+     *  @param damageCoolDown {number?} damage cool down of the sprite. Default is 1.
      */
     constructor(
         description,
@@ -383,7 +414,8 @@ class Sprite {
         nonPausable,
         isStatic,
         scale,
-        hp
+        hp,
+        damageCoolDown = 1
     ) {
         this.#id = Sprite.#spriteId();
         this.#scale = scale ?? 1;
@@ -397,6 +429,11 @@ class Sprite {
         this.#states = new Map();
         this.#level = undefined;
         this.#hp = this.#initHp = hp;
+
+        // Initialize the damage cool down
+        this.#initDamageCoolDown = damageCoolDown;
+        this.#damageFrames = 0;
+        this.#damageCoolDown = 0;
 
         // Do not use the setter, causes issues due to abstract nature of width
         this.#flip = false;
@@ -414,6 +451,20 @@ class Sprite {
 
         // Store the sprite reference into the sprites map
         Sprite.sprites[this.id] = this;
+    }
+
+    /**
+     * @returns {number} the sprite damage cool down.
+     */
+    get damageCoolDown() {
+        return this.#damageCoolDown;
+    }
+
+    /**
+     * @returns {number} the sprite damage cool down.
+     */
+    get damageFrames() {
+        return this.#damageFrames;
     }
 
     /**
@@ -583,7 +634,10 @@ class Sprite {
      * @returns {(function(number): any)} the onUpdate function.
      */
     get onUpdate() {
-        return this.#onUpdate ?? (() => undefined);
+        return (ticks) => {
+            this.#damageCoolDown--;
+            return this.#onUpdate(ticks);
+        }
     }
 
     /**
@@ -894,10 +948,31 @@ class Sprite {
     }
 
     /**
+     * @param value {number} new value of the damage frames.
+     */
+    set damageFrames(value) {
+        this.#damageFrames = value * Sprite.#damageFrameIntervals;
+    }
+
+    /**
      * Stops the current dominant animation.
      */
     stopAnimation() {
         this.currentAnimation = undefined;
+    }
+
+    /**
+     * Resets the damage cool down back to its original value.
+     */
+    resetDamageCoolDown() {
+        this.#damageCoolDown = this.#initDamageCoolDown;
+    }
+
+    /**
+     * Resets the damage frames back to their original value.
+     */
+    resetDamageFrames() {
+        this.damageFrames = 6;
     }
 
     /**
@@ -922,8 +997,12 @@ class Sprite {
      * @param value {number} damages the sprite by the given value.
      */
     damage(value) {
-        this.#hp -= value;
-        this.#hp = Math.max(0, this.#hp);
+        if (this.damageCoolDown <= 0) {
+            this.#hp -= value;
+            this.#hp = Math.max(0, this.#hp);
+            this.resetDamageCoolDown();
+            this.resetDamageFrames();
+        }
     }
 
     /**
@@ -1479,6 +1558,28 @@ class Sprite {
 
         // Rotate the image
         ctx.rotate(this.radRotation);
+
+        if (this.damageFrames) {
+            if (this.damageFrames % Sprite.#damageFrameIntervals === 0) {
+                // Check https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
+                ctx.globalCompositeOperation = 'xor';
+
+                ctx.drawImage(
+                    // the damage image
+                    SpriteSheet.load(Sprite.sheets[0], forceLoad, width, height),
+                    Math.floor((anim.singleWidth + anim.cSpace) * anim.currentCol + anim.startX),
+                    Math.floor((anim.singleHeight + anim.rSpace) * anim.currentRow + anim.startY),
+                    anim.singleWidth,
+                    anim.singleHeight,
+                    0, // Already translated
+                    0, // Already translated
+                    Math.floor(scale * anim.singleWidth),
+                    Math.floor(scale * anim.singleHeight),
+                );
+            }
+
+            this.#damageFrames--;
+        }
 
         ctx.drawImage(
             SpriteSheet.load(this.sheets[anim.sheetInd], forceLoad, width, height),

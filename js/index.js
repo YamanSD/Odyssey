@@ -17,7 +17,6 @@ let moveVector = [0, 0];
  * TODO List
  *
  * - Implement last level.
- * - Implement damage cool down.
  * - Adjust hit boxes for enemies, player, & levels.
  * - Adjust attack damage.
  * - Implement X animations + attacks.
@@ -62,6 +61,22 @@ const ShootingState = {
 const l1 = new Level_2([txt]);
 g.insertSprite(l1);
 
+// const gman = new GrenadeMan(600, 400, l1.scale);
+const expl = new Explosion(
+    100 * l1.scale,
+    100 * l1.scale,
+    l1.scale,
+    false,
+    true,
+    (e) => {
+        e.start();
+    }
+);
+l1.insertSprites(expl);
+
+expl.start();
+
+
 
 // const s1 = new SigmaSickle(
 //     l1,
@@ -79,7 +94,7 @@ g.insertSprite(l1);
 //     false,
 // );
 
-const x = new Player(500, 300, l1.scale, (ignored) => {
+const x = new Player(100 * l1.scale, 100 * l1.scale, l1.scale, (ignored) => {
     // if (x.states.get(ShootingState) === ShootingState.shoot) {
     //     x.currentAnimation = x.animations.shoot;
     //     const m = new BusterShot(
@@ -156,8 +171,8 @@ const x = new Player(500, 300, l1.scale, (ignored) => {
     if (x.states.get(ShootingState) !== ShootingState.idle) {
         x.states.set(ShootingState, ShootingState.idle);
 
-        const r = new Rocket(x.x + 100, x.y + 100, false, 2);
-        x.level.insertSprite(r);
+        // const r = new Rocket(x.x + 100, x.y + 100, false, 2);
+        // x.level.insertSprite(r);
     }
 
     if (moveVector[0] < 0) {
