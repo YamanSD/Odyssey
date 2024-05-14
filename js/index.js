@@ -59,7 +59,7 @@ const ShootingState = {
 }
 
 
-const l1 = new Level_1([txt]);
+const l1 = new Level_2([txt]);
 g.insertSprite(l1);
 
 
@@ -173,7 +173,7 @@ const x = new Player(500, 300, l1.scale, (ignored) => {
 });
 
 const hpB = new HealthBar(
-    HealthBarType.x,
+    HealthBarType.zero,
     x,
     l1.scale
 );

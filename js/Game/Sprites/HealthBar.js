@@ -272,7 +272,7 @@ class HealthBar extends Sprite {
             this.drawAnimation(
                 this.#livesAnimation,
                 this.rx - 11 * this.scale,
-                this.by - 12.5 * this.scale,
+                this.by - 12.7 * this.scale,
                 context
             );
         }

@@ -17,14 +17,16 @@ class Level_3 extends Level {
     constructor(sprites) {
         super(
             sprites,
-            320,
-            240,
+            267,
+            201,
             {
                 fillColor: '#FFFF0077'
             },
             undefined,
             true
         );
+
+        // TODO fix the image ratios
 
         this.currentAnimation = this.createAnimation(
             0,
@@ -33,8 +35,8 @@ class Level_3 extends Level {
             3,
             1,
             0,
-            320,
-            240,
+            267,
+            201,
             0,
             0,
             1
