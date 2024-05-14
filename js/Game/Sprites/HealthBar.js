@@ -256,9 +256,9 @@ class HealthBar extends Sprite {
         this.drawCurrentAnimation(this.x, this.y, context);
 
         const maxHeight = (this.isBoss ? 56 : 54) * this.scale;
-        const x = (this.isBoss ? 8 : 0) + this.x + 21,
-            y = this.y + 5,
-            width = 7 * this.scale,
+        const width = 7 * this.scale;
+        const x = (this.isBoss ? 3 * this.scale : 0) + this.x + width + this.scale,
+            y = this.y + 2 * this.scale,
             height = maxHeight * (this.target.hp / this.target.initHp);
 
         context.fillRect(
@@ -271,8 +271,8 @@ class HealthBar extends Sprite {
         if (!this.isBoss) {
             this.drawAnimation(
                 this.#livesAnimation,
-                this.rx - 30,
-                this.by - 33.5,
+                this.rx - 11 * this.scale,
+                this.by - 12.5 * this.scale,
                 context
             );
         }
