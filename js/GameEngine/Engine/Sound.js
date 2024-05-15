@@ -93,9 +93,15 @@ class Sound {
 
     /**
      * @param audio {HTMLAudioElement} audio instance to play.
+     * @param noOverlap {boolean?} if true, the audio does not overlap over itself.
      */
-    static playAudio(audio) {
-        audio.cloneNode().play();
+    static playAudio(audio, noOverlap) {
+        if (noOverlap) {
+            // Ignore the promise
+            audio.play();
+        } else {
+            audio.cloneNode().play();
+        }
     }
 
     /**

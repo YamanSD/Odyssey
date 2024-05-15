@@ -988,9 +988,10 @@ class Sprite {
      * Plays the given audio properly.
      *
      * @param audio {HTMLAudioElement} to play.
+     * @param noOverlap {boolean?} if true, the audio does not overlap over itself.
      */
-    playSound(audio) {
-        Sound.playAudio(audio);
+    playSound(audio, noOverlap) {
+        Sound.playAudio(audio, noOverlap);
     }
 
     /**
