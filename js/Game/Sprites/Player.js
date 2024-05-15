@@ -4,6 +4,27 @@
  * @exports Player
  */
 
+/**
+ * States for the player control activity.
+ *
+ * @type {{inactive: number, active: number}}
+ */
+const PlayerControlsState = {
+    inactive: 0,
+    active: 1
+};
+
+/**
+ * States for the player spawn state.
+ *
+ * @type {{spawning: number, spawned: number, beaming: number}}
+ */
+const PlayerSpawnState = {
+    beaming: 0,
+    spawning: 1,
+    spawned: 2,
+};
+
 
 /**
  * @class Player
@@ -43,7 +64,32 @@ class Player extends Sprite {
                 lives: 2,
             },
             [x, y],
-            onUpdate,
+            (t) => {
+                switch (this.states.get(PlayerSpawnState)) {
+                    case PlayerSpawnState.beaming:
+                        const col = this.colliding(this.level);
+
+                        if (col) {
+                            this.states.set(PlayerSpawnState, PlayerSpawnState.spawning)
+
+                            // Important switch to get idle animation height not spawn_1
+                            this.currentAnimation = this.animations.idle;
+                            this.by = col.collided.projectX(this.x);
+                            this.currentAnimation = this.animations.spawn_1;
+
+                            // Recenter from beam going down
+                            this.x -= 32 * scale;
+                        } else {
+                            this.y += 30;
+                        }
+
+                        break;
+                }
+
+                if (onUpdate) {
+                    onUpdate(t);
+                }
+            },
             undefined,
             hitBoxBrush,
             undefined,
@@ -59,347 +105,32 @@ class Player extends Sprite {
 
         // Create the animations
         this.#animations = {
-            idle: this.createAnimation(
-                0,
-                6,
-                170,
-                5,
-                1,
-                5,
-                35,
-                49,
-                1,
-                0,
-                15,
-            ),
-            startMove: this.createAnimation(
-                0,
-                463,
-                252,
-                2,
-                1,
-                2,
-                33,
-                48,
-                1,
-                0,
-                3,
-                undefined,
-                () => {
-                    this.currentAnimation = this.animations.moveLoop
-                }
-            ),
-            moveLoop: this.createAnimation(
-                0,
-                676,
-                61,
-                4,
-                4,
-                14,
-                54,
-                52,
-                1,
-                1,
-                3
-            ),
-            idleLowHp: this.createAnimation(
-                0,
-                12,
-                547,
-                6,
-                1,
-                6,
-                33,
-                48,
-                1,
-                0,
-                30
-            ),
-            dashStart: this.createAnimation(
-                0,
-                71,
-                310,
-                3,
-                1,
-                3,
-                53,
-                45,
-                1,
-                0,
-                2
-            ),
-            dashLoop: this.createAnimation(
-                0,
-                252,
-                310,
-                1,
-                1,
-                1,
-                53,
-                45,
-                0,
-                0,
-                2
-            ),
-            dashEnd: this.createAnimation(
-                0,
-                374,
-                310,
-                4,
-                1,
-                4,
-                41,
-                47,
-                1,
-                0,
-                2
-            ),
-            jumpStart: this.createAnimation(
-                0,
-                64,
-                244,
-                7,
-                1,
-                7,
-                34,
-                60,
-                1,
-                0,
-                4,
-                () => {
-                    this.currentAnimation = this.animations.jumpLoop;
-                }
-            ),
-            jumpLoop: this.createAnimation(
-                0,
-                309,
-                244,
-                1,
-                1,
-                1,
-                34,
-                60,
-                0,
-                0,
-                15
-            ),
-            jumpEnd: this.createAnimation(
-                0,
-                344,
-                244,
-                3,
-                1,
-                3,
-                34,
-                54,
-                1,
-                0,
-                4,
-                undefined,
-                () => {
-                    this.currentAnimation = this.animations.idle;
-                }
-            ),
-            shoot: this.createAnimation(
-                0,
-                2,
-                431,
-                8,
-                1,
-                8,
-                51,
-                47,
-                1,
-                0,
-                4,
-                undefined,
-                () => {
-                    this.currentAnimation = this.animations.idle;
-                }
-            ),
-            superShoot: this.createAnimation(
-                0,
-                359,
-                763,
-                8,
-                1,
-                8,
-                56,
-                77,
-                1,
-                0,
-                4
-            ),
-            damagedStart: this.createAnimation(
-                0,
-                55,
-                487,
-                3,
-                1,
-                3,
-                51,
-                55,
-                1,
-                0,
-                2
-            ),
-            damagedEnd: this.createAnimation(
-                0,
-                211,
-                487,
-                2,
-                1,
-                2,
-                51,
-                55,
-                1,
-                0,
-                5
-            ),
-            crouchStart: this.createAnimation(
-                0,
-                8,
-                600,
-                1,
-                1,
-                1,
-                42,
-                42,
-                0,
-                0,
-                5
-            ),
-            crouchLoop: this.createAnimation(
+            spawn_0: this.createAnimation(
                 0,
                 62,
-                600,
-                1,
-                1,
-                1,
-                42,
-                42,
-                0,
-                0,
-                5
-            ),
-            crouchShoot: this.createAnimation(
-                0,
-                80,
-                925,
-                2,
-                1,
-                2,
-                69,
-                79,
-                1,
-                0,
-                5
-            ),
-            crouchSuperShoot: this.createAnimation(
-                0,
-                220,
-                925,
-                10,
-                1,
-                10,
-                69,
-                79,
-                1,
-                0,
-                5
-            ),
-            flyIdle: this.createAnimation(
-                0,
-                12,
-                649,
-                3,
-                1,
-                3,
-                33,
-                64,
-                1,
-                0,
-                5
-            ),
-            flyForward: this.createAnimation(
-                0,
-                5,
-                717,
-                6,
-                1,
-                6,
-                41,
-                56,
-                1,
-                0,
-                5
-            ),
-            flyBackward: this.createAnimation(
-                0,
-                7,
-                779,
-                5,
-                1,
-                5,
-                33,
-                61,
-                1,
-                0,
-                5
-            ),
-            novaJump: this.createAnimation(
-                0,
-                13,
-                1173,
-                4,
-                1,
-                4,
-                38,
-                56,
-                1,
-                0,
-                5
-            ),
-            novaStart: this.createAnimation(
-                0,
-                188,
-                1164,
-                4,
-                1,
-                4,
-                123,
-                64,
-                1,
-                0,
-                2
-            ),
-            novaLoop: this.createAnimation(
-                0,
-                684,
-                1164,
-                1,
-                1,
-                1,
-                123,
-                64,
-                0,
-                0,
-                2
-            ),
-            spawnBeam: this.createAnimation(
-                0,
-                54,
                 25,
-                2,
                 1,
-                2,
-                22,
+                1,
+                1,
+                6,
                 77,
-                1,
                 0,
-                2
+                0,
+                1,
+                undefined,
+                undefined,
+                (x, y) => {
+                    return [
+                        {
+                            x,
+                            y,
+                            width: 6,
+                            height: 77
+                        }
+                    ];
+                }
             ),
-            spawnExplosion: this.createAnimation(
+            spawn_1: this.createAnimation(
                 0,
                 146,
                 35,
@@ -410,37 +141,38 @@ class Player extends Sprite {
                 64,
                 1,
                 1,
-                5
-            ),
-            victoryDance: this.createAnimation(
-                0,
                 4,
-                1098,
-                4,
-                1,
-                4,
-                38,
-                54,
-                1,
-                0,
-                5
+                () => {
+                    this.states.set(PlayerSpawnState, PlayerSpawnState.spawning);
+                },
+                () => {
+                    // Recenter from beam going down
+                    this.x += 12 * scale;
+
+                    this.states.set(PlayerSpawnState, PlayerSpawnState.spawned);
+                    this.states.set(PlayerControlsState, PlayerControlsState.active);
+                    this.currentAnimation = this.animations.idle;
+                }
             ),
-            leave: this.createAnimation(
-                0,
-                328,
-                1063,
-                6,
+            idle: this.createAnimation(
                 1,
-                6,
-                58,
-                88,
+                232,
+                7,
+                5,
+                1,
+                5,
+                39,
+                49,
                 1,
                 0,
-                5
+                18,
             ),
+
         };
 
-        this.currentAnimation = this.#animations.idle;
+        this.states.set(PlayerSpawnState, PlayerSpawnState.beaming);
+        this.states.set(PlayerControlsState, PlayerControlsState.inactive);
+        this.currentAnimation = this.#animations.spawn_0;
     }
 
     /**

@@ -16,11 +16,12 @@ let moveVector = [0, 0];
 /**
  * TODO List
  *
+ * - Implement X animations + attacks.
  * - Adjust hit boxes for enemies, player, & levels.
  * - Adjust attack damage.
- * - Implement X animations + attacks.
  * - Place the enemies in levels.
  * - Implement main menu and pause menu.
+ * - Implement the teleporter for level 3.
  *
  * Tomorrow:
  * - Deploy.
@@ -57,22 +58,22 @@ const ShootingState = {
 }
 
 
-const l1 = new Level_3([txt]);
+const l1 = new Level_2([txt]);
 g.insertSprite(l1);
 g.showHitBoxes = true;
 
 // const gman = new GrenadeMan(600, 400, l1.scale);
-const expl = new Explosion(
-    100 * l1.scale,
-    100 * l1.scale,
-    l1.scale,
-    false,
-    true,
-    (e) => {
-        e.start();
-    }
-);
-l1.insertSprites(expl);
+// const expl = new Explosion(
+//     100 * l1.scale,
+//     100 * l1.scale,
+//     l1.scale,
+//     false,
+//     true,
+//     (e) => {
+//         e.start();
+//     }
+// );
+// l1.insertSprites(expl);
 
 // expl.start();
 
@@ -96,7 +97,7 @@ l1.insertSprites(expl);
 
 const x = new Player(
     100 * l1.scale,
-    100 * l1.scale,
+    -100 * l1.scale,
     l1.scale,
     (ignored) => {
     // if (x.states.get(ShootingState) === ShootingState.shoot) {
@@ -185,11 +186,11 @@ const x = new Player(
         x.flip = false;
     }
 
-    if (moveVector[0]) {
-        l1.moveCurrentAnimation();
-    }
+    // if (moveVector[0]) {
+    //     l1.moveCurrentAnimation();
+    // }
 
-    // x.rx += moveVector[0];
+    x.rx += moveVector[0];
     x.by += moveVector[1];
 
     x.moveCurrentAnimation();
