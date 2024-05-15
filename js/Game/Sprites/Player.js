@@ -196,7 +196,7 @@ class Player extends Sprite {
 
                             switch (this.states.get(PlayerMoveState)) {
                                 case PlayerMoveState.idle:
-                                    this.currentAnimation = this.animations.idle;
+                                    this.setIdle();
                                     break;
                                 case PlayerMoveState.startRun:
                                     this.currentAnimation = this.animations.startRun;
@@ -215,7 +215,7 @@ class Player extends Sprite {
                                     if (col) {
                                         this.states.set(PlayerMoveState, PlayerMoveState.endJump);
 
-                                        this.currentAnimation = this.animations.idle;
+                                        this.setIdle();
                                         this.by = col.collided.projectX(this.x);
                                     }
                                     break;
@@ -223,13 +223,6 @@ class Player extends Sprite {
                                     this.currentAnimation = this.animations.land;
                                     break;
                             }
-                        }
-
-                        // Switch animation if player is low on health
-                        if (this.hp <= this.initHp / 2 && this.currentAnimation === this.animations.idle) {
-                            this.currentAnimation = this.animations.idleTired;
-                        } else if (this.hp > this.initHp / 2 && this.currentAnimation === this.animations.idleTired) {
-                            this.currentAnimation = this.animations.idle;
                         }
                         break;
                 }
@@ -581,6 +574,18 @@ class Player extends Sprite {
      */
     draw(context) {
         this.drawCurrentAnimation(this.x, this.y, context);
+    }
+
+    /**
+     * Sets the moving state to idle. Works based on HP.
+     */
+    setIdle() {
+        // Switch animation if player is low on health
+        if (this.hp <= this.initHp / 2 && this.currentAnimation === this.animations.idle) {
+            this.currentAnimation = this.animations.idleTired;
+        } else if (this.hp > this.initHp / 2 && this.currentAnimation === this.animations.idleTired) {
+            this.currentAnimation = this.animations.idle;
+        }
     }
 
     damage(value) {
