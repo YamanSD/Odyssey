@@ -231,7 +231,7 @@ const keyPressHandler = (e) => {
             x.damage(10);
             break;
         case 'e':
-            l1.moveCurrentAnimation();
+            x.heal(10);
             break;
         case 'h':
             g.showHitBoxes = !g.showHitBoxes;
