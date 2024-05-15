@@ -16,6 +16,12 @@ class Text extends Sprite {
     #metrics;
 
     /**
+     * @type {string[]} array of lines in the text.
+     * @private
+     */
+    #lines;
+
+    /**
      * @param description {{
      *   bottomLeftCoords: [number, number],
      *   text: string,
@@ -57,6 +63,8 @@ class Text extends Sprite {
             ignorable,
             isStatic
         );
+
+        this.countLines(this.text);
     }
 
     /**
@@ -69,6 +77,13 @@ class Text extends Sprite {
      */
     get desc() {
         return super.desc;
+    }
+
+    /**
+     * @returns {string[]} number of lines.
+     */
+    get lines() {
+        return this.#lines;
     }
 
     /**
@@ -86,17 +101,28 @@ class Text extends Sprite {
     }
 
     /**
+     * @returns {number} height of a single line.
+     */
+    get singleLineHeight() {
+        return (this.metrics?.fontBoundingBoxAscent ?? 0)
+            + (this.metrics?.fontBoundingBoxDescent ?? 0);
+    }
+
+    /**
      * @returns {number} text height if metrics are defined.
      */
     get height() {
-        return (this.metrics?.fontBoundingBoxAscent ?? 0
-            + this.metrics?.fontBoundingBoxDescent ?? 0);
+        return this.singleLineHeight * this.#lines.length;
     }
 
     /**
      * @returns {number} text width if metrics are defined.
      */
     get width() {
+        // There is a bug with this as it returns the length of
+        // the sentences as if they were all a single sentence.
+        // To fix this it requires a partial rewrite of the text
+        // drawing logic in the game, not necessary so not doing it.
         return (this.metrics?.width ?? 0);
     }
 
@@ -133,6 +159,7 @@ class Text extends Sprite {
      */
     set text(v) {
         this.desc.text = v;
+        this.countLines(v);
     }
 
     /**
@@ -170,13 +197,46 @@ class Text extends Sprite {
     }
 
     /**
+     * Assigns the value to the lines array.
+     *
+     * @param str {string} to count the lines for.
+     */
+    countLines(str) {
+        this.#lines = [];
+        let prevI = 0;
+
+        // Count the lines
+        for (let i = 0; i < str.length; i++) {
+            if (str.charAt(i) === '\n') {
+                this.#lines.push(str.substring(prevI, i - 1));
+                prevI = i + 1;
+            }
+        }
+
+        // Last sentence
+        const last = str.substring(prevI);
+
+        if (last.length) {
+            this.#lines.push(last);
+        }
+    }
+
+    /**
      * Draws the text in the 2d context.
      *
      * @param context {CanvasRenderingContext2D} 2d canvas element context.
      */
     draw(context) {
+        const l = this.lines.length;
+
         // Draw the text fill
-        context.fillText(this.text, this.x, this.y);
+        for (let i = 0; i < l; i++) {
+            context.fillText(
+                this.lines[i],
+                this.x,
+                this.y - (l - i - 0.99) * this.singleLineHeight
+            );
+        }
     }
 
     /**
