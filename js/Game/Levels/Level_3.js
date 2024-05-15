@@ -17,16 +17,15 @@ class Level_3 extends Level {
     constructor(sprites) {
         super(
             sprites,
-            267,
-            201,
+            320,
+            240,
             {
                 fillColor: '#FFFF0077'
             },
-            undefined,
+            3.2,
+            true,
             true
         );
-
-        // TODO fix the image ratios
 
         this.currentAnimation = this.createAnimation(
             0,
@@ -34,16 +33,22 @@ class Level_3 extends Level {
             0,
             3,
             1,
-            0,
-            267,
-            201,
+            3,
+            320,
+            240,
             0,
             0,
             1
         );
 
         this.hitBox = this.convertHitBoxes([
-
+            {
+                x: 0,
+                y: 230,
+                width: 1024,
+                height: 220,
+                rotation: -15
+            }
         ]);
     }
 

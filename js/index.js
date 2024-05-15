@@ -16,15 +16,16 @@ let moveVector = [0, 0];
 /**
  * TODO List
  *
- * - Implement last level.
  * - Adjust hit boxes for enemies, player, & levels.
  * - Adjust attack damage.
  * - Implement X animations + attacks.
- * - Add sound effects and OST.
  * - Place the enemies in levels.
  * - Implement main menu and pause menu.
- * - Implement zero (if there is time).
+ *
+ * Tomorrow:
  * - Deploy.
+ * - Implement zero (if there is time).
+ * - Add sound effects and OST.
  *
  * Finally remove all unused features and reduce bloat.
  */
@@ -56,8 +57,9 @@ const ShootingState = {
 }
 
 
-const l1 = new Level_2([txt]);
+const l1 = new Level_3([txt]);
 g.insertSprite(l1);
+g.showHitBoxes = true;
 
 // const gman = new GrenadeMan(600, 400, l1.scale);
 const expl = new Explosion(
@@ -183,7 +185,11 @@ const x = new Player(
         x.flip = false;
     }
 
-    x.rx += moveVector[0];
+    if (moveVector[0]) {
+        l1.moveCurrentAnimation();
+    }
+
+    // x.rx += moveVector[0];
     x.by += moveVector[1];
 
     x.moveCurrentAnimation();
@@ -224,7 +230,7 @@ const keyPressHandler = (e) => {
             x.damage(10);
             break;
         case 'e':
-            x.heal(10);
+            l1.moveCurrentAnimation();
             break;
         case 'h':
             g.showHitBoxes = !g.showHitBoxes;
@@ -269,5 +275,5 @@ const d = new Dialog(
     }
 )
 
-g.insertSprite(d);
+// g.insertSprite(d);
 g.resume();

@@ -34,6 +34,7 @@ class Level extends Sprite {
      * }?} object hit-box brush properties.
      * @param scale {number?} scale of the sprite. Default is [2.67].
      * @param noBaseAnimation {boolean?} if true, the constructor does not create a base animation.
+     * @param normalScale {boolean?} if true, the value given for the scale is used normally.
      */
     constructor(
         sprites,
@@ -41,7 +42,8 @@ class Level extends Sprite {
         height,
         hitBoxBrush,
         scale,
-        noBaseAnimation
+        noBaseAnimation,
+        normalScale
     ) {
         super(
             {
@@ -55,7 +57,7 @@ class Level extends Sprite {
             undefined,
             false,
             true,
-            Game.windowHeight / (height * (scale ?? 0.5))
+            normalScale ? scale : Game.windowHeight / (height * (scale ?? 0.5))
         );
 
         // Sprite array
