@@ -18,6 +18,22 @@ class Game {
     static #loadingLock = false;
 
     /**
+     * Stores the last time a key was pressed.
+     *
+     * @type {{}}
+     * @private
+     */
+    static #doubleKeySchedule = {};
+
+    /**
+     * Difference between two presses to be considered a double press.
+     *
+     * @type {number} in ticks.
+     * @private
+     */
+    static #doubleClickDelta = 20;
+
+    /**
      * @type {number} ID counter for the event handlers.
      * @protected
      */
@@ -765,6 +781,38 @@ class Game {
         };
 
         return id;
+    }
+
+    /**
+     * Attaches the given event listener to a double-key.
+     * The sprite and game objects must be in the caller's scope.
+     *
+     * @param handler {function(Event)} event handler.
+     * @param noPause {boolean?} true if the event is not affected by pausing.
+     * @returns the ID of the handler (used to remove it or update it).
+     */
+    addDoubleKeyListener(handler, noPause) {
+        const se = Game.#doubleKeySchedule;
+
+        return this.addEventListener(
+            'keyup',
+            /**
+             * @param e {KeyboardEvent}
+             */
+            (e) => {
+                const k = e.key;
+
+                if (k in se) {
+                    console.log(this.currentTick - se[k]);
+                    if (this.currentTick - se[k] <= Game.#doubleClickDelta) {
+                        handler(e);
+                    }
+                }
+
+                se[k] = this.currentTick;
+            },
+            noPause
+        );
     }
 
     /**

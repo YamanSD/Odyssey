@@ -265,6 +265,9 @@ l1.insertSprite(hpB);
 g.follow(x);
 g.addEventListener('keydown', keyPressHandler);
 g.addEventListener('keyup', keyLiftHandler);
+// g.addDoubleKeyListener((e) => {
+//     console.log("DOUBLE CLICK");
+// });
 
 // console.log(g.areColliding(x, x));
 l1.load();

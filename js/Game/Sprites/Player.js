@@ -119,7 +119,7 @@ class Player extends Sprite {
                             this.states.set(PlayerSpawnState, PlayerSpawnState.spawning)
 
                             // Important switch to get idle animation height not spawn_1
-                            this.currentAnimation = this.animations.idle;
+                            this.setIdle();
                             this.by = col.collided.projectX(this.x);
                             this.currentAnimation = this.animations.spawn_1;
 
@@ -199,8 +199,8 @@ class Player extends Sprite {
                                     this.setIdle();
                                     break;
                                 case PlayerMoveState.startRun:
-                                    this.currentAnimation = this.animations.startRun;
                                     this.states.set(PlayerMoveState, PlayerMoveState.run);
+                                    this.currentAnimation = this.animations.startRun;
                                     break;
                                 case PlayerMoveState.startJump:
                                     this.y -= this.jumpForce;
@@ -292,7 +292,7 @@ class Player extends Sprite {
 
                     this.states.set(PlayerSpawnState, PlayerSpawnState.spawned);
                     this.states.set(PlayerControlsState, PlayerControlsState.active);
-                    this.currentAnimation = this.animations.idle;
+                    this.setIdle();
                 }
             ),
             idle: this.createAnimation(
@@ -335,7 +335,7 @@ class Player extends Sprite {
                 5,
                 undefined,
                 () => {
-                    this.currentAnimation = this.animations.idle;
+                    this.setIdle();
                 }
             ),
             startRun: this.createAnimation(
@@ -352,6 +352,7 @@ class Player extends Sprite {
                 3,
                 undefined,
                 () => {
+                    this.states.set(PlayerMoveState, PlayerMoveState.run);
                     this.currentAnimation = this.animations.runLoop_0;
                 }
             ),
@@ -581,9 +582,9 @@ class Player extends Sprite {
      */
     setIdle() {
         // Switch animation if player is low on health
-        if (this.hp <= this.initHp / 2 && this.currentAnimation === this.animations.idle) {
+        if (this.hp <= this.initHp / 2) {
             this.currentAnimation = this.animations.idleTired;
-        } else if (this.hp > this.initHp / 2 && this.currentAnimation === this.animations.idleTired) {
+        } else {
             this.currentAnimation = this.animations.idle;
         }
     }
