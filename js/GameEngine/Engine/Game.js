@@ -216,7 +216,7 @@ class Game {
      * @returns {number} the browser window width.
      */
     static get windowWidth() {
-        return window.innerWidth;
+        return Math.min(1024, window.innerWidth);
     }
 
     /**
@@ -236,6 +236,9 @@ class Game {
             if (name === "body") {
                 element.style.backgroundColor = '#000';
             } else {
+                element.style.position = "absolute";
+                element.style.top = element.style.bottom = element.style.right = element.style.left = '0px';
+                element.style.margin = 'auto';
                 element.style.backgroundColor = '#FFF';
             }
         }

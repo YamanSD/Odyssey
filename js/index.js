@@ -21,7 +21,6 @@ let moveVector = [0, 0];
  * - Adjust attack damage.
  * - Implement X animations + attacks.
  * - Add sound effects and OST.
- * - Implement dialog.
  * - Place the enemies in levels.
  * - Implement main menu and pause menu.
  * - Implement zero (if there is time).
@@ -93,7 +92,11 @@ l1.insertSprites(expl);
 //     false,
 // );
 
-const x = new Player(100 * l1.scale, 100 * l1.scale, l1.scale, (ignored) => {
+const x = new Player(
+    100 * l1.scale,
+    100 * l1.scale,
+    l1.scale,
+    (ignored) => {
     // if (x.states.get(ShootingState) === ShootingState.shoot) {
     //     x.currentAnimation = x.animations.shoot;
     //     const m = new BusterShot(
@@ -184,7 +187,8 @@ const x = new Player(100 * l1.scale, 100 * l1.scale, l1.scale, (ignored) => {
     x.by += moveVector[1];
 
     x.moveCurrentAnimation();
-});
+}
+);
 
 const hpB = new HealthBar(
     HealthBarType.x,

@@ -64,7 +64,7 @@ class Dialog extends Sprite {
     constructor(
         text,
         type,
-        scale = 3.5,
+        scale = 2.5,
         onEnd
     ) {
         // Used to store the key press handler ID.
@@ -121,7 +121,7 @@ class Dialog extends Sprite {
                     handlerId = this.game.addEventListener('keydown', keyPressHandler);
                 }
 
-                this.x = this.game.cameraX + (7 + Game.windowWidth / 20) * scale - (this.isBoss ? 40 : -120);
+                this.x = this.game.cameraX + (7 + Game.windowWidth / 20) * scale + (this.isBoss ? 0 : 120);
                 this.y = this.game.cameraBY - 80 * scale;
 
                 this.moveCurrentAnimation();
