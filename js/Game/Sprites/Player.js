@@ -177,6 +177,7 @@ class Player extends Sprite {
                                             || this.states.get(PlayerMoveState) === PlayerMoveState.startRun
                                         ) {
                                             this.states.set(PlayerMoveState, PlayerMoveState.idle);
+                                            this.setIdle();
                                         }
                                         break;
                                 }
@@ -195,9 +196,9 @@ class Player extends Sprite {
                             }
 
                             switch (this.states.get(PlayerMoveState)) {
-                                case PlayerMoveState.idle:
-                                    this.setIdle();
-                                    break;
+                                // case PlayerMoveState.idle:
+                                //     this.setIdle();
+                                //     break;
                                 case PlayerMoveState.startRun:
                                     this.states.set(PlayerMoveState, PlayerMoveState.run);
                                     this.currentAnimation = this.animations.startRun;
@@ -332,7 +333,7 @@ class Player extends Sprite {
                 56,
                 1,
                 0,
-                5,
+                3,
                 undefined,
                 () => {
                     this.setIdle();
@@ -448,6 +449,7 @@ class Player extends Sprite {
                 () => {
                     if (this.states.get(PlayerDisplacementState) === PlayerDisplacementState.idle) {
                         this.states.set(PlayerMoveState, PlayerMoveState.idle);
+                        this.setIdle();
                     } else {
                         this.currentAnimation = this.animations.runLoop_0;
                         this.states.set(PlayerMoveState, PlayerMoveState.run);
@@ -582,7 +584,7 @@ class Player extends Sprite {
      */
     setIdle() {
         // Switch animation if player is low on health
-        if (this.hp <= this.initHp / 2) {
+        if (this.hp < this.initHp / 2) {
             this.currentAnimation = this.animations.idleTired;
         } else {
             this.currentAnimation = this.animations.idle;
@@ -591,7 +593,16 @@ class Player extends Sprite {
 
     damage(value) {
         this.currentAnimation = this.animations.damaged;
+        this.states.set(PlayerDisplacementState, PlayerDisplacementState.idle);
         super.damage(value);
+    }
+
+    heal(value) {
+        super.heal(value);
+
+        if (this.states.get(PlayerMoveState) === PlayerMoveState.idle) {
+            this.setIdle();
+        }
     }
 
     /**
