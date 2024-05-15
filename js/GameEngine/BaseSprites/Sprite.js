@@ -636,7 +636,7 @@ class Sprite {
     get onUpdate() {
         return (ticks) => {
             this.#damageCoolDown--;
-            return this.#onUpdate(ticks);
+            return this.#onUpdate ? this.#onUpdate(ticks) : undefined;
         }
     }
 
