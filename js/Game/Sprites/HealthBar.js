@@ -63,9 +63,8 @@ class HealthBar extends Sprite {
                     case HealthBarType.x:
                         // Fall through
                     case HealthBarType.zero:
-                        this.x = this.game.cameraX + 10;
+                        this.x = this.game.lastCameraX + 10;
                         this.lives = target.lives;
-
                         break;
                     case HealthBarType.sigma:
                         // Fall through
@@ -74,7 +73,7 @@ class HealthBar extends Sprite {
                         break;
                 }
 
-                this.y = this.game.cameraY + 100;
+                this.y = this.game.lastCameraY + 100;
             },
             {
                 fillColor: HealthBar.#colors[type]

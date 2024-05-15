@@ -349,6 +349,26 @@ class Game {
     }
 
     /**
+     * @returns {number} represents the last valid top-left X of the camera.
+     */
+    get lastCameraX() {
+        return Math.min(
+            this.cameraX,
+            this.perceivedDimensions.width - this.windowWidth
+        );
+    }
+
+    /**
+     * @returns {number} represents the last valid top-left Y of the camera.
+     */
+    get lastCameraY() {
+        return Math.min(
+            this.cameraY,
+            this.perceivedDimensions.height - Game.windowHeight
+        );
+    }
+
+    /**
      * @returns {number} the x-coordinate of the camera.
      */
     get cameraX() {
