@@ -960,7 +960,11 @@ class Game {
      * Pauses the game.
      */
     pause() {
-        this.#isRunning = false;
+        if (this.#isRunning) {
+            this.unfollow();
+            this.#isRunning = false;
+            this.insertSprite(new PauseMenu());
+        }
     }
 
     /**

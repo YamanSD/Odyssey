@@ -25,6 +25,7 @@ function loadGame() {
     const SpriteClasses = [
         Sprite,
         MainMenu,
+        PauseMenu,
         Segment,
         Text,
         Void,

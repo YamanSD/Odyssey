@@ -41,7 +41,7 @@ const PlayerAttackState = {
  *
  * @type {{startJump: number, hoverIdle: number, idle: number, endRun: number, endJump: number, run: number, hoverForwards: number, startRun: number, wallSlide: number, dash: number, jump: number, hoverBackwards: number, nova: number}}
  */
-const PlayerMoveState = {
+const PlayerMoveState = { // TODO separate the states into their own
     idle: 0,
     startRun: 1,
     run: 2,
@@ -97,6 +97,8 @@ class Player extends Sprite {
             {
                 lives: 2,
                 moveSpeed: 8,
+                jumpForce: 20,
+                gravity: 20,
             },
             [x, y],
             (t) => {
@@ -131,6 +133,11 @@ class Player extends Sprite {
 
                                         if (this.states.get(PlayerMoveState) === PlayerMoveState.idle) {
                                             this.states.set(PlayerMoveState, PlayerMoveState.startRun);
+                                        }
+                                        break;
+                                    case ' ':
+                                        if (!this.isInAir) {
+                                            this.states.set(PlayerMoveState, PlayerMoveState.startJump);
                                         }
                                         break;
                                     case 'ArrowRight':
@@ -170,6 +177,26 @@ class Player extends Sprite {
                                     // Fall through
                                 case PlayerMoveState.run:
                                     this.x += this.flip ? -this.speed : this.speed;
+                                    break;
+                                case PlayerMoveState.startJump:
+                                    this.y -= this.jumpForce;
+                                    this.currentAnimation = this.animations.startJump;
+                                    break;
+                                case PlayerMoveState.jump:
+                                    const col = this.colliding(this.level);
+
+                                    this.currentAnimation = this.animations.jump;
+                                    this.y += this.gravity;
+
+                                    if (col) {
+                                        this.states.set(PlayerMoveState, PlayerMoveState.endJump);
+
+                                        this.currentAnimation = this.animations.idle;
+                                        this.by = col.collided.projectX(this.x);
+                                    }
+                                    break;
+                                case PlayerMoveState.endJump:
+                                    this.currentAnimation = this.animations.land;
                                     break;
                             }
                         }
@@ -346,6 +373,53 @@ class Player extends Sprite {
                     this.currentAnimation = this.animations.runLoop_0;
                 }
             ),
+            startJump: this.createAnimation(
+                1,
+                27,
+                415,
+                7,
+                1,
+                7,
+                34,
+                58,
+                1,
+                0,
+                3,
+                undefined,
+                () => {
+                    this.states.set(PlayerMoveState, PlayerMoveState.jump);
+                }
+            ),
+            jump: this.createAnimation(
+                1,
+                359,
+                438,
+                1,
+                1,
+                1,
+                29,
+                57,
+                0,
+                0,
+                1,
+            ),
+            land: this.createAnimation(
+                1,
+                400,
+                434,
+                3,
+                1,
+                3,
+                33,
+                54,
+                1,
+                0,
+                4,
+                undefined,
+                () => {
+                    this.states.set(PlayerMoveState, PlayerMoveState.idle);
+                }
+            )
         };
 
         this.states.set(PlayerAttackState, PlayerAttackState.none);
@@ -365,11 +439,45 @@ class Player extends Sprite {
     /**
      * @returns {{
      *   lives: number,
-     *   moveSpeed: number
+     *   moveSpeed: number,
+     *   jumpForce: number,
+     *   gravity: number
      * }} description of Player.
      */
     get desc() {
         return super.desc;
+    }
+
+    /**
+     * @returns {boolean} true if the player is in the air.
+     */
+    get isInAir() {
+        const airStates = new Set([
+            PlayerMoveState.startJump,
+            PlayerMoveState.jump,
+            PlayerMoveState.hoverIdle,
+            PlayerMoveState.hoverBackwards,
+            PlayerMoveState.hoverForwards,
+            PlayerMoveState.nova
+        ]);
+
+        const s = this.states.get(PlayerMoveState);
+
+        return airStates.has(s);
+    }
+
+    /**
+     * @returns {number} gravity applied on player.
+     */
+    get gravity() {
+        return this.desc.gravity;
+    }
+
+    /**
+     * @returns {number} jump force of the player.
+     */
+    get jumpForce() {
+        return this.desc.jumpForce;
     }
 
     /**

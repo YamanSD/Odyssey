@@ -108,7 +108,7 @@ class MainMenu extends Sprite {
             undefined,
             undefined,
             undefined,
-            800 / 320
+            1024 / 320
         );
 
         this.#animations = {
@@ -229,7 +229,7 @@ class MainMenu extends Sprite {
             this.drawAnimation(
                 this.#foregroundAnimation,
                 this.width / 2 - 43.5 * this.scale,
-                this.height / 2 + 20 * this.scale,
+                this.height / 2 + 30 * this.scale,
                 context
             );
         }

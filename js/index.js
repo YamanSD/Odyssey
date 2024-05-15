@@ -236,6 +236,9 @@ const keyPressHandler = (e) => {
         case 'h':
             g.showHitBoxes = !g.showHitBoxes;
             break;
+        case 'Escape':
+            g.pause();
+            break;
     }
 };
 
