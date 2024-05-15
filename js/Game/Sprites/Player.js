@@ -39,13 +39,12 @@ const PlayerAttackState = {
 /**
  * States for the player move state.
  *
- * @type {{startJump: number, hoverIdle: number, idle: number, endRun: number, endJump: number, run: number, hoverForwards: number, startRun: number, wallSlide: number, dash: number, jump: number, hoverBackwards: number, nova: number}}
+ * @type {{startRun: number, run: number, startJump: number, hoverIdle: number, idle: number, wallSlide: number, endJump: number, dash: number, hoverForwards: number, jump: number, hoverBackwards: number, nova: number}}
  */
-const PlayerMoveState = { // TODO separate the states into their own
+const PlayerMoveState = {
     idle: 0,
     startRun: 1,
     run: 2,
-    endRun: 3,
     startJump: 4,
     jump: 5,
     endJump: 6,
@@ -55,6 +54,16 @@ const PlayerMoveState = { // TODO separate the states into their own
     dash: 10,
     wallSlide: 11,
     nova: 12
+};
+
+/**
+ * States for whether the player is moving horizontally or not.
+ *
+ * @type {{move: number, idle: number}}
+ */
+const PlayerDisplacementState = {
+    idle: 0,
+    move: 1,
 };
 
 
@@ -97,8 +106,8 @@ class Player extends Sprite {
             {
                 lives: 2,
                 moveSpeed: 8,
-                jumpForce: 20,
-                gravity: 20,
+                jumpForce: 10,
+                gravity: 15,
             },
             [x, y],
             (t) => {
@@ -134,17 +143,21 @@ class Player extends Sprite {
                                         if (this.states.get(PlayerMoveState) === PlayerMoveState.idle) {
                                             this.states.set(PlayerMoveState, PlayerMoveState.startRun);
                                         }
-                                        break;
-                                    case ' ':
-                                        if (!this.isInAir) {
-                                            this.states.set(PlayerMoveState, PlayerMoveState.startJump);
-                                        }
+
+                                        this.states.set(PlayerDisplacementState, PlayerDisplacementState.move);
                                         break;
                                     case 'ArrowRight':
                                         this.flip = false;
 
                                         if (this.states.get(PlayerMoveState) === PlayerMoveState.idle) {
                                             this.states.set(PlayerMoveState, PlayerMoveState.startRun);
+                                        }
+
+                                        this.states.set(PlayerDisplacementState, PlayerDisplacementState.move);
+                                        break;
+                                    case ' ':
+                                        if (!this.isInAir) {
+                                            this.states.set(PlayerMoveState, PlayerMoveState.startJump);
                                         }
                                         break;
                                 }
@@ -157,7 +170,14 @@ class Player extends Sprite {
                                 switch (e.key) {
                                     case 'ArrowLeft':
                                     case 'ArrowRight':
-                                        this.states.set(PlayerMoveState, PlayerMoveState.idle);
+                                        this.states.set(PlayerDisplacementState, PlayerDisplacementState.idle);
+
+                                        if (
+                                            this.states.get(PlayerMoveState) === PlayerMoveState.run
+                                            || this.states.get(PlayerMoveState) === PlayerMoveState.startRun
+                                        ) {
+                                            this.states.set(PlayerMoveState, PlayerMoveState.idle);
+                                        }
                                         break;
                                 }
                             };
@@ -168,15 +188,19 @@ class Player extends Sprite {
 
                         // If not active do not take commands
                         if (this.states.get(PlayerControlsState) === PlayerControlsState.active) {
+                            switch (this.states.get(PlayerDisplacementState)) {
+                                case PlayerDisplacementState.move:
+                                    this.x += this.flip ? -this.speed : this.speed;
+                                    break;
+                            }
+
                             switch (this.states.get(PlayerMoveState)) {
                                 case PlayerMoveState.idle:
                                     this.currentAnimation = this.animations.idle;
                                     break;
                                 case PlayerMoveState.startRun:
                                     this.currentAnimation = this.animations.startRun;
-                                    // Fall through
-                                case PlayerMoveState.run:
-                                    this.x += this.flip ? -this.speed : this.speed;
+                                    this.states.set(PlayerMoveState, PlayerMoveState.run);
                                     break;
                                 case PlayerMoveState.startJump:
                                     this.y -= this.jumpForce;
@@ -335,7 +359,6 @@ class Player extends Sprite {
                 3,
                 undefined,
                 () => {
-                    this.states.set(PlayerMoveState, PlayerMoveState.run);
                     this.currentAnimation = this.animations.runLoop_0;
                 }
             ),
@@ -402,6 +425,18 @@ class Player extends Sprite {
                 0,
                 0,
                 1,
+                undefined,
+                undefined,
+                (x, y) => {
+                    return [
+                        {
+                            x,
+                            y,
+                            width: 29,
+                            height: 57
+                        }
+                    ];
+                }
             ),
             land: this.createAnimation(
                 1,
@@ -417,11 +452,17 @@ class Player extends Sprite {
                 4,
                 undefined,
                 () => {
-                    this.states.set(PlayerMoveState, PlayerMoveState.idle);
+                    if (this.states.get(PlayerDisplacementState) === PlayerDisplacementState.idle) {
+                        this.states.set(PlayerMoveState, PlayerMoveState.idle);
+                    } else {
+                        this.currentAnimation = this.animations.runLoop_0;
+                        this.states.set(PlayerMoveState, PlayerMoveState.run);
+                    }
                 }
             )
         };
 
+        this.states.set(PlayerDisplacementState, PlayerDisplacementState.idle);
         this.states.set(PlayerAttackState, PlayerAttackState.none);
         this.states.set(PlayerMoveState, PlayerMoveState.idle);
         this.states.set(PlayerSpawnState, PlayerSpawnState.beaming);
