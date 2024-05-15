@@ -20,13 +20,13 @@ let moveVector = [0, 0];
  * - Adjust hit boxes for enemies, player, & levels.
  * - Adjust attack damage.
  * - Place the enemies in levels.
- * - Implement main menu and pause menu.
  * - Implement the teleporter for level 3.
  *
  * Tomorrow:
  * - Deploy.
  * - Implement zero (if there is time).
  * - Add sound effects and OST.
+ * - Implement options menu
  *
  * Finally remove all unused features and reduce bloat.
  */
