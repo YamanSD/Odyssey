@@ -31,11 +31,11 @@ class Level_1 extends Level {
     #rockAnimation;
 
     /**
-     * @param sprites {Sprite[]} array of sprites to be loaded to the map.
+     * Constructs the level.
      */
-    constructor(sprites) {
+    constructor() {
         super(
-            sprites,
+            [],
             5112,
             747,
             {
@@ -254,6 +254,232 @@ class Level_1 extends Level {
             //     height: 20,
             // }
         ]);
+
+
+        const s0 = new Segment(
+            {
+                p0: [this.scale * 266, this.scale * 205],
+                p1: [this.scale * 266, 0]
+            },
+            () => {
+                if (s0.intersects(x.segment)) {
+                    s0.isDone = true;
+                    s0.level.insertSprites(
+                        new TrapBlast(
+                            this.scale * 455,
+                            this.scale * 105,
+                            2
+                        ),
+                        new TrapBlast(
+                            this.scale * 455,
+                            this.scale * 165,
+                            2
+                        ),
+                    )
+                }
+            },
+            'green'
+        );
+
+        const s1 = new Segment(
+            {
+                p0: [this.scale * 490, 0],
+                p1: [this.scale * 490, this.scale * 80]
+            },
+            () => {
+                if (s1.intersects(x.segment)) {
+                    s1.isDone = true;
+                    s1.level.insertSprites(
+                        new Bee(
+                            this.scale * 700,
+                            this.scale * 21,
+                            2
+                        ),
+                        new Bee(
+                            this.scale * 700,
+                            this.scale * 15,
+                            2
+                        ),
+                        new GrenadeMan(
+                            this.scale * 762,
+                            this.scale * 156,
+                            2
+                        )
+                    )
+                }
+            },
+            'green'
+        );
+
+        const s2 = new Segment(
+            {
+                p0: [this.scale * 880, 0],
+                p1: [this.scale * 880, this.scale * 120]
+            },
+            () => {
+                if (s2.intersects(x.segment)) {
+                    s2.isDone = true;
+                    s2.level.insertSprites(
+                        new Bee(
+                            this.scale * 1130,
+                            this.scale * 51,
+                            2
+                        ),
+                        new Bee(
+                            this.scale * 1130,
+                            this.scale * 41,
+                            2
+                        ),
+                        new Bee(
+                            this.scale * 1100,
+                            this.scale * 46,
+                            2
+                        ),
+                        new TrapBlast(
+                            this.scale * 945,
+                            this.scale * 150,
+                            2,
+                            true
+                        ),
+                        new GrenadeMan(
+                            this.scale * 1200,
+                            this.scale * 134,
+                            2
+                        ),
+                        new GrenadeMan(
+                            this.scale * 1300,
+                            this.scale * 134,
+                            2
+                        ),
+                        new TrapBlast(
+                            this.scale * 1400,
+                            this.scale * 96,
+                            2
+                        ),
+                        new TrapBlast(
+                            this.scale * 1400,
+                            this.scale * 145,
+                            2
+                        ),
+                    )
+                }
+            },
+            'green'
+        );
+
+        const s3 = new Segment(
+            {
+                p0: [this.scale * 2000, 0],
+                p1: [this.scale * 2000, this.scale * 240]
+            },
+            () => {
+                if (s3.intersects(x.segment)) {
+                    s3.isDone = true;
+                    s3.level.insertSprites(
+                        new Bee(
+                            this.scale * 2126,
+                            this.scale * 71,
+                            2
+                        ),
+                        new Bee(
+                            this.scale * 2126,
+                            this.scale * 71,
+                            2
+                        ),
+                        new TrapBlast(
+                            this.scale * 1994,
+                            this.scale * 162,
+                            2,
+                            true
+                        ),
+                        new GrenadeMan(
+                            this.scale * 2200,
+                            this.scale * 160,
+                            2
+                        ),
+                        new TrapBlast(
+                            this.scale * 2280,
+                            this.scale * 173,
+                            2,
+                        ),
+                    )
+                }
+            },
+            'green'
+        );
+
+        const s4 = new Segment(
+            {
+                p0: [this.scale * 2550, 0],
+                p1: [this.scale * 2550, this.scale * 240]
+            },
+            () => {
+                if (s4.intersects(x.segment)) {
+                    s4.isDone = true;
+                    s4.level.insertSprites(
+                        new Bee(
+                            this.scale * 2700,
+                            this.scale * 41,
+                            2
+                        ),
+                        new Bee(
+                            this.scale * 2700,
+                            this.scale * 31,
+                            2
+                        ),
+                        new TrapBlast(
+                            this.scale * 2580,
+                            this.scale * 162,
+                            2,
+                            true
+                        ),
+                        new GrenadeMan(
+                            this.scale * 2740,
+                            this.scale * 169,
+                            2
+                        ),
+                        new TrapBlast(
+                            this.scale * 2955,
+                            this.scale * 169,
+                            2,
+                        ),
+                        new TrapBlast(
+                            this.scale * 2955,
+                            this.scale * 106,
+                            2,
+                        ),
+                    )
+                }
+            },
+            'green'
+        );
+
+        const s5 = new Segment(
+            {
+                p0: [this.scale * 3580, 0],
+                p1: [this.scale * 3580, this.scale * 240]
+            },
+            () => {
+                if (s5.intersects(x.segment)) {
+                    s5.isDone = true;
+                    this.createBossArena();
+                }
+            },
+            'green'
+        );
+
+        const segments = [
+            s0,
+            s1,
+            s2,
+            s3,
+            s4,
+            s5,
+        ];
+
+        for (const s of segments) {
+            this.sprites.add(s);
+        }
     }
 
     /**
