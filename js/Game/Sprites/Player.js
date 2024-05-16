@@ -131,6 +131,7 @@ class Player extends Sprite {
                 dashDuration: 50, // In ticks
                 jumpForce: 10,
                 gravity: 15,
+                power: 1, // Power of the shot
                 initDashDuration: 50, // In ticks
                 tempAnimation: undefined
             },
@@ -163,6 +164,12 @@ class Player extends Sprite {
 
                         // If not active do not take commands
                         if (this.states.get(PlayerControlsState) === PlayerControlsState.active) {
+                            switch (this.states.get(PlayerAttackState)) {
+                                case PlayerAttackState.charging:
+                                    this.power++;
+                                    break;
+                            }
+
                             switch (this.states.get(PlayerDisplacementState)) {
                                 case PlayerDisplacementState.move:
                                     this.move();
@@ -231,6 +238,7 @@ class Player extends Sprite {
             100,
         );
 
+        // TODO add shooting animations and link
         // Create the animations
         this.#animations = {
             spawn_0: this.createAnimation(
@@ -767,11 +775,19 @@ class Player extends Sprite {
      *   dashDuration: number,
      *   tempAnimation: number,
      *   hoverTimer: number,
-     *   maxHoverTimer: number
+     *   maxHoverTimer: number,
+     *   power: number
      * }} description of Player.
      */
     get desc() {
         return super.desc;
+    }
+
+    /**
+     * @returns {number}
+     */
+    get power() {
+        return this.desc.power;
     }
 
     /**
@@ -828,6 +844,13 @@ class Player extends Sprite {
      */
     get speed() {
         return this.desc.moveSpeed;
+    }
+
+    /**
+     * @param v {number}
+     */
+    set power(v) {
+        this.desc.power = v;
     }
 
     /**
@@ -891,6 +914,33 @@ class Player extends Sprite {
     }
 
     /**
+     * Charges the shot.
+     */
+    charge() {
+        this.states.set(PlayerAttackState, PlayerAttackState.charging);
+    }
+
+    /**
+     * Fires the shot.
+     */
+    shoot() {
+        this.states.set(PlayerAttackState, PlayerAttackState.none);
+
+        this.game.insertSprite(
+            new BusterShot(
+                this.rx,
+                this.y + this.height / 2,
+                this.flip,
+                Math.min(3, Math.ceil(this.power / 12)),
+                [],
+                this.scale
+            )
+        );
+
+        this.power = 1;
+    }
+
+    /**
      * Activates the key listeners
      */
     addListeners() {
@@ -934,6 +984,9 @@ class Player extends Sprite {
                         this.states.set(PlayerVerticalDisplacementState, PlayerVerticalDisplacementState.up);
                     }
                     break;
+                case 'x':
+                    this.charge();
+                    break;
             }
         };
 
@@ -957,6 +1010,9 @@ class Player extends Sprite {
                 case 'ArrowUp':
                 case 'ArrowDown':
                     this.states.set(PlayerVerticalDisplacementState, PlayerVerticalDisplacementState.float);
+                    break;
+                case 'x':
+                    this.shoot();
                     break;
             }
         };
@@ -1002,13 +1058,6 @@ class Player extends Sprite {
         this.game.addEventListener('keydown', keyHoldHandler);
         this.game.addEventListener('keypress', keyPressHandler);
         this.game.addEventListener('keyup', keyLiftHandler);
-    }
-
-    /**
-     * Starts the player nova attack.
-     */
-    nova() {
-
     }
 
     /**
