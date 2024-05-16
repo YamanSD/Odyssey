@@ -937,6 +937,8 @@ class Sigma extends Sprite {
         if (this.states.get(SigmaStageState) === SigmaStageState.stage1) {
             this.startCycle2();
         } else {
+            this.player.progressLevel();
+
             for (let i = 0; i < this.initHp / 10; i++) {
                 this.game.setTimeout(() => {
                     const e = new Explosion(

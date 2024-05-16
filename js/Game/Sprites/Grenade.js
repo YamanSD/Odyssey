@@ -121,6 +121,8 @@ class Grenade extends Sprite {
             this.x - 50,
             this.y - 50,
             this.scale,
+            false,
+            true
         );
 
         exp.start();

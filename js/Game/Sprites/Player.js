@@ -212,7 +212,6 @@ class Player extends Sprite {
                                 this.level.spawnEnemies();
                             }
 
-
                             switch (this.states.get(PlayerAttackState)) {
                                 case PlayerAttackState.charging:
                                     this.power++;
@@ -228,13 +227,25 @@ class Player extends Sprite {
                                     break;
                             }
 
+                            this.y += this.gravity;
+
+                            const col = this.colliding(this.level);
+
+                            if (col) {
+                                if (col.collided.y <= 100) {
+                                    this.y = col.collided.by
+                                } else {
+                                    this.by = col.collided.projectX(this.x);
+                                }
+                            }
+
                             switch (this.states.get(PlayerVerticalDisplacementState)) {
                                 case PlayerVerticalDisplacementState.up:
-                                    this.y -= 2;
+                                    this.y -= 2 + this.gravity;
                                     this.hoverTimer++;
                                     break;
                                 case PlayerVerticalDisplacementState.down:
-                                    this.y += 2;
+                                    this.y += 2 - this.gravity;
                                     this.hoverTimer++;
                                     break;
                                 case PlayerVerticalDisplacementState.float:
@@ -251,12 +262,8 @@ class Player extends Sprite {
 
                             switch (this.states.get(PlayerMoveState)) {
                                 case PlayerMoveState.startJumping:
-                                    if (lvlCol) {
-                                        // TODO separate the collision
-                                    }
-
                                     if (this.currentAnimation !== this.animations.damaged) {
-                                        this.y -= this.jumpForce;
+                                        this.y -= this.jumpForce + this.gravity;
                                     } else {
                                         this.transitionTo(PlayerMoveState.falling);
                                     }
@@ -289,7 +296,6 @@ class Player extends Sprite {
             150,
         );
 
-        // TODO add shooting animations and link
         // Create the animations
         this.#animations = {
             leave: this.createAnimation(

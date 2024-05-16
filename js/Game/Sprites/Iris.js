@@ -977,7 +977,11 @@ class Iris extends Sprite {
      * Destroys the sprite
      */
     destroy() {
+        this.player.progressLevel();
         const level = this.level;
+        this.level.removeSprite(this.#energyField);
+        this.level.removeSprite(this.#crystal);
+        this.level.removeSprite(this.#crystalField);
 
         for (let i = 0; i < this.initHp / 10; i++) {
             this.game.setTimeout(() => {
