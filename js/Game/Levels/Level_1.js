@@ -360,6 +360,14 @@ class Level_1 extends Level {
                 ]
             )
         );
+
+        const irisField = new IrisField(0, 0, this.scale * 206, this.scale);
+        this.insertSprite(new Iris(
+            this.scale * 3785,
+            this.scale * 157,
+            irisField,
+            this.scale
+        ));
     }
 
     /**

@@ -10,10 +10,9 @@ class BusterShot extends Sprite {
      * @param y {number}
      * @param left {boolean}
      * @param power {number}
-     * @param enemies {Sprite[]}
      * @param scale {number}
      */
-    constructor(x, y, left, power, enemies, scale) {
+    constructor(x, y, left, power, scale) {
         super(
             {},
             [x, y],
@@ -28,7 +27,7 @@ class BusterShot extends Sprite {
                     this.game.removeSprite(this);
                 }
 
-                for (const enemy of enemies) {
+                for (const enemy of this.level.enemies) {
                     const col = this.colliding(enemy);
 
                     if (col) {

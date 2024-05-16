@@ -75,7 +75,10 @@ class Explosion extends Sprite {
             undefined,
             undefined,
             undefined,
-            scale
+            scale,
+            undefined,
+            undefined,
+            true
         );
 
         this.#damaging = damaging ?? false;

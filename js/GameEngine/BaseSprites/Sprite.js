@@ -297,6 +297,12 @@ class Sprite {
     #damageFrames;
 
     /**
+     * @type {boolean}
+     * @private
+     */
+    #noDestroyOnDrain;
+
+    /**
      * @returns {number} a usable sprite ID.
      * @private
      */
@@ -402,7 +408,8 @@ class Sprite {
      *  @param isStatic {boolean?} true indicates that the sprite does not update. Default false.
      *  @param scale {number?} scale of the sprite.
      *  @param hp {number?} hit points of the sprite. Undefined means it has no HP.
-     *  @param damageCoolDown {number?} damage cool down of the sprite. Default is 1.
+     *  @param damageCoolDown {number?} damage cool down of the sprite. Default is 5.
+     *  @param noDestroyOnDrain {boolean?} if true, the sprite is not destroyed by auto when HP reaches 0.
      */
     constructor(
         description,
@@ -415,7 +422,8 @@ class Sprite {
         isStatic,
         scale,
         hp,
-        damageCoolDown = 1
+        damageCoolDown = 5,
+        noDestroyOnDrain
     ) {
         this.#id = Sprite.#spriteId();
         this.#scale = scale ?? 1;
@@ -429,6 +437,7 @@ class Sprite {
         this.#states = new Map();
         this.#level = undefined;
         this.#hp = this.#initHp = hp;
+        this.#noDestroyOnDrain = noDestroyOnDrain;
 
         // Initialize the damage cool down
         this.#initDamageCoolDown = damageCoolDown;
@@ -1001,6 +1010,12 @@ class Sprite {
         if (this.damageCoolDown <= 0) {
             this.#hp -= value;
             this.#hp = Math.max(0, this.#hp);
+
+            if (this.hp === 0 && !this.#noDestroyOnDrain) {
+                this.destroy();
+                return;
+            }
+
             this.resetDamageCoolDown();
             this.resetDamageFrames();
         }
@@ -1608,6 +1623,11 @@ class Sprite {
         // Restore the context
         ctx.restore();
     }
+
+    /**
+     * Destroys the given sprite.
+     */
+    destroy() {}
 
     /**
      * @param id {number} ID of the next animation to play.

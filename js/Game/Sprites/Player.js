@@ -839,6 +839,16 @@ class Player extends Sprite {
     }
 
     /**
+     * @returns {Segment}
+     */
+    get segment() {
+        return Segment.simpleSegment(
+            [this.x, this.y],
+                [this.rx, this.y]
+        );
+    }
+
+    /**
      * Links the shooting and normal animations.
      */
     link() {
@@ -1278,13 +1288,12 @@ class Player extends Sprite {
         // To switch the animation to non shooting
         this.currentAnimation = this.currentAnimation;
 
-        this.game.insertSprite(
+        this.level.insertSprite(
             new BusterShot(
                 this.flip ? this.x : (this.rx - 30),
                 this.y + this.height / 2 - 22,
                 this.flip,
                 Math.min(4, this.shotPower),
-                [],
                 this.scale
             )
         );
@@ -1519,4 +1528,27 @@ class Player extends Sprite {
     get sounds() {
         return Player.sounds;
     }
+    /**
+     * Destroys the sprite
+     */
+    destroy() {
+        const level = this.level;
+
+        for (let i = 0; i < this.initHp / 10; i++) {
+            this.game.setTimeout(() => {
+                const e = new Explosion(
+                    this.x + (-10 + Math.random() * 20),
+                    this.y + (-10 + Math.random() * 20),
+                    this.scale
+                )
+
+                level.insertSprite(e);
+
+                e.start();
+            }, i * 10);
+        }
+
+        this.level.removeSprite(this);
+    }
+
 }

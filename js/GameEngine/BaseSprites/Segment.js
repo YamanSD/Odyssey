@@ -118,9 +118,20 @@ class Segment extends Sprite {
         isStatic
     ) {
         super(
-            description,
+            {
+                isDone: false,
+                ...description
+            },
             description.p0,
-            onUpdate,
+            (t) => {
+                if (onUpdate) {
+                    onUpdate(t);
+                }
+
+                if (this.isDone) {
+                    this.level.removeSprite(this);
+                }
+            },
             {
                 borderColor: color,
                 borderWidth: 1,
@@ -136,10 +147,26 @@ class Segment extends Sprite {
      * @returns {{
      *   p0: [number, number],
      *   p1: [number, number],
+     *   isDone: boolean
      * }} description of the line.
      */
     get desc() {
         return super.desc;
+    }
+
+    /**
+     * True if activated
+     * @returns {boolean}
+     */
+    get isDone() {
+        return this.desc.isDone;
+    }
+
+    /**
+     * @param v
+     */
+    set isDone(v) {
+        this.desc.isDone = v;
     }
 
     /**

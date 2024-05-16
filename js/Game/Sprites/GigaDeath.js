@@ -202,5 +202,27 @@ class GigaDeath extends Sprite {
      */
     get sounds() {
         return GigaDeath.sounds;
+    }    /**
+     * Destroys the sprite
+     */
+    destroy() {
+        const level = this.level;
+
+        for (let i = 0; i < this.initHp / 10; i++) {
+            this.game.setTimeout(() => {
+                const e = new Explosion(
+                    this.x + (-10 + Math.random() * 20),
+                    this.y + (-10 + Math.random() * 20),
+                    this.scale
+                )
+
+                level.insertSprite(e);
+
+                e.start();
+            }, i * 10);
+        }
+
+        this.level.removeSprite(this);
     }
+
 }

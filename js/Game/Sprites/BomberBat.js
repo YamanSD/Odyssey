@@ -283,4 +283,28 @@ class BomberBat extends Sprite {
     get sounds() {
         return BomberBat.sounds;
     }
+
+    /**
+     * Destroys the sprite
+     */
+    destroy() {
+        for (let i = 0; i < this.initHp / 10; i++) {
+            this.game.setTimeout(() => {
+                const e = new Explosion(
+                    this.x + (-10 + Math.random() * 20),
+                    this.y + (-10 + Math.random() * 20),
+                    this.scale
+                )
+
+                this.game.insertSprite(e);
+
+                e.start();
+            }, i * 10);
+        }
+
+        if (this.states.get(BombState) === BombState.held) {
+            this.level.removeSprite(this.#bomb);
+        }
+        this.level.removeSprite(this);
+    }
 }

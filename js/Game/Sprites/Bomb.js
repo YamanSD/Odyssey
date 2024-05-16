@@ -184,5 +184,4 @@ class Bomb extends Sprite {
     get sounds() {
         return Bomb.sounds;
     }
-
 }

@@ -48,6 +48,7 @@ class TrapBlast extends Sprite {
      * @param x {number} x-coordinate of the hero.
      * @param y {number} y-coordinate of the hero.
      * @param scale {number} scale of TrapBlast.
+     * @param flip {boolean?} if true it faces to the right.
      * @param hitBoxBrush {{
      *    borderWidth?: number,
      *    borderColor?: string,
@@ -59,6 +60,7 @@ class TrapBlast extends Sprite {
         x,
         y,
         scale,
+        flip,
         hitBoxBrush
     ) {
         super(
@@ -86,7 +88,8 @@ class TrapBlast extends Sprite {
             undefined,
             undefined,
             undefined,
-            scale
+            scale,
+            20
         );
 
         // Initially cannot fire
@@ -209,6 +212,7 @@ class TrapBlast extends Sprite {
         };
 
         this.currentAnimation = this.animations.idle;
+        this.flip = flip;
     }
 
     /**
@@ -327,4 +331,27 @@ class TrapBlast extends Sprite {
     get sounds() {
         return TrapBlast.sounds;
     }
+    /**
+     * Destroys the sprite
+     */
+    destroy() {
+        const level = this.level;
+
+        for (let i = 0; i < this.initHp / 10; i++) {
+            this.game.setTimeout(() => {
+                const e = new Explosion(
+                    this.x + (-10 + Math.random() * 20),
+                    this.y + (-10 + Math.random() * 20),
+                    this.scale
+                )
+
+                level.insertSprite(e);
+
+                e.start();
+            }, i * 10);
+        }
+
+        this.level.removeSprite(this);
+    }
+
 }

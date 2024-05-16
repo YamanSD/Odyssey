@@ -21,6 +21,14 @@ class Level extends Sprite {
     #sprites;
 
     /**
+     * Set of enemies inside the level.
+     *
+     * @type {Set<Sprite>}
+     * @public
+     */
+    enemies;
+
+    /**
      * Each instance must initialize its hit-box.
      *
      * @param sprites {Sprite[]} sprite array.
@@ -62,6 +70,7 @@ class Level extends Sprite {
 
         // Sprite array
         this.#sprites = new Set(sprites);
+        this.enemies = new Set();
 
         if (!noBaseAnimation) {
             this.currentAnimation = this.createAnimation(
@@ -146,6 +155,10 @@ class Level extends Sprite {
      * @param sprite {Sprite} added to the level and game.
      */
     insertSprite(sprite) {
+        if (sprite.type === "enemy" || sprite.type === "boss") {
+            this.enemies.add(sprite);
+        }
+
         sprite.level = this;
         this.game.insertSprite(sprite);
         this.sprites.add(sprite);
@@ -155,6 +168,10 @@ class Level extends Sprite {
      * @param sprite {Sprite} removes the sprite from the level & game.
      */
     removeSprite(sprite) {
+        if (sprite.type === "enemy" || sprite.type === "boss") {
+            this.enemies.delete(sprite);
+        }
+
         sprite.level = undefined;
         this.game.removeSprite(sprite);
         this.sprites.delete(sprite);

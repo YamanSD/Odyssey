@@ -76,8 +76,17 @@ class Bee extends Sprite {
                 this.x += this.#speedVector[0];
                 this.y += this.#speedVector[1];
 
+                if (this.currentAnimation === this.animations.idle) {
+                    this.attack();
+                }
+
                 if (this.y > this.player.y) {
                     this.#speedVector[1] = this.#accelerationVector[1] = 0;
+                }
+
+                if (this.x < 0) {
+                    this.level.removeSprite(this);
+                    return;
                 }
 
                 this.moveCurrentAnimation();
@@ -87,7 +96,8 @@ class Bee extends Sprite {
             undefined,
             undefined,
             undefined,
-            scale
+            scale,
+            10
         );
 
         // Movement vectors
@@ -251,6 +261,29 @@ class Bee extends Sprite {
      */
     attack() {
         this.currentAnimation = this.animations.prepareAttack;
+    }
+
+    /**
+     * Destroys the sprite
+     */
+    destroy() {
+        const level = this.level;
+
+        for (let i = 0; i < this.initHp / 10; i++) {
+            this.game.setTimeout(() => {
+                const e = new Explosion(
+                    this.x + (-10 + Math.random() * 20),
+                    this.y + (-10 + Math.random() * 20),
+                    this.scale
+                )
+
+                level.insertSprite(e);
+
+                e.start();
+            }, i * 10);
+        }
+
+        this.level.removeSprite(this);
     }
 
     /**

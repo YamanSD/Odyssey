@@ -702,6 +702,7 @@ class Sigma extends Sprite {
      * Enters staeg 2 of the fight.
      */
     changeStage() {
+        this.heal(this.initHp);
         this.states.set(SigmaStageState, SigmaStageState.stage2);
         this.states.set(SigmaAttackState, SigmaAttackState.none);
         this.flip = false;
@@ -884,4 +885,27 @@ class Sigma extends Sprite {
     get sounds() {
         return Sigma.sounds;
     }
+    /**
+     * Destroys the sprite
+     */
+    destroy() {
+        const level = this.level;
+
+        for (let i = 0; i < this.initHp / 10; i++) {
+            this.game.setTimeout(() => {
+                const e = new Explosion(
+                    this.x + (-10 + Math.random() * 20),
+                    this.y + (-10 + Math.random() * 20),
+                    this.scale
+                )
+
+                level.insertSprite(e);
+
+                e.start();
+            }, i * 10);
+        }
+
+        this.level.removeSprite(this);
+    }
+
 }
