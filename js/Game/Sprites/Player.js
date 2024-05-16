@@ -132,7 +132,7 @@ class Player extends Sprite {
                 jumpForce: 10,
                 gravity: 15,
                 initDashDuration: 50, // In ticks
-                tempState: PlayerMoveState.idle
+                tempAnimation: undefined
             },
             [x, y],
             (t) => {
@@ -199,7 +199,11 @@ class Player extends Sprite {
                                         // TODO separate the collision
                                     }
 
-                                    this.y -= this.jumpForce;
+                                    if (this.currentAnimation !== this.animations.damaged) {
+                                        this.y -= this.jumpForce;
+                                    } else {
+                                        this.transitionTo(PlayerMoveState.falling);
+                                    }
                                     break;
                                 case PlayerMoveState.falling:
                                     this.y += this.gravity;
@@ -322,7 +326,7 @@ class Player extends Sprite {
                 3,
                 undefined,
                 () => {
-                    this.transitionTo(this.tempState);
+                    this.currentAnimation = this.tempAnimation;
                 }
             ),
             startRun: this.createAnimation(
@@ -552,7 +556,6 @@ class Player extends Sprite {
      * @param state {number} state to transition to.
      */
     transitionTo(state) {
-        // TODO add player damaged state here
         switch (this.states.get(PlayerMoveState)) {
             case PlayerMoveState.idle:
                 switch (state) {
@@ -710,7 +713,7 @@ class Player extends Sprite {
         this.states.set(PlayerDisplacementState, PlayerDisplacementState.idle);
 
         // Player stops when damaged while dashing
-        this.tempState = PlayerMoveState.idle;
+        this.tempAnimation = PlayerMoveState.idle;
         this.currentAnimation = this.animations.damaged;
     }
 
@@ -766,7 +769,7 @@ class Player extends Sprite {
      *   dashSpeed: number,
      *   initDashDuration: number,
      *   dashDuration: number,
-     *   tempState: number,
+     *   tempAnimation: number,
      *   hoverTimer: number,
      *   maxHoverTimer: number
      * }} description of Player.
@@ -778,8 +781,8 @@ class Player extends Sprite {
     /**
      * @returns {number} previous player state.
      */
-    get tempState() {
-        return this.desc.tempState;
+    get tempAnimation() {
+        return this.desc.tempAnimation;
     }
 
     /**
@@ -853,10 +856,10 @@ class Player extends Sprite {
     }
 
     /**
-     * @param v {number} new temp state.
+     * @param v {number} new temp animations.
      */
-    set tempState(v) {
-        this.desc.tempState = v;
+    set tempAnimation(v) {
+        this.desc.tempAnimation = v;
     }
 
     /**
@@ -1035,6 +1038,7 @@ class Player extends Sprite {
     }
 
     damage(value) {
+        this.tempAnimation = this.currentAnimation;
         this.currentAnimation = this.animations.damaged;
         super.damage(value);
     }
