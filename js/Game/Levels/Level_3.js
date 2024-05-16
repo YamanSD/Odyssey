@@ -103,5 +103,19 @@ class Level_3 extends Level {
         return Level_3.sounds;
     }
 
+
+    /**
+     * @returns {string} string representing the type of the sprite.
+     */
+    static get type() {
+        return "3";
+    }
+
+    /**
+     * @returns {string} string representing the type of the sprite.
+     */
+    get type() {
+        return Level_3.type;
+    }
 }
 

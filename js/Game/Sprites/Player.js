@@ -277,6 +277,8 @@ class Player extends Sprite {
                 if (onUpdate) {
                     onUpdate(t);
                 }
+
+                this.moveCurrentAnimation();
             },
             undefined,
             hitBoxBrush,
@@ -290,6 +292,35 @@ class Player extends Sprite {
         // TODO add shooting animations and link
         // Create the animations
         this.#animations = {
+            leave: this.createAnimation(
+                0,
+                328,
+                1063,
+                6,
+                1,
+                6,
+                58,
+                88,
+                1,
+                0,
+                4,
+                undefined,
+                () => {
+                    if (this.level) {
+                        switch (this.level.type) {
+                            case Level_1.type:
+                                this.goToLevel(new Level_2([]));
+                                break;
+                            case Level_2.type:
+                                this.goToLevel(new Level_3());
+                                break;
+                            case Level_3.type:
+                                location.reload();
+                                break;
+                        }
+                    }
+                }
+            ),
             spawn_0: this.createAnimation(
                 0,
                 62,
@@ -1409,7 +1440,9 @@ class Player extends Sprite {
                     break;
                 case 'ArrowUp':
                 case 'ArrowDown':
-                    this.states.set(PlayerVerticalDisplacementState, PlayerVerticalDisplacementState.float);
+                    if (this.states.get(PlayerMoveState) === PlayerMoveState.hoverIdle) {
+                        this.states.set(PlayerVerticalDisplacementState, PlayerVerticalDisplacementState.float);
+                    }
                     break;
                 case 'x':
                     this.shoot();
@@ -1436,6 +1469,17 @@ class Player extends Sprite {
             }
         }
 
+        const escapeHandler = (e) => {
+            switch (e.key) {
+                case 'Escape':
+                    this.game.pause();
+                    break;
+                case 'e':
+                    this.progressLevel();
+                    break;
+            }
+        };
+
         /**
          * @param e {KeyboardEvent}
          */
@@ -1456,8 +1500,40 @@ class Player extends Sprite {
 
         this.game.addDoubleKeyListener(doubleKeyPressHandler);
         this.game.addEventListener('keydown', keyHoldHandler);
+        this.game.addEventListener('keypress', escapeHandler, true);
         this.game.addEventListener('keypress', keyPressHandler);
         this.game.addEventListener('keyup', keyLiftHandler);
+    }
+
+    /**
+     * Sends the player to the next level.
+     *
+     * @param {Level} l to go to.
+     */
+    goToLevel(l) {
+        const game = this.game;
+
+        game.removeAllEventListeners();
+
+        this.game.insertSprite(l);
+
+        const p = new Player(
+            100 * l.scale,
+            -100 * l.scale,
+            l.scale,
+            undefined,
+            true
+        );
+        Sprite.player = p;
+        const hpB = new HealthBar(
+            HealthBarType.x,
+            p,
+            l.scale
+        );
+        l.insertSprites(p, hpB);
+        l.game.follow(p);
+        l.load();
+        this.level.offload();
     }
 
     /**
@@ -1573,7 +1649,8 @@ class Player extends Sprite {
     }
 
     progressLevel() {
-
+        this.states.set(PlayerControlsState, PlayerControlsState.inactive);
+        this.currentAnimation = this.animations.leave;
     }
 
     /**
@@ -1597,6 +1674,7 @@ class Player extends Sprite {
             }, i * 10);
         }
 
+        this.player;
         this.level.removeSprite(this);
     }
 

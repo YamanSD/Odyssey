@@ -74,10 +74,25 @@ class MainMenu extends Sprite {
                                                 this.game.insertSprite(ls);
 
                                                 this.game.setTimeout(() => {
-                                                    // TODO start level 1
-                                                    /*this.game.insertSprite(
-                                                        new Level_1()
-                                                    );*/
+                                                    const l = new Level_1();
+
+                                                    this.game.insertSprite(l);
+
+                                                    const p = new Player(
+                                                        100 * l.scale,
+                                                        -100 * l.scale,
+                                                        l.scale
+                                                    );
+                                                    Sprite.player = p;
+                                                    const hpB = new HealthBar(
+                                                        HealthBarType.x,
+                                                        p,
+                                                        l.scale
+                                                    );
+                                                    l.insertSprites(p, hpB);
+
+                                                    l.game.follow(p);
+                                                    l.load();
                                                     this.game.removeSprite(ls);
                                                     this.game.removeEventListener('keydown', keyHandlerId);
                                                     this.game.removeSprite(this);

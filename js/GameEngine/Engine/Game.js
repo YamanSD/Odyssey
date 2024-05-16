@@ -31,7 +31,7 @@ class Game {
      * @type {number} in ticks.
      * @private
      */
-    static #doubleClickDelta = 20;
+    static #doubleClickDelta = 10;
 
     /**
      * @type {number} ID counter for the event handlers.
@@ -847,6 +847,17 @@ class Game {
         if (event in this.#events
             && id in this.#events[event].handlers) {
             delete this.#events[event].handlers[id];
+        }
+    }
+
+    /**
+     * Erases all key listeners.
+     */
+    removeAllEventListeners() {
+        for (const event of Object.keys(this.#events)) {
+            for (const id of Object.keys(this.#events[event])) {
+                this.removeEventListener(event, Number(id));
+            }
         }
     }
 

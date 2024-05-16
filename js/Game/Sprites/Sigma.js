@@ -142,7 +142,7 @@ class Sigma extends Sprite {
                         }
                     );
 
-                    this.game.insertSprite(
+                    this.level.insertSprite(
                         d
                     );
                 }

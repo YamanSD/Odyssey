@@ -43,6 +43,11 @@ class ShockProjectile extends Sprite {
             () => {
                 this.x += this.#speedVector[0];
                 this.y += this.#speedVector[1];
+
+                if (this.colliding(this.player)) {
+                    this.player.damage(2);
+                }
+
                 this.moveCurrentAnimation();
             },
             undefined,

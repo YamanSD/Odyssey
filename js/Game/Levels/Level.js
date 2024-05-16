@@ -101,20 +101,6 @@ class Level extends Sprite {
     }
 
     /**
-     * @returns {string} string representing the type of the sprite.
-     */
-    static get type() {
-        return "level";
-    }
-
-    /**
-     * @returns {string} string representing the type of the sprite.
-     */
-    get type() {
-        return Level.type;
-    }
-
-    /**
      * @returns {number} width of the sprite.
      */
     get width() {

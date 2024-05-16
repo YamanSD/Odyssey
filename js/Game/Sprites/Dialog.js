@@ -55,6 +55,8 @@ class Dialog extends Sprite {
      */
     #headAnimation;
 
+    #handlerId;
+
     /**
      * @param text {string} text to be displayed.
      * @param type {number} one of the four DialogTypes.
@@ -67,9 +69,6 @@ class Dialog extends Sprite {
         scale = 2.5,
         onEnd
     ) {
-        // Used to store the key press handler ID.
-        let handlerId = undefined;
-
         super(
             {
                 dialog: text,
@@ -78,7 +77,7 @@ class Dialog extends Sprite {
             },
             [0, 0],
             () => {
-                if (handlerId === undefined) {
+                if (this.#handlerId === undefined) {
                     // Not inserted yet
                     this.game.insertSprite(this.#text);
 
@@ -118,7 +117,7 @@ class Dialog extends Sprite {
                         }
                     };
 
-                    handlerId = this.game.addEventListener('keydown', keyPressHandler);
+                    this.#handlerId = this.game.addEventListener('keydown', keyPressHandler);
                 }
 
                 this.x = this.game.cameraX + (7 + Game.windowWidth / 20) * scale + (this.isBoss ? 0 : 120);
@@ -434,8 +433,9 @@ class Dialog extends Sprite {
      * Ends the dialog box.
      */
     endDialog() {
-        this.game.removeSprite(this.#text);
-        this.game.removeSprite(this);
+        this.game.removeEventListener('keydown', this.#handlerId);
+        this.level.removeSprite(this.#text);
+        this.level.removeSprite(this);
     }
 
     /**

@@ -172,7 +172,7 @@ class Iris extends Sprite {
                         }
                     );
 
-                    this.game.insertSprite(
+                    this.level.insertSprite(
                         d
                     );
                 }

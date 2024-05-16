@@ -262,7 +262,7 @@ class Level_1 extends Level {
                 p1: [this.scale * 266, 0]
             },
             () => {
-                if (s0.intersects(x.segment)) {
+                if (s0.intersects(this.player.segment)) {
                     s0.isDone = true;
                     s0.level.insertSprites(
                         new TrapBlast(
@@ -287,7 +287,7 @@ class Level_1 extends Level {
                 p1: [this.scale * 490, this.scale * 80]
             },
             () => {
-                if (s1.intersects(x.segment)) {
+                if (s1.intersects(this.player.segment)) {
                     s1.isDone = true;
                     s1.level.insertSprites(
                         new Bee(
@@ -317,7 +317,7 @@ class Level_1 extends Level {
                 p1: [this.scale * 880, this.scale * 120]
             },
             () => {
-                if (s2.intersects(x.segment)) {
+                if (s2.intersects(this.player.segment)) {
                     s2.isDone = true;
                     s2.level.insertSprites(
                         new Bee(
@@ -373,7 +373,7 @@ class Level_1 extends Level {
                 p1: [this.scale * 2000, this.scale * 240]
             },
             () => {
-                if (s3.intersects(x.segment)) {
+                if (s3.intersects(this.player.segment)) {
                     s3.isDone = true;
                     s3.level.insertSprites(
                         new Bee(
@@ -414,7 +414,7 @@ class Level_1 extends Level {
                 p1: [this.scale * 2550, this.scale * 240]
             },
             () => {
-                if (s4.intersects(x.segment)) {
+                if (s4.intersects(this.player.segment)) {
                     s4.isDone = true;
                     s4.level.insertSprites(
                         new Bee(
@@ -460,7 +460,7 @@ class Level_1 extends Level {
                 p1: [this.scale * 3580, this.scale * 240]
             },
             () => {
-                if (s5.intersects(x.segment)) {
+                if (s5.intersects(this.player.segment)) {
                     s5.isDone = true;
                     this.createBossArena();
                 }
@@ -627,5 +627,19 @@ class Level_1 extends Level {
         return Level_1.sounds;
     }
 
+
+    /**
+     * @returns {string} string representing the type of the sprite.
+     */
+    static get type() {
+        return "1";
+    }
+
+    /**
+     * @returns {string} string representing the type of the sprite.
+     */
+    get type() {
+        return Level_1.type;
+    }
 }
 
