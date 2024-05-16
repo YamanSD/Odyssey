@@ -86,6 +86,12 @@ class SigmaShockProjectile extends Sprite {
                     }
                 }
 
+                const pcol = this.colliding(this.player);
+
+                if (pcol) {
+                    this.player.damage(2);
+                }
+
                 this.moveCurrentAnimation();
             },
             undefined,

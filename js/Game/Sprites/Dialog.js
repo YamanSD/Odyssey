@@ -87,7 +87,7 @@ class Dialog extends Sprite {
                      */
                     const keyPressHandler = (e) => {
                         switch (e.key) {
-                            case ' ':
+                            case 'Enter':
                                 switch (this.states.get(DialogState)) {
                                     case DialogState.starting:
                                         this.states.set(DialogState, DialogState.typing);

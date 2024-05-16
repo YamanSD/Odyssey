@@ -31,7 +31,7 @@ class Game {
      * @type {number} in ticks.
      * @private
      */
-    static #doubleClickDelta = 50;
+    static #doubleClickDelta = 20;
 
     /**
      * @type {number} ID counter for the event handlers.

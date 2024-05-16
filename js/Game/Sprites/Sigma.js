@@ -100,10 +100,53 @@ class Sigma extends Sprite {
         scale,
         hitBoxBrush
     ) {
+        let addedDialog = false;
+
         super(
             {},
             [x, y],
             (tick) => {
+                if (!addedDialog) {
+                    let sentence = 0;
+                    addedDialog = true;
+
+                    const d = new Dialog(
+                        "SIGMA!",
+                        DialogType.x,
+                        undefined,
+                        () => {
+                            if (sentence === 0) {
+                                d.dialogType = DialogType.sigma;
+                                d.dialog = "HE HE HE";
+                                sentence++;
+                            } else if (sentence === 1) {
+                                d.dialogType = DialogType.x;
+                                d.dialog = "You will pay for what you have \n done to Iris";
+                                sentence++;
+                            } else if (sentence === 2) {
+                                d.dialogType = DialogType.sigma;
+                                d.dialog = "This is your end X. \n Prepare to DIE!";
+                                sentence++;
+                            } else {
+                                const hpB = new HealthBar(
+                                    HealthBarType.sigma,
+                                    this,
+                                    this.level.scale
+                                );
+
+                                this.level.insertSprite(hpB);
+
+                                this.changeStage();
+                                d.endDialog();
+                            }
+                        }
+                    );
+
+                    this.game.insertSprite(
+                        d
+                    );
+                }
+
                 switch (this.states.get(SigmaStageState)) {
                     case SigmaStageState.stage1:
                         switch (this.states.get(SigmaAttackState)) {
@@ -205,7 +248,8 @@ class Sigma extends Sprite {
             undefined,
             undefined,
             undefined,
-            scale
+            scale,
+            1000
         );
 
         // Create the animations
@@ -702,7 +746,6 @@ class Sigma extends Sprite {
      * Enters staeg 2 of the fight.
      */
     changeStage() {
-        this.heal(this.initHp);
         this.states.set(SigmaStageState, SigmaStageState.stage2);
         this.states.set(SigmaAttackState, SigmaAttackState.none);
         this.flip = false;
@@ -750,8 +793,8 @@ class Sigma extends Sprite {
             this.states.set(SigmaAttackState, SigmaAttackState.none);
         }
 
-        const x = this.flip ? this.x + 120 : this.rx - 24,
-            y = this.y + 40,
+        const x = this.flip ? this.x + 115 : this.rx - 29,
+            y = this.y + 37,
             bottom = this.by - 60,
             close = (long ? 10 : 0) + 60,
             far = (long ? 10 : 0) + 70,
@@ -891,21 +934,25 @@ class Sigma extends Sprite {
     destroy() {
         const level = this.level;
 
-        for (let i = 0; i < this.initHp / 10; i++) {
-            this.game.setTimeout(() => {
-                const e = new Explosion(
-                    this.x + (-10 + Math.random() * 20),
-                    this.y + (-10 + Math.random() * 20),
-                    this.scale
-                )
+        if (this.states.get(SigmaStageState) === SigmaStageState.stage1) {
+            this.startCycle2();
+        } else {
+            for (let i = 0; i < this.initHp / 10; i++) {
+                this.game.setTimeout(() => {
+                    const e = new Explosion(
+                        this.x + (-10 + Math.random() * 20),
+                        this.y + (-10 + Math.random() * 20),
+                        this.scale
+                    )
 
-                level.insertSprite(e);
+                    level.insertSprite(e);
 
-                e.start();
-            }, i * 10);
+                    e.start();
+                }, i * 10);
+            }
+
+            this.level.removeSprite(this);
         }
-
-        this.level.removeSprite(this);
     }
 
 }

@@ -1092,25 +1092,14 @@ class Player extends Sprite {
         this.currentAnimation = this.animations.startRun;
     }
 
-    dashingToDamaged() {
-        this.states.set(PlayerMoveState, PlayerMoveState.damaged);
-        this.states.set(PlayerDisplacementState, PlayerDisplacementState.idle);
-
-        // Player stops when damaged while dashing
-        this.tempAnimation = PlayerMoveState.idle;
-        this.currentAnimation = this.animations.damaged;
-    }
-
     /**
      * Moves the player to the flip direction.
      */
     move() {
-        if (this.currentAnimation !== this.animations.damaged) {
-            if (this.currentAnimation === this.animations.hoverBackward) {
-                this.x -= this.speed;
-            } else {
-                this.x += this.flip ? -this.speed : this.speed;
-            }
+        if (this.currentAnimation === this.animations.hoverBackward) {
+            this.x -= this.speed;
+        } else {
+            this.x += this.flip ? -this.speed : this.speed;
         }
     }
 
@@ -1125,15 +1114,13 @@ class Player extends Sprite {
             return;
         }
 
-        if (this.currentAnimation !== this.animations.damaged) {
-            // First dash
-            if (this.dashDuration === this.desc.initDashDuration) {
-                this.y += 19 * this.scale;
-            }
-
-            this.x += this.flip ? -this.dashSpeed : this.dashSpeed;
-            this.dashDuration--;
+        // First dash
+        if (this.dashDuration === this.desc.initDashDuration) {
+            this.y += 19 * this.scale;
         }
+
+        this.x += this.flip ? -this.dashSpeed : this.dashSpeed;
+        this.dashDuration--;
     }
 
     /**

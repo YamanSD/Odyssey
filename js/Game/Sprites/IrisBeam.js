@@ -61,7 +61,7 @@ class IrisBeam extends Sprite {
                     this.states.get(PowerState) === PowerState.full
                     && this.colliding(this.player)
                 ) {
-                    this.player.damage(10);
+                    this.player.damage(1);
                 }
 
                 this.moveCurrentAnimation();

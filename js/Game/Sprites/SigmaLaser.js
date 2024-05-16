@@ -72,6 +72,12 @@ class SigmaLaser extends Sprite {
 
                 this.x1 = -Math.tan(this.radRotation) * (this.y1 - this.y) + this.x;
 
+                const col = this.colliding(this.player);
+
+                if (col) {
+                    this.player.damage(red ? 2 : 1);
+                }
+
                 this.moveCurrentAnimation();
 
                 if (duration !== undefined && this.rotation === maxRotation && !haveTimeout) {

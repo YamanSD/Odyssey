@@ -69,7 +69,8 @@ class SuicideDrone extends Sprite {
             undefined,
             undefined,
             undefined,
-            scale
+            scale,
+            3
         );
 
         this.#animations = {
@@ -198,7 +199,7 @@ class SuicideDrone extends Sprite {
      * @returns {string} the type of the sprite.
      */
     static get type() {
-        return "enemyProjectile";
+        return "enemy";
     }
 
     /**

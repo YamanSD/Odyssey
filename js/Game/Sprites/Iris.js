@@ -133,10 +133,50 @@ class Iris extends Sprite {
         scale,
         hitBoxBrush
     ) {
+        let startedDialog = false;
+
         super(
             {},
             [x, y],
             () => {
+                if (!startedDialog) {
+                    startedDialog = true;
+
+                    let sentence = 0
+
+                    const d = new Dialog(
+                        "Iris what are you doing here?",
+                        DialogType.x,
+                        undefined,
+                        () => {
+                            if (sentence === 0) {
+                                d.dialogType = DialogType.iris;
+                                d.dialog = "I am here to kill you!";
+                                sentence++;
+                            } else if (sentence === 1) {
+                                d.dialogType = DialogType.x;
+                                d.dialog = "IRIS NO WAIT!";
+                                sentence++;
+                            } else {
+                                const hpB = new HealthBar(
+                                    HealthBarType.iris,
+                                    this,
+                                    this.level.scale
+                                );
+
+                                this.level.insertSprite(hpB);
+
+                                this.spawnCrystal();
+                                d.endDialog();
+                            }
+                        }
+                    );
+
+                    this.game.insertSprite(
+                        d
+                    );
+                }
+
                 if (this.states.get(CrystalAttackState) === CrystalAttackState.follow) {
                     this.#crystal.moveTo(this.player.rx, this.player.by, 6);
                 }
@@ -224,7 +264,8 @@ class Iris extends Sprite {
             undefined,
             undefined,
             undefined,
-            scale
+            scale,
+            1000
         );
 
         // Iris field

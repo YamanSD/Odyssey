@@ -16,22 +16,13 @@ class Level_3 extends Level {
      */
     constructor() {
         super(
-            [
-                new Sigma(
-                    300,
-                    150,
-                    [100, 350],
-                    3.4
-                )
-            ],
-            400,
-            240,
+            [],
+            5112,
+            747,
             {
                 fillColor: '#FFFF0077'
             },
-            3.4,
-            false,
-            true
+            0.34
         );
 
         const height = 200;
@@ -45,17 +36,17 @@ class Level_3 extends Level {
                 height,
             },
             {
+                x: 480,
+                y: 0,
+                width: 15,
+                height: 250,
+            },
+            {
                 x: -20,
                 y: 0,
                 width: 20,
                 height,
             },
-            {
-                x: 400 * this.scale,
-                y: 0,
-                width: 20,
-                height
-            }
         ]);
     }
 
@@ -72,11 +63,23 @@ class Level_3 extends Level {
         );
     }
 
+    load() {
+        this.sprites.add(
+            new Sigma(
+                700,
+                310,
+                [200, 700],
+                this.scale
+            )
+        );
+        super.load();
+    }
+
     /**
      * @returns {string[]} sprite sheets.
      */
     static get sheets() {
-        return ['level_3.png'];
+        return ['level_1.png'];
     }
 
     /**

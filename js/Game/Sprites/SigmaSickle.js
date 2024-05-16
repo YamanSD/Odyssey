@@ -56,6 +56,10 @@ class SigmaSickle extends Sprite {
             {},
             [x, y],
             () => {
+                if (this.colliding(this.player)) {
+                    this.player.damage(10);
+                }
+
                 this.circleAround(
                     this.#angleRef,
                     this.initX + (toLeft ? -200 : 200),
@@ -68,7 +72,7 @@ class SigmaSickle extends Sprite {
                             onCycle();
                         }
                     }
-                )
+                );
 
                 this.moveCurrentAnimation();
             },

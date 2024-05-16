@@ -13,19 +13,6 @@ let speed = 40;
 
 let moveVector = [0, 0];
 
-/**
- * TODO List
- *
- * - Add attack damage.
- * - Place the enemies in levels.
- * - Implement X animations + attacks.
- * - Deploy.
- * - Add sound effects and OST.
- * - Add rest of dialog
- * - Add heal and life items as drops from enemies.
- */
-
-
 const txt = new Text(
     {
         bottomLeftCoords: [0, 0],
@@ -61,84 +48,8 @@ const x = new Player(
     -100 * l1.scale,
     l1.scale,
     (ignored) => {
-    // if (x.states.get(ShootingState) === ShootingState.shoot) {
-    //     x.currentAnimation = x.animations.shoot;
-    //     const m = new BusterShot(
-    //         x.flip ? x.x : x.x + x.width,
-    //         x.y + 26,
-    //         x.flip,
-    //         1,
-    //         () => {
-    //             m.moveCurrentAnimation();
-    //             m.x += (m.flip ? -1 : 1) * 20;
-    //         },
-    //         {
-    //             'fillColor': 'green'
-    //         }
-    //     );
-    //
-    //     x.game.insertSprite(
-    //         m
-    //     );
-    //
-    //     x.states.set(ShootingState, ShootingState.idle);
-    // }
-    //
-    // const gravity = speed;
-    // const floorY = 400;
-    //
-    // if (moveVector[1] < 0
-    //     && (x.currentAnimation !== x.animations.jumpStart
-    //         || x.currentAnimation !== x.animations.jumpLoop)) {
-    //     x.currentAnimation = x.animations.jumpStart;
-    //     x.states.set(JumpState, JumpState.floating);
-    // }
-    //
-    // x.y += moveVector[1] + gravity;
-    // const col = x.colliding(l1);
-    //
-    // if (col) {
-    //     if (col.isNorth) {
-    //         console.log(col.collided.y);
-    //         x.by = col.collided.projectX(x.x);
-    //     }
-    // }
-    //
-    // moveVector[1] += gravity;
-    //
-    // if (moveVector[1] >= 0) {
-    //     moveVector[1] = 0;
-    // }
-    //
-    // if (moveVector[0]) {
-    //     x.x += moveVector[0];
-    //
-    //     if (moveVector[0] < 0) {
-    //         x.flip = true;
-    //     } else if (moveVector[0] > 0) {
-    //         x.flip = false;
-    //     }
-    //
-    //     if (x.y + x.height >= floorY && x.currentAnimation !== x.animations.moveLoop) {
-    //         x.currentAnimation = x.animations.startMove;
-    //     }
-    // } else if (x.y + x.height >= floorY) {
-    //     if (x.states.get(JumpState) === JumpState.floating) {
-    //         x.currentAnimation = x.animations.jumpEnd;
-    //     } else if (x.currentAnimation !== x.animations.shoot) {
-    //         x.currentAnimation = x.animations.idle;
-    //     }
-    //
-    //     x.states.set(JumpState, JumpState.idle);
-    // }
-
-    // x.currentAnimation = x.animations.idle;
-
     if (x.states.get(ShootingState) !== ShootingState.idle) {
         x.states.set(ShootingState, ShootingState.idle);
-
-        // const r = new Rocket(x.x + 100, x.y + 100, false, 2);
-        // x.level.insertSprite(r);
     }
 
     if (moveVector[0] < 0) {
@@ -146,10 +57,6 @@ const x = new Player(
     } else if (moveVector[0] > 0) {
         x.flip = false;
     }
-
-    // if (moveVector[0]) {
-    //     l1.moveCurrentAnimation();
-    // }
 
     x.rx += moveVector[0];
     x.by += moveVector[1];
@@ -229,34 +136,5 @@ g.addEventListener('keydown', keyPressHandler);
 g.addEventListener('keyup', keyLiftHandler);
 
 
-
-// g.addDoubleKeyListener((e) => {
-//     console.log("DOUBLE CLICK");
-// });
-
-// const t = new Teleporter(
-//     100 * l1.scale,
-//     100 * l1.scale,
-//     l1.scale,
-//     () => {
-//         console.log("STOOD");
-//     }
-// )
-// l1.insertSprite(t);
-// console.log(g.areColliding(x, x));
 l1.load();
-
-const d = new Dialog(
-    "HA HA HA surrender X you idiot!aaaaaaaaaaa",
-    DialogType.zero,
-    undefined,
-    () => {
-        d.dialog = "PREPARE TO DIE";
-        d.dialogType = DialogType.sigma
-    }
-);
-
-
-
-// g.insertSprite(d);
 g.resume();
