@@ -48,6 +48,18 @@ const PlayerDisplacementState = {
 };
 
 /**
+ * State used while hovering.
+ *
+ * @type {{idle: number, up: number, down: number, float: number}}
+ */
+const PlayerVerticalDisplacementState = {
+    idle: 0,
+    up: 1,
+    down: 2,
+    float: 3,
+};
+
+/**
  * Primary states of the player.
  *
  * @type {{falling: number, hoverIdle: number, idle: number, stopDashing: number, dashing: number, running: number, landing: number, startRunning: number, damaged: number, startDashing: number, hoverForward: number, startJumping: number, hoverBackwards: number}}
@@ -114,6 +126,8 @@ class Player extends Sprite {
                 lives: 2,
                 moveSpeed: 8,
                 dashSpeed: 16,
+                hoverTimer: 0,
+                maxHoverTimer: 240, // In ticks
                 dashDuration: 50, // In ticks
                 jumpForce: 10,
                 gravity: 15,
@@ -157,26 +171,45 @@ class Player extends Sprite {
                                     this.dash();
                                     break;
                             }
-                        }
 
-                        const lvlCol = this.colliding(this.level);
+                            switch (this.states.get(PlayerVerticalDisplacementState)) {
+                                case PlayerVerticalDisplacementState.up:
+                                    this.y -= 2;
+                                    this.hoverTimer++;
+                                    break;
+                                case PlayerVerticalDisplacementState.down:
+                                    this.y += 2;
+                                    this.hoverTimer++;
+                                    break;
+                                case PlayerVerticalDisplacementState.float:
+                                    this.hoverTimer++;
+                                    break;
+                            }
 
-                        switch (this.states.get(PlayerMoveState)) {
-                            case PlayerMoveState.startJumping:
-                                if (lvlCol) {
-                                    // TODO separate the collision
-                                }
+                            if (this.hoverTimer === this.desc.maxHoverTimer) {
+                                this.transitionTo(PlayerMoveState.falling);
+                                this.hoverTimer = 0;
+                            }
 
-                                this.y -= this.jumpForce;
-                                break;
-                            case PlayerMoveState.falling:
-                                this.y += this.gravity;
+                            const lvlCol = this.colliding(this.level);
 
-                                if (lvlCol) {
-                                    this.by = lvlCol.collided.projectX(this.x);
-                                    this.transitionTo(PlayerMoveState.landing);
-                                }
-                                break;
+                            switch (this.states.get(PlayerMoveState)) {
+                                case PlayerMoveState.startJumping:
+                                    if (lvlCol) {
+                                        // TODO separate the collision
+                                    }
+
+                                    this.y -= this.jumpForce;
+                                    break;
+                                case PlayerMoveState.falling:
+                                    this.y += this.gravity;
+
+                                    if (lvlCol) {
+                                        this.by = lvlCol.collided.projectX(this.x);
+                                        this.transitionTo(PlayerMoveState.landing);
+                                    }
+                                    break;
+                            }
                         }
                         break;
                 }
@@ -466,8 +499,48 @@ class Player extends Sprite {
                     this.setIdle();
                 }
             ),
+            hoverIdle: this.createAnimation(
+                1,
+                265,
+                999,
+                3,
+                1,
+                3,
+                33,
+                64,
+                1,
+                0,
+                3,
+            ),
+            hoverForward: this.createAnimation(
+                1,
+                15,
+                1209,
+                6,
+                1,
+                6,
+                41,
+                56,
+                1,
+                0,
+                3,
+            ),
+            hoverBackward: this.createAnimation(
+                1,
+                15,
+                1008,
+                6,
+                1,
+                6,
+                33,
+                61,
+                1,
+                0,
+                3,
+            )
         };
 
+        this.states.set(PlayerVerticalDisplacementState, PlayerVerticalDisplacementState.idle);
         this.states.set(PlayerDisplacementState, PlayerDisplacementState.idle);
         this.states.set(PlayerMoveState, PlayerMoveState.idle);
         this.states.set(PlayerSpawnState, PlayerSpawnState.beaming);
@@ -527,6 +600,9 @@ class Player extends Sprite {
                     case PlayerMoveState.startDashing:
                         this.toDashing();
                         break;
+                    case PlayerMoveState.hoverIdle:
+                        this.toHover();
+                        break;
                 }
                 break;
             case PlayerMoveState.landing:
@@ -549,7 +625,38 @@ class Player extends Sprite {
                         break;
                 }
                 break;
+            case PlayerMoveState.hoverBackwards:
+                // Fall through
+            case PlayerMoveState.hoverForward:
+                // Fall through
+            case PlayerMoveState.hoverIdle:
+                switch (state) {
+                    case PlayerMoveState.hoverIdle:
+                        this.currentAnimation = this.animations.hoverIdle;
+                        this.states.set(PlayerDisplacementState, PlayerDisplacementState.idle);
+                        break;
+                    case PlayerMoveState.hoverForward:
+                        this.currentAnimation = this.animations.hoverForward;
+                        break;
+                    case PlayerMoveState.hoverBackwards:
+                        this.currentAnimation = this.animations.hoverBackward;
+                        break;
+                    case PlayerMoveState.startDashing:
+                        this.states.set(PlayerVerticalDisplacementState, PlayerVerticalDisplacementState.idle);
+                        this.toDashing();
+                        break;
+                    case PlayerMoveState.falling:
+                        this.states.set(PlayerVerticalDisplacementState, PlayerVerticalDisplacementState.idle);
+                        this.toFalling();
+                        break;
+                }
+                break;
         }
+    }
+
+    toHover() {
+        this.states.set(PlayerMoveState, PlayerMoveState.hoverIdle);
+        this.currentAnimation = this.animations.hoverIdle;
     }
 
     idleToRunning() {
@@ -607,24 +714,16 @@ class Player extends Sprite {
         this.currentAnimation = this.animations.damaged;
     }
 
-    hoverToDamaged() {
-        // TODO
-    }
-
-    jumpingToHover() {
-        // TODO
-    }
-
-    fallingToHover() {
-        // TODO
-    }
-
     /**
      * Moves the player to the flip direction.
      */
     move() {
         if (this.currentAnimation !== this.animations.damaged) {
-            this.x += this.flip ? -this.speed : this.speed;
+            if (this.currentAnimation === this.animations.hoverBackward) {
+                this.x -= this.speed;
+            } else {
+                this.x += this.flip ? -this.speed : this.speed;
+            }
         }
     }
 
@@ -667,7 +766,9 @@ class Player extends Sprite {
      *   dashSpeed: number,
      *   initDashDuration: number,
      *   dashDuration: number,
-     *   tempState: number
+     *   tempState: number,
+     *   hoverTimer: number,
+     *   maxHoverTimer: number
      * }} description of Player.
      */
     get desc() {
@@ -679,6 +780,20 @@ class Player extends Sprite {
      */
     get tempState() {
         return this.desc.tempState;
+    }
+
+    /**
+     * @returns {number} current hover timer.
+     */
+    get hoverTimer() {
+        return this.desc.hoverTimer;
+    }
+
+    /**
+     * @param v {number}
+     */
+    set hoverTimer(v) {
+        this.desc.hoverTimer = v;
     }
 
     /**
@@ -789,14 +904,35 @@ class Player extends Sprite {
                     if (this.states.get(PlayerDisplacementState) !== PlayerDisplacementState.dash) {
                         this.flip = true;
                         this.states.set(PlayerDisplacementState, PlayerDisplacementState.move);
-                        this.transitionTo(PlayerMoveState.startRunning);
+
+                        if (this.states.get(PlayerMoveState) === PlayerMoveState.hoverIdle) {
+                            this.flip = false;
+                            this.transitionTo(PlayerMoveState.hoverBackwards);
+                        } else {
+                            this.transitionTo(PlayerMoveState.startRunning);
+                        }
                     }
                     break;
                 case 'ArrowRight':
                     if (this.states.get(PlayerDisplacementState) !== PlayerDisplacementState.dash) {
                         this.flip = false;
                         this.states.set(PlayerDisplacementState, PlayerDisplacementState.move);
-                        this.transitionTo(PlayerMoveState.startRunning);
+
+                        if (this.states.get(PlayerMoveState) === PlayerMoveState.hoverIdle) {
+                            this.transitionTo(PlayerMoveState.hoverForward);
+                        } else {
+                            this.transitionTo(PlayerMoveState.startRunning);
+                        }
+                    }
+                    break;
+                case 'ArrowDown':
+                    if (this.states.get(PlayerVerticalDisplacementState) === PlayerVerticalDisplacementState.float) {
+                        this.states.set(PlayerVerticalDisplacementState, PlayerVerticalDisplacementState.down);
+                    }
+                    break;
+                case 'ArrowUp':
+                    if (this.states.get(PlayerVerticalDisplacementState) === PlayerVerticalDisplacementState.float) {
+                        this.states.set(PlayerVerticalDisplacementState, PlayerVerticalDisplacementState.up);
                     }
                     break;
             }
@@ -811,8 +947,17 @@ class Player extends Sprite {
                 case 'ArrowRight':
                     if (this.states.get(PlayerDisplacementState) !== PlayerDisplacementState.dash) {
                         this.states.set(PlayerDisplacementState, PlayerDisplacementState.idle);
-                        this.transitionTo(PlayerMoveState.idle);
+
+                        if (this.states.get(PlayerMoveState) === PlayerMoveState.hoverIdle) {
+                            this.transitionTo(PlayerMoveState.hoverIdle);
+                        } else {
+                            this.transitionTo(PlayerMoveState.idle);
+                        }
                     }
+                    break;
+                case 'ArrowUp':
+                case 'ArrowDown':
+                    this.states.set(PlayerVerticalDisplacementState, PlayerVerticalDisplacementState.float);
                     break;
             }
         };
@@ -823,7 +968,15 @@ class Player extends Sprite {
         const keyPressHandler = (e) => {
             switch (e.key) {
                 case ' ':
-                    this.transitionTo(PlayerMoveState.startJumping);
+                    if (
+                        this.states.get(PlayerMoveState) === PlayerMoveState.falling
+                        || this.states.get(PlayerMoveState) === PlayerMoveState.startJumping
+                ) {
+                        this.states.set(PlayerVerticalDisplacementState, PlayerVerticalDisplacementState.float);
+                        this.transitionTo(PlayerMoveState.hoverIdle);
+                    } else {
+                        this.transitionTo(PlayerMoveState.startJumping);
+                    }
                     break;
             }
         }
