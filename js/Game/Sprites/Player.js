@@ -129,6 +129,7 @@ class Player extends Sprite {
      * @param y {number} y-coordinate of the hero.
      * @param scale {number} scale of Player.
      * @param onUpdate {(function(number): boolean)?} called on each update cycle, with the current tick.
+     * @param animateBackground {boolean?} if true, the background moves instead of the player.
      * @param hitBoxBrush {{
      *    borderWidth?: number,
      *    borderColor?: string,
@@ -141,6 +142,7 @@ class Player extends Sprite {
         y,
         scale,
         onUpdate,
+        animateBackground,
         hitBoxBrush
     ) {
         let addedListeners = false;
@@ -157,7 +159,9 @@ class Player extends Sprite {
                 gravity: 15,
                 power: 1, // Power of the shot
                 initDashDuration: 40, // In ticks
-                tempAnimation: undefined
+                tempAnimation: undefined,
+                animateBg: animateBackground,
+                mapMovement: 0,
             },
             [x, y],
             (t) => {
@@ -188,6 +192,26 @@ class Player extends Sprite {
 
                         // If not active do not take commands
                         if (this.states.get(PlayerControlsState) === PlayerControlsState.active) {
+                            if (this.desc.mapMovement % 100 === 0) {
+                                this.desc.mapMovement++;
+                                this.level.spawnEnemies();
+                            }
+                            if (this.desc.mapMovement === 1000) {
+                                this.desc.mapMovement++;
+                                this.desc.animateBg = false;
+
+                                this.level.insertSprite(
+                                    new Teleporter(
+                                        240 * this.level.scale,
+                                        150 * this.level.scale,
+                                        this.level.scale,
+                                        () => {
+                                            this.progressLevel();
+                                        }
+                                    )
+                                );
+                            }
+
                             switch (this.states.get(PlayerAttackState)) {
                                 case PlayerAttackState.charging:
                                     this.power++;
@@ -259,7 +283,7 @@ class Player extends Sprite {
             undefined,
             undefined,
             scale,
-            100,
+            150,
         );
 
         // TODO add shooting animations and link
@@ -839,6 +863,27 @@ class Player extends Sprite {
     }
 
     /**
+     * @returns {number} current x.
+     */
+    get x() {
+        return super.x;
+    }
+
+    /**
+     * @param v {number} new x.
+     */
+    set x(v) {
+        if (this.animateBg) {
+                if (this.x !== v) {
+                    this.desc.mapMovement++;
+                    this.level.moveCurrentAnimation();
+                }
+        } else {
+            super.x = v;
+        }
+    }
+
+    /**
      * @returns {Segment}
      */
     get segment() {
@@ -1116,11 +1161,17 @@ class Player extends Sprite {
      *   tempAnimation: number,
      *   hoverTimer: number,
      *   maxHoverTimer: number,
-     *   power: number
+     *   power: number,
+     *   animateBg: boolean,
+     *   mapMovement: number
      * }} description of Player.
      */
     get desc() {
         return super.desc;
+    }
+
+    get animateBg() {
+        return this.desc.animateBg;
     }
 
     /**
@@ -1528,10 +1579,20 @@ class Player extends Sprite {
     get sounds() {
         return Player.sounds;
     }
+
+    restartLevel() {
+
+    }
+
+    progressLevel() {
+
+    }
+
     /**
      * Destroys the sprite
      */
     destroy() {
+        // TODO implement player death
         const level = this.level;
 
         for (let i = 0; i < this.initHp / 10; i++) {

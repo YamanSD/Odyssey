@@ -281,6 +281,8 @@ class Rocket extends Sprite {
             this.x - 50,
             this.y - 50,
             1.5,
+            false,
+            true
         );
 
         exp.start();

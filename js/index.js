@@ -51,7 +51,7 @@ const ShootingState = {
     shoot: 1,
 }
 
-const l1 = new Level_1([txt]);
+const l1 = new Level_3([txt]);
 
 g.insertSprite(l1);
 g.showHitBoxes = true;
@@ -155,8 +155,7 @@ const x = new Player(
     x.by += moveVector[1];
 
     x.moveCurrentAnimation();
-}
-);
+}, true);
 
 const hpB = new HealthBar(
     HealthBarType.x,

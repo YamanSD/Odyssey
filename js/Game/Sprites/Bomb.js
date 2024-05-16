@@ -184,4 +184,11 @@ class Bomb extends Sprite {
     get sounds() {
         return Bomb.sounds;
     }
+
+    /**
+     * Destroys the sprite
+     */
+    destroy() {
+        this.explode();
+    }
 }

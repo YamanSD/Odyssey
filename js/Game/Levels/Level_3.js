@@ -38,7 +38,7 @@ class Level_3 extends Level {
             240,
             0,
             0,
-            1
+            3
         );
 
         this.hitBox = this.convertHitBoxes([
@@ -64,6 +64,37 @@ class Level_3 extends Level {
             context
         );
     }
+
+    spawnEnemies() {
+        for (let i = 0; i < 2; i++) {
+            const b = new Bomb(0, 0, this.scale);
+
+            this.insertSprites(
+                b,
+                new BomberBat(
+                    this.scale * 300 - (20 * Math.random()),
+                    this.scale * 100 - (50 * Math.random()),
+                    b,
+                    this.scale
+                )
+            )
+        }
+
+        this.insertSprites(
+            new GigaDeath(
+                this.scale * 250,
+                this.scale * 120,
+                true,
+                this.scale
+            ),
+            new Dejira(
+                this.scale * 300 - (60 * Math.random()),
+                this.scale * 120 - (20 * Math.random()),
+                this.scale
+            ),
+        );
+    }
+
     /**
      * @returns {string[]} sprite sheets.
      */

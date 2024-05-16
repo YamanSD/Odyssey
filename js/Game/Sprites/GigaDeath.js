@@ -76,7 +76,8 @@ class GigaDeath extends Sprite {
             undefined,
             undefined,
             undefined,
-            scale
+            scale,
+            50
         );
 
         // Initialize the speed vector

@@ -114,7 +114,8 @@ class Dejira extends Sprite {
             undefined,
             undefined,
             undefined,
-            scale
+            scale,
+            10
         );
 
         // Create the animations

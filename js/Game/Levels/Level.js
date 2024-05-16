@@ -191,6 +191,13 @@ class Level extends Sprite {
     }
 
     /**
+     * Could be used.
+     */
+    spawnEnemies() {
+
+    }
+
+    /**
      * Unloads the level sprites.
      */
     offload() {

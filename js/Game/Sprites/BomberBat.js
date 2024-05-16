@@ -79,7 +79,8 @@ class BomberBat extends Sprite {
             undefined,
             undefined,
             undefined,
-            scale
+            scale,
+            20
         );
 
         // Create the animations
@@ -288,6 +289,8 @@ class BomberBat extends Sprite {
      * Destroys the sprite
      */
     destroy() {
+        const level = this.level;
+
         for (let i = 0; i < this.initHp / 10; i++) {
             this.game.setTimeout(() => {
                 const e = new Explosion(
@@ -296,14 +299,14 @@ class BomberBat extends Sprite {
                     this.scale
                 )
 
-                this.game.insertSprite(e);
+                level.insertSprite(e);
 
                 e.start();
             }, i * 10);
         }
 
         if (this.states.get(BombState) === BombState.held) {
-            this.level.removeSprite(this.#bomb);
+            this.#bomb.destroy();
         }
         this.level.removeSprite(this);
     }

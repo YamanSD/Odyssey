@@ -27,6 +27,8 @@ class Teleporter extends Sprite {
             {},
             [x, y],
             () => {
+                this.moveCurrentAnimation();
+
                 if (
                     this.player.by <= this.by
                     && this.player.x >= this.x
@@ -34,8 +36,6 @@ class Teleporter extends Sprite {
                 ) {
                     onStand();
                 }
-
-                this.moveCurrentAnimation();
             },
             undefined,
             undefined,
