@@ -8,46 +8,53 @@
 /**
  * @class Level_3
  *
- * Third level in the game.
+ * Second level in the game.
  */
 class Level_3 extends Level {
     /**
-     * @param sprites {Sprite[]} array of sprites to be loaded to the map.
+     * Constructs the level.
      */
-    constructor(sprites) {
+    constructor() {
         super(
-            sprites,
-            320,
+            [
+                new Sigma(
+                    300,
+                    150,
+                    [100, 350],
+                    3.4
+                )
+            ],
+            400,
             240,
             {
                 fillColor: '#FFFF0077'
             },
-            3.2,
-            true,
+            3.4,
+            false,
             true
         );
 
-        this.currentAnimation = this.createAnimation(
-            0,
-            0,
-            0,
-            3,
-            1,
-            3,
-            320,
-            240,
-            0,
-            0,
-            3
-        );
+        const height = 200;
 
         this.hitBox = this.convertHitBoxes([
+            // Ground
             {
                 x: 0,
-                y: 230,
-                width: 1024,
-                height: 220,
-                rotation: -15
+                y: 210,
+                width: 480,
+                height,
+            },
+            {
+                x: -20,
+                y: 0,
+                width: 20,
+                height,
+            },
+            {
+                x: 400 * this.scale,
+                y: 0,
+                width: 20,
+                height
             }
         ]);
     }
@@ -62,36 +69,6 @@ class Level_3 extends Level {
             0,
             0,
             context
-        );
-    }
-
-    spawnEnemies() {
-        for (let i = 0; i < 2; i++) {
-            const b = new Bomb(0, 0, this.scale);
-
-            this.insertSprites(
-                b,
-                new BomberBat(
-                    this.scale * 300 - (20 * Math.random()),
-                    this.scale * 100 - (50 * Math.random()),
-                    b,
-                    this.scale
-                )
-            )
-        }
-
-        this.insertSprites(
-            new GigaDeath(
-                this.scale * 250,
-                this.scale * 120,
-                true,
-                this.scale
-            ),
-            new Dejira(
-                this.scale * 300 - (60 * Math.random()),
-                this.scale * 120 - (20 * Math.random()),
-                this.scale
-            ),
         );
     }
 
@@ -124,3 +101,4 @@ class Level_3 extends Level {
     }
 
 }
+

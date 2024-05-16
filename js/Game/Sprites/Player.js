@@ -192,10 +192,6 @@ class Player extends Sprite {
 
                         // If not active do not take commands
                         if (this.states.get(PlayerControlsState) === PlayerControlsState.active) {
-                            if (this.desc.mapMovement % 100 === 0) {
-                                this.desc.mapMovement++;
-                                this.level.spawnEnemies();
-                            }
                             if (this.desc.mapMovement === 1000) {
                                 this.desc.mapMovement++;
                                 this.desc.animateBg = false;
@@ -211,6 +207,11 @@ class Player extends Sprite {
                                     )
                                 );
                             }
+                            if (this.desc.mapMovement % 100 === 0) {
+                                this.desc.mapMovement++;
+                                this.level.spawnEnemies();
+                            }
+
 
                             switch (this.states.get(PlayerAttackState)) {
                                 case PlayerAttackState.charging:

@@ -155,7 +155,7 @@ const x = new Player(
     x.by += moveVector[1];
 
     x.moveCurrentAnimation();
-}, true);
+}, false);
 
 const hpB = new HealthBar(
     HealthBarType.x,
