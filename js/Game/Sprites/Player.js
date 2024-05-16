@@ -229,11 +229,7 @@ class Player extends Sprite {
             undefined,
             scale,
             100,
-            30
         );
-
-        // TODO Add rest of animations and update buster
-        // TODO add zero (not vital)
 
         // Create the animations
         this.#animations = {

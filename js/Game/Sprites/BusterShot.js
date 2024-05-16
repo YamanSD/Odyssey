@@ -66,7 +66,7 @@ class BusterShot extends Sprite {
      * @returns {string[]} sprite sheets.
      */
     static get sheets() {
-        return ['x_0.png']; // Might be broken, not finished
+        return ['x_0.png'];
     }
 
     /**
