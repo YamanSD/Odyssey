@@ -1513,27 +1513,38 @@ class Player extends Sprite {
     goToLevel(l) {
         const game = this.game;
 
-        game.removeAllEventListeners();
+        if (l.type === this.level.type) {
+            const hpB = new HealthBar(
+                HealthBarType.x,
+                p,
+                l.scale
+            );
+            l.insertSprites(this, hpB);
+        } else {
+            game.removeAllEventListeners();
 
-        this.game.insertSprite(l);
+            this.game.insertSprite(l);
 
-        const p = new Player(
-            100 * l.scale,
-            -100 * l.scale,
-            l.scale,
-            undefined,
-            true
-        );
-        Sprite.player = p;
-        const hpB = new HealthBar(
-            HealthBarType.x,
-            p,
-            l.scale
-        );
-        l.insertSprites(p, hpB);
-        l.game.follow(p);
-        l.load();
-        this.level.offload();
+            const p = new Player(
+                100 * l.scale,
+                -100 * l.scale,
+                l.scale,
+                undefined,
+                true
+            );
+
+            Sprite.player = p;
+            const hpB = new HealthBar(
+                HealthBarType.x,
+                p,
+                l.scale
+            );
+
+            l.insertSprites(p, hpB);
+            l.game.follow(p);
+            l.load();
+            this.level.offload();
+        }
     }
 
     /**
@@ -1645,7 +1656,21 @@ class Player extends Sprite {
     }
 
     restartLevel() {
+        if (this.level) {
+            this.heal(this.initHp);
 
+            switch (this.level.type) {
+                case Level_1.type:
+                    this.goToLevel(new Level_1([]));
+                    break;
+                case Level_2.type:
+                    this.goToLevel(new Level_2([]));
+                    break;
+                case Level_3.type:
+                    this.goToLevel(new Level_3([]));
+                    break;
+            }
+        }
     }
 
     progressLevel() {
@@ -1657,25 +1682,12 @@ class Player extends Sprite {
      * Destroys the sprite
      */
     destroy() {
-        // TODO implement player death
-        const level = this.level;
-
-        for (let i = 0; i < this.initHp / 10; i++) {
-            this.game.setTimeout(() => {
-                const e = new Explosion(
-                    this.x + (-10 + Math.random() * 20),
-                    this.y + (-10 + Math.random() * 20),
-                    this.scale
-                )
-
-                level.insertSprite(e);
-
-                e.start();
-            }, i * 10);
+        if (this.lives) {
+            this.lives--;
+            this.restartLevel();
+        } else {
+            location.reload();
         }
-
-        this.player;
-        this.level.removeSprite(this);
     }
 
 }
