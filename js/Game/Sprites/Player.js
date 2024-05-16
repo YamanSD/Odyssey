@@ -37,33 +37,40 @@ const PlayerAttackState = {
 };
 
 /**
- * States for the player move state.
+ * State for the player movement.
  *
- * @type {{startRun: number, run: number, startJump: number, hoverIdle: number, idle: number, wallSlide: number, endJump: number, dash: number, hoverForwards: number, jump: number, hoverBackwards: number, nova: number}}
- */
-const PlayerMoveState = {
-    idle: 0,
-    startRun: 1,
-    run: 2,
-    startJump: 4,
-    jump: 5,
-    endJump: 6,
-    hoverIdle: 7,
-    hoverBackwards: 8,
-    hoverForwards: 9,
-    dash: 10,
-    wallSlide: 11,
-    nova: 12
-};
-
-/**
- * States for whether the player is moving horizontally or not.
- *
- * @type {{move: number, idle: number}}
+ * @type {{move: number, idle: number, dash: number}}
  */
 const PlayerDisplacementState = {
     idle: 0,
     move: 1,
+    dash: 2
+};
+
+/**
+ * Primary states of the player.
+ *
+ * @type {{falling: number, hoverIdle: number, idle: number, stopDashing: number, dashing: number, running: number, landing: number, startRunning: number, damaged: number, startDashing: number, hoverForward: number, startJumping: number, hoverBackwards: number}}
+ */
+const PlayerMoveState = {
+    idle: 0,
+    // Running
+    startRunning: 1,
+    running: 2,
+    // Jumping
+    startJumping: 3,
+    falling: 4,
+    landing: 5,
+    // Dashing
+    startDashing: 6,
+    dashing: 7,
+    stopDashing: 8,
+    // Hover
+    hoverIdle: 9,
+    hoverForward: 10,
+    hoverBackwards: 11,
+    // Damaged
+    damaged: 12,
 };
 
 
@@ -100,14 +107,18 @@ class Player extends Sprite {
         onUpdate,
         hitBoxBrush
     ) {
-        let keyDownId = undefined, keyUpId = undefined;
+        let addedListeners = false;
 
         super(
             {
                 lives: 2,
                 moveSpeed: 8,
+                dashSpeed: 16,
+                dashDuration: 50, // In ticks
                 jumpForce: 10,
                 gravity: 15,
+                initDashDuration: 50, // In ticks
+                tempState: PlayerMoveState.idle
             },
             [x, y],
             (t) => {
@@ -131,99 +142,41 @@ class Player extends Sprite {
 
                         break;
                     case PlayerSpawnState.spawned:
-                        if (keyDownId === undefined) {
-                            /**
-                             * @param e {KeyboardEvent}
-                             */
-                            const keyPressHandler = (e) => {
-                                switch (e.key) {
-                                    case 'ArrowLeft':
-                                        this.flip = true;
-
-                                        if (this.states.get(PlayerMoveState) === PlayerMoveState.idle) {
-                                            this.states.set(PlayerMoveState, PlayerMoveState.startRun);
-                                        }
-
-                                        this.states.set(PlayerDisplacementState, PlayerDisplacementState.move);
-                                        break;
-                                    case 'ArrowRight':
-                                        this.flip = false;
-
-                                        if (this.states.get(PlayerMoveState) === PlayerMoveState.idle) {
-                                            this.states.set(PlayerMoveState, PlayerMoveState.startRun);
-                                        }
-
-                                        this.states.set(PlayerDisplacementState, PlayerDisplacementState.move);
-                                        break;
-                                    case ' ':
-                                        if (!this.isInAir) {
-                                            this.states.set(PlayerMoveState, PlayerMoveState.startJump);
-                                        }
-                                        break;
-                                }
-                            };
-
-                            /**
-                             * @param e {KeyboardEvent}
-                             */
-                            const keyLiftHandler = (e) => {
-                                switch (e.key) {
-                                    case 'ArrowLeft':
-                                    case 'ArrowRight':
-                                        this.states.set(PlayerDisplacementState, PlayerDisplacementState.idle);
-
-                                        if (
-                                            this.states.get(PlayerMoveState) === PlayerMoveState.run
-                                            || this.states.get(PlayerMoveState) === PlayerMoveState.startRun
-                                        ) {
-                                            this.states.set(PlayerMoveState, PlayerMoveState.idle);
-                                            this.setIdle();
-                                        }
-                                        break;
-                                }
-                            };
-
-                            keyDownId = this.game.addEventListener('keydown', keyPressHandler);
-                            keyUpId = this.game.addEventListener('keyup', keyLiftHandler);
+                        if (!addedListeners) {
+                            this.addListeners();
+                            addedListeners = true;
                         }
 
                         // If not active do not take commands
                         if (this.states.get(PlayerControlsState) === PlayerControlsState.active) {
                             switch (this.states.get(PlayerDisplacementState)) {
                                 case PlayerDisplacementState.move:
-                                    this.x += this.flip ? -this.speed : this.speed;
+                                    this.move();
+                                    break;
+                                case PlayerDisplacementState.dash:
+                                    this.dash();
                                     break;
                             }
+                        }
 
-                            switch (this.states.get(PlayerMoveState)) {
-                                // case PlayerMoveState.idle:
-                                //     this.setIdle();
-                                //     break;
-                                case PlayerMoveState.startRun:
-                                    this.states.set(PlayerMoveState, PlayerMoveState.run);
-                                    this.currentAnimation = this.animations.startRun;
-                                    break;
-                                case PlayerMoveState.startJump:
-                                    this.y -= this.jumpForce;
-                                    this.currentAnimation = this.animations.startJump;
-                                    break;
-                                case PlayerMoveState.jump:
-                                    const col = this.colliding(this.level);
+                        const lvlCol = this.colliding(this.level);
 
-                                    this.currentAnimation = this.animations.jump;
-                                    this.y += this.gravity;
+                        switch (this.states.get(PlayerMoveState)) {
+                            case PlayerMoveState.startJumping:
+                                if (lvlCol) {
+                                    // TODO separate the collision
+                                }
 
-                                    if (col) {
-                                        this.states.set(PlayerMoveState, PlayerMoveState.endJump);
+                                this.y -= this.jumpForce;
+                                break;
+                            case PlayerMoveState.falling:
+                                this.y += this.gravity;
 
-                                        this.setIdle();
-                                        this.by = col.collided.projectX(this.x);
-                                    }
-                                    break;
-                                case PlayerMoveState.endJump:
-                                    this.currentAnimation = this.animations.land;
-                                    break;
-                            }
+                                if (lvlCol) {
+                                    this.by = lvlCol.collided.projectX(this.x);
+                                    this.transitionTo(PlayerMoveState.landing);
+                                }
+                                break;
                         }
                         break;
                 }
@@ -336,7 +289,7 @@ class Player extends Sprite {
                 3,
                 undefined,
                 () => {
-                    this.setIdle();
+                    this.transitionTo(this.tempState);
                 }
             ),
             startRun: this.createAnimation(
@@ -353,7 +306,6 @@ class Player extends Sprite {
                 3,
                 undefined,
                 () => {
-                    this.states.set(PlayerMoveState, PlayerMoveState.run);
                     this.currentAnimation = this.animations.runLoop_0;
                 }
             ),
@@ -405,10 +357,10 @@ class Player extends Sprite {
                 3,
                 undefined,
                 () => {
-                    this.states.set(PlayerMoveState, PlayerMoveState.jump);
+                    this.transitionTo(PlayerMoveState.falling);
                 }
             ),
-            jump: this.createAnimation(
+            falling: this.createAnimation(
                 1,
                 359,
                 438,
@@ -444,26 +396,252 @@ class Player extends Sprite {
                 54,
                 1,
                 0,
-                4,
+                3,
                 undefined,
                 () => {
                     if (this.states.get(PlayerDisplacementState) === PlayerDisplacementState.idle) {
-                        this.states.set(PlayerMoveState, PlayerMoveState.idle);
-                        this.setIdle();
+                        this.transitionTo(PlayerMoveState.idle);
                     } else {
-                        this.currentAnimation = this.animations.runLoop_0;
-                        this.states.set(PlayerMoveState, PlayerMoveState.run);
+                        this.transitionTo(PlayerMoveState.startRunning);
                     }
                 }
-            )
+            ),
+            dashStart: this.createAnimation(
+                1,
+                14,
+                851,
+                3,
+                1,
+                3,
+                53,
+                44,
+                1,
+                0,
+                2,
+                undefined,
+                () => {
+                    this.states.set(PlayerMoveState, PlayerMoveState.dashing);
+                    this.currentAnimation = this.animations.dash;
+                }
+            ),
+            dash: this.createAnimation(
+                1,
+                212,
+                845,
+                1,
+                1,
+                1,
+                57,
+                34,
+                0,
+                0,
+                1,
+                undefined,
+                undefined,
+                (x, y) => {
+                    return [
+                        {
+                            x,
+                            y,
+                            width: 55,
+                            height: 30
+                        }
+                    ];
+                }
+            ),
+            dashEnd: this.createAnimation(
+                1,
+                334,
+                843,
+                4,
+                1,
+                4,
+                41,
+                46,
+                1,
+                0,
+                4,
+                undefined,
+                () => {
+                    this.setIdle();
+                }
+            ),
         };
 
         this.states.set(PlayerDisplacementState, PlayerDisplacementState.idle);
-        this.states.set(PlayerAttackState, PlayerAttackState.none);
         this.states.set(PlayerMoveState, PlayerMoveState.idle);
         this.states.set(PlayerSpawnState, PlayerSpawnState.beaming);
         this.states.set(PlayerControlsState, PlayerControlsState.inactive);
         this.currentAnimation = this.#animations.spawn_0;
+    }
+
+    /**
+     * @param state {number} state to transition to.
+     */
+    transitionTo(state) {
+        // TODO add player damaged state here
+        switch (this.states.get(PlayerMoveState)) {
+            case PlayerMoveState.idle:
+                switch (state) {
+                    case PlayerMoveState.startRunning:
+                        this.idleToRunning();
+                        break;
+                    case PlayerMoveState.startJumping:
+                        this.idleToJumping();
+                        break;
+                    case PlayerMoveState.startDashing:
+                        this.toDashing();
+                        break;
+                }
+                break;
+            case PlayerMoveState.startRunning:
+                // Fall through
+            case PlayerMoveState.running:
+                switch (state) {
+                    case PlayerMoveState.idle:
+                        this.toIdle();
+                        break;
+                    case PlayerMoveState.startJumping:
+                        this.runningToJumping();
+                        break;
+                    case PlayerMoveState.startDashing:
+                        this.toDashing();
+                        break;
+                }
+                break;
+            case PlayerMoveState.startJumping:
+                switch (state) {
+                    case PlayerMoveState.falling:
+                        this.toFalling();
+                        break;
+                    case PlayerMoveState.startDashing:
+                        this.toDashing();
+                        break;
+                }
+                break;
+            case PlayerMoveState.falling:
+                switch (state) {
+                    case PlayerMoveState.landing:
+                        this.fallingToLanding();
+                        break;
+                    case PlayerMoveState.startDashing:
+                        this.toDashing();
+                        break;
+                }
+                break;
+            case PlayerMoveState.landing:
+                switch (state) {
+                    case PlayerMoveState.idle:
+                        this.toIdle();
+                        break;
+                    case PlayerMoveState.startDashing:
+                        this.toDashing();
+                        break;
+                    case PlayerMoveState.startRunning:
+                        this.landingToRunning();
+                        break;
+                }
+                break;
+            case PlayerMoveState.dashing:
+                switch (state) {
+                    case PlayerMoveState.stopDashing:
+                        this.stopDashing();
+                        break;
+                }
+                break;
+        }
+    }
+
+    idleToRunning() {
+        this.states.set(PlayerMoveState, PlayerMoveState.running);
+        this.currentAnimation = this.animations.startRun;
+    }
+
+    toIdle() {
+        this.states.set(PlayerMoveState, PlayerMoveState.idle);
+        this.setIdle();
+    }
+
+    toFalling() {
+        this.states.set(PlayerMoveState, PlayerMoveState.falling);
+        this.currentAnimation = this.animations.falling;
+    }
+
+    idleToJumping() {
+        this.states.set(PlayerMoveState, PlayerMoveState.startJumping);
+        this.currentAnimation = this.animations.startJump;
+    }
+
+    fallingToLanding() {
+        this.states.set(PlayerMoveState, PlayerMoveState.landing);
+        this.currentAnimation = this.animations.land;
+    }
+
+    toDashing() {
+        this.states.set(PlayerMoveState, PlayerMoveState.startDashing);
+        this.currentAnimation = this.animations.dashStart;
+    }
+
+    stopDashing() {
+        this.states.set(PlayerMoveState, PlayerMoveState.idle);
+        this.states.set(PlayerDisplacementState, PlayerDisplacementState.idle);
+        this.currentAnimation = this.animations.dashEnd;
+    }
+
+    runningToJumping() {
+        this.states.set(PlayerMoveState, PlayerMoveState.startJumping);
+        this.currentAnimation = this.animations.startJump;
+    }
+
+    landingToRunning() {
+        this.states.set(PlayerMoveState, PlayerMoveState.startRunning);
+        this.currentAnimation = this.animations.startRun;
+    }
+
+    dashingToDamaged() {
+        this.states.set(PlayerMoveState, PlayerMoveState.damaged);
+        this.states.set(PlayerDisplacementState, PlayerDisplacementState.idle);
+
+        // Player stops when damaged while dashing
+        this.tempState = PlayerMoveState.idle;
+        this.currentAnimation = this.animations.damaged;
+    }
+
+    hoverToDamaged() {
+        // TODO
+    }
+
+    jumpingToHover() {
+        // TODO
+    }
+
+    fallingToHover() {
+        // TODO
+    }
+
+    /**
+     * Moves the player to the flip direction.
+     */
+    move() {
+        if (this.currentAnimation !== this.animations.damaged) {
+            this.x += this.flip ? -this.speed : this.speed;
+        }
+    }
+
+    /**
+     * Dashes the player to the flip direction.
+     */
+    dash() {
+        if (this.dashDuration <= 0) {
+            this.transitionTo(PlayerMoveState.stopDashing);
+            this.dashDuration = this.desc.initDashDuration;
+            return;
+        }
+
+        if (this.currentAnimation !== this.animations.damaged) {
+            this.x += this.flip ? -this.dashSpeed : this.dashSpeed;
+            this.dashDuration--;
+        }
     }
 
     /**
@@ -474,11 +652,22 @@ class Player extends Sprite {
     }
 
     /**
+     * @returns {number} the dash duration.
+     */
+    get dashDuration() {
+        return this.desc.dashDuration;
+    }
+
+    /**
      * @returns {{
      *   lives: number,
      *   moveSpeed: number,
      *   jumpForce: number,
-     *   gravity: number
+     *   gravity: number,
+     *   dashSpeed: number,
+     *   initDashDuration: number,
+     *   dashDuration: number,
+     *   tempState: number
      * }} description of Player.
      */
     get desc() {
@@ -486,21 +675,10 @@ class Player extends Sprite {
     }
 
     /**
-     * @returns {boolean} true if the player is in the air.
+     * @returns {number} previous player state.
      */
-    get isInAir() {
-        const airStates = new Set([
-            PlayerMoveState.startJump,
-            PlayerMoveState.jump,
-            PlayerMoveState.hoverIdle,
-            PlayerMoveState.hoverBackwards,
-            PlayerMoveState.hoverForwards,
-            PlayerMoveState.nova
-        ]);
-
-        const s = this.states.get(PlayerMoveState);
-
-        return airStates.has(s);
+    get tempState() {
+        return this.desc.tempState;
     }
 
     /**
@@ -508,6 +686,13 @@ class Player extends Sprite {
      */
     get gravity() {
         return this.desc.gravity;
+    }
+
+    /**
+     * @returns {number} the dash speed.
+     */
+    get dashSpeed() {
+        return this.desc.dashSpeed;
     }
 
     /**
@@ -536,6 +721,27 @@ class Player extends Sprite {
      */
     set lives(v) {
         this.desc.lives = v;
+    }
+
+    /**
+     * @param v {number} remaining dash duration.
+     */
+    set dashDuration(v) {
+        this.desc.dashDuration = v;
+    }
+
+    /**
+     * @param v {number} new dash speed.
+     */
+    set dashSpeed(v) {
+        this.desc.dashSpeed = v;
+    }
+
+    /**
+     * @param v {number} new temp state.
+     */
+    set tempState(v) {
+        this.desc.tempState = v;
     }
 
     /**
@@ -571,6 +777,89 @@ class Player extends Sprite {
     }
 
     /**
+     * Activates the key listeners
+     */
+    addListeners() {
+        /**
+         * @param e {KeyboardEvent}
+         */
+        const keyHoldHandler = (e) => {
+            switch (e.key) {
+                case 'ArrowLeft':
+                    if (this.states.get(PlayerDisplacementState) !== PlayerDisplacementState.dash) {
+                        this.flip = true;
+                        this.states.set(PlayerDisplacementState, PlayerDisplacementState.move);
+                        this.transitionTo(PlayerMoveState.startRunning);
+                    }
+                    break;
+                case 'ArrowRight':
+                    if (this.states.get(PlayerDisplacementState) !== PlayerDisplacementState.dash) {
+                        this.flip = false;
+                        this.states.set(PlayerDisplacementState, PlayerDisplacementState.move);
+                        this.transitionTo(PlayerMoveState.startRunning);
+                    }
+                    break;
+            }
+        };
+
+        /**
+         * @param e {KeyboardEvent}
+         */
+        const keyLiftHandler = (e) => {
+            switch (e.key) {
+                case 'ArrowLeft':
+                case 'ArrowRight':
+                    if (this.states.get(PlayerDisplacementState) !== PlayerDisplacementState.dash) {
+                        this.states.set(PlayerDisplacementState, PlayerDisplacementState.idle);
+                        this.transitionTo(PlayerMoveState.idle);
+                    }
+                    break;
+            }
+        };
+
+        /**
+         * @param e {KeyboardEvent}
+         */
+        const keyPressHandler = (e) => {
+            switch (e.key) {
+                case ' ':
+                    this.transitionTo(PlayerMoveState.startJumping);
+                    break;
+            }
+        }
+
+        /**
+         * @param e {KeyboardEvent}
+         */
+        const doubleKeyPressHandler = (e) => {
+            switch (e.key) {
+                case 'ArrowLeft':
+                    this.flip = true;
+                    this.states.set(PlayerDisplacementState, PlayerDisplacementState.dash);
+                    this.transitionTo(PlayerMoveState.startDashing);
+                    break;
+                case 'ArrowRight':
+                    this.flip = false;
+                    this.states.set(PlayerDisplacementState, PlayerDisplacementState.dash);
+                    this.transitionTo(PlayerMoveState.startDashing);
+                    break;
+            }
+        }
+
+        this.game.addDoubleKeyListener(doubleKeyPressHandler);
+        this.game.addEventListener('keydown', keyHoldHandler);
+        this.game.addEventListener('keypress', keyPressHandler);
+        this.game.addEventListener('keyup', keyLiftHandler);
+    }
+
+    /**
+     * Starts the player nova attack.
+     */
+    nova() {
+
+    }
+
+    /**
      * Draws the rectangle in the 2d context.
      *
      * @param context {CanvasRenderingContext2D} 2d canvas element context.
@@ -580,7 +869,8 @@ class Player extends Sprite {
     }
 
     /**
-     * Sets the moving state to idle. Works based on HP.
+     * Sets the current animation to idle. Works based on HP.
+     * Does not affect the state.
      */
     setIdle() {
         // Switch animation if player is low on health
@@ -593,16 +883,7 @@ class Player extends Sprite {
 
     damage(value) {
         this.currentAnimation = this.animations.damaged;
-        this.states.set(PlayerDisplacementState, PlayerDisplacementState.idle);
         super.damage(value);
-    }
-
-    heal(value) {
-        super.heal(value);
-
-        if (this.states.get(PlayerMoveState) === PlayerMoveState.idle) {
-            this.setIdle();
-        }
     }
 
     /**

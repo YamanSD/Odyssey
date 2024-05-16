@@ -235,6 +235,18 @@ class Sigma extends Sprite {
                 1,
                 0,
                 4,
+                undefined,
+                undefined,
+                (x, y) => {
+                    return [
+                        {
+                            x,
+                            y,
+                            width: 80,
+                            height: 100
+                        }
+                    ];
+                }
             ),
             prepareDash: this.createAnimation(
                 0,
@@ -252,6 +264,16 @@ class Sigma extends Sprite {
                 () => {
                     this.currentAnimation = this.animations.dash;
                     this.states.set(SigmaAttackState, SigmaAttackState.dash);
+                },
+                (x, y) => {
+                    return [
+                        {
+                            x: x + 30,
+                            y: y + 50,
+                            width: 50,
+                            height: 70,
+                        }
+                    ];
                 }
             ),
             dash: this.createAnimation(
@@ -265,7 +287,19 @@ class Sigma extends Sprite {
                 141,
                 1,
                 0,
-                3
+                3,
+                undefined,
+                undefined,
+                (x, y) => {
+                    return [
+                        {
+                            x: x + 50,
+                            y,
+                            width: 70,
+                            height: 130,
+                        }
+                    ];
+                }
             ),
             energyOrb: this.currentAnimation = this.createAnimation(
                 3,
@@ -524,12 +558,20 @@ class Sigma extends Sprite {
      * @returns {HitBox[]} the smallest rectangle that surrounds the shape.
      */
     get defaultHitBox() {
-        return this.convertHitBoxes([
+        return this.convertHitBoxes(this.states.get(SigmaStageState) === SigmaStageState.stage1 ? [
             {
-                x: this.x + 5,
-                y: this.y,
+                x: this.x - 17,
+                y: this.y + (this.flip ? 0 : 20),
                 width: 45,
-                height: 55
+                height: 110,
+                rotation: this.flip ? 30 : -30
+            }
+        ] : [
+            {
+                x: this.x,
+                y: this.y,
+                width: 70,
+                height: 90,
             }
         ]);
     }

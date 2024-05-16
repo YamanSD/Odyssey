@@ -60,7 +60,8 @@ function loadGame() {
         TrapBlast,
         VerticalMeteor,
         HealthBar,
-        Dialog
+        Dialog,
+        Teleporter
     ];
 
     // Load all the resources for each class

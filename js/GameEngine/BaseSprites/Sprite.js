@@ -1447,6 +1447,17 @@ class Sprite {
     }
 
     /**
+     * @param animations {number} links the give animations to each other.
+     */
+    multiLinkAnimations(...animations) {
+        for (let i = 0; i < animations.length; i++) {
+            for (let j = i + 1; j < animations.length; j++) {
+                this.linkAnimations(animations[i], animations[j]);
+            }
+        }
+    }
+
+    /**
      * Resets the animation to its original state.
      *
      * @param id {number} ID of the animation to reset.

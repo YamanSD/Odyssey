@@ -31,7 +31,7 @@ class Game {
      * @type {number} in ticks.
      * @private
      */
-    static #doubleClickDelta = 20;
+    static #doubleClickDelta = 50;
 
     /**
      * @type {number} ID counter for the event handlers.
@@ -803,7 +803,6 @@ class Game {
                 const k = e.key;
 
                 if (k in se) {
-                    console.log(this.currentTick - se[k]);
                     if (this.currentTick - se[k] <= Game.#doubleClickDelta) {
                         handler(e);
                     }

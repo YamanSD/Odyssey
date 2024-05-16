@@ -12,6 +12,25 @@
  */
 class Level_1 extends Level {
     /**
+     * Array of coordinates for rock placements.
+     *
+     * @type {{
+     *     x: number,
+     *     y: number
+     * }[]}
+     * @private
+     */
+    #rocks;
+
+    /**
+     * Animation used by the rocks.
+     *
+     * @type {number}
+     * @private
+     */
+    #rockAnimation;
+
+    /**
      * @param sprites {Sprite[]} array of sprites to be loaded to the map.
      */
     constructor(sprites) {
@@ -25,7 +44,22 @@ class Level_1 extends Level {
             0.32
         );
 
+        this.#rocks = [];
         const height = 200;
+
+        this.#rockAnimation = this.createAnimation(
+            1,
+            0,
+            0,
+            1,
+            1,
+            1,
+            96,
+            88,
+            0,
+            0,
+            1
+        );
 
         this.hitBox = this.convertHitBoxes([
             // Ground
@@ -211,7 +245,14 @@ class Level_1 extends Level {
                 y: 0,
                 width: 160,
                 height: 64
-            }
+            },
+            // Borders,
+            // {
+            //     x: 300,
+            //     y: -20,
+            //     width: 8000,
+            //     height: 20,
+            // }
         ]);
     }
 
@@ -226,13 +267,106 @@ class Level_1 extends Level {
             0,
             context
         );
+
+        for (const rock of this.#rocks) {
+            this.drawAnimation(
+                this.#rockAnimation,
+                rock.x,
+                rock.y,
+                context
+            );
+        }
+    }
+
+    /**
+     * Creates the boss arena
+     */
+    createBossArena() {
+        for (let i = 0; i < 3; i++) {
+            this.game.setTimeout(() => {
+                for (let x = 3400; x < 3550; x += 20) {
+                    const e = new Explosion(
+                        x * this.scale,
+                        (40 + 80 * Math.random()) * this.scale,
+                        3,
+                        true
+                    );
+
+                    this.insertSprite(
+                        e
+                    );
+
+                    e.start();
+                }
+            }, i * 50);
+        }
+
+        this.#rocks.push(
+            {
+                x: 3426 * this.scale,
+                y: 62 * this.scale,
+            },
+            {
+                x: 3488 * this.scale,
+                y: 62 * this.scale,
+            },
+            {
+                x: 4000 * this.scale,
+                y: 110 * this.scale
+            },
+            {
+                x: 4000 * this.scale,
+                y: 30 * this.scale
+            },
+            {
+                x: 4000 * this.scale,
+                y: -50 * this.scale
+            },
+        );
+
+        this.hitBox.push(
+            ...this.convertHitBoxes(
+                [
+                    {
+                        x: 3426,
+                        y: 62,
+                        width: 96,
+                        height: 88
+                    },
+                    {
+                        x: 3488,
+                        y: 62,
+                        width: 96,
+                        height: 88
+                    },
+                    {
+                        x: 4000,
+                        y: 110,
+                        width: 96,
+                        height: 88
+                    },
+                    {
+                        x: 4000,
+                        y: 30,
+                        width: 96,
+                        height: 88
+                    },
+                    {
+                        x: 4000,
+                        y: -50,
+                        width: 96,
+                        height: 88
+                    },
+                ]
+            )
+        );
     }
 
     /**
      * @returns {string[]} sprite sheets.
      */
     static get sheets() {
-        return ['level_1.png'];
+        return ['level_1.png', "rock.png"];
     }
 
     /**

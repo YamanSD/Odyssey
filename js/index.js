@@ -16,17 +16,14 @@ let moveVector = [0, 0];
 /**
  * TODO List
  *
- * - Implement X animations + attacks.
- * - Adjust hit boxes for enemies, player, & levels.
- * - Adjust attack damage.
+ * - Add attack damage.
  * - Place the enemies in levels.
- * - Implement the teleporter for level 3.
- *
- * Tomorrow:
+ * - Implement X animations + attacks.
  * - Deploy.
- * - Implement zero (if there is time).
  * - Add sound effects and OST.
  * - Implement options menu
+ * - Add rest of dialog
+ * - Add heal and life items as drops from enemies.
  *
  * Finally remove all unused features and reduce bloat.
  */
@@ -57,8 +54,14 @@ const ShootingState = {
     shoot: 1,
 }
 
-
 const l1 = new Level_2([txt]);
+
+const sigma = new Sigma(
+    100 * l1.scale,
+    100 * l1.scale,
+    [0, 1000],
+    l1.scale,
+)
 g.insertSprite(l1);
 g.showHitBoxes = true;
 
@@ -204,7 +207,7 @@ const hpB = new HealthBar(
 );
 
 Sprite.player = x;
-l1.insertSprite(x);
+l1.insertSprites(x);
 
 
 /**
@@ -235,6 +238,9 @@ const keyPressHandler = (e) => {
             break;
         case 'h':
             g.showHitBoxes = !g.showHitBoxes;
+            break;
+        case 'r':
+            sigma.changeStage();
             break;
         case 'Escape':
             g.pause();
@@ -269,6 +275,15 @@ g.addEventListener('keyup', keyLiftHandler);
 //     console.log("DOUBLE CLICK");
 // });
 
+// const t = new Teleporter(
+//     100 * l1.scale,
+//     100 * l1.scale,
+//     l1.scale,
+//     () => {
+//         console.log("STOOD");
+//     }
+// )
+// l1.insertSprite(t);
 // console.log(g.areColliding(x, x));
 l1.load();
 
