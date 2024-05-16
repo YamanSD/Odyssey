@@ -1625,7 +1625,7 @@ class Sprite {
 
             // If the animations are linked, move the same amount of steps
             if (curAnim.linkedTo?.has(id)) {
-                for (let i = 0; i < curAnim.moves; i++) {
+                for (let i = 0; i <= curAnim.moves; i++) {
                     this.moveAnimation(id);
                 }
             }

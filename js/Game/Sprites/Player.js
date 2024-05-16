@@ -101,6 +101,30 @@ class Player extends Sprite {
     #animations;
 
     /**
+     * Object containing the shooting animations of the player.
+     *
+     * @type {Object<string, number>}
+     * @private
+     */
+    #shootingAnimations;
+
+    /**
+     * Maps IDs of animations from non-shooting to shooting.
+     *
+     * @type {Object<number, number>}
+     * @private
+     */
+    #shootMap;
+
+    /**
+     * Maps IDs of animations from shooting to non-shooting.
+     *
+     * @type {Object<number, number>}
+     * @private
+     */
+    #nonShootingMap;
+
+    /**
      * @param x {number} x-coordinate of the hero.
      * @param y {number} y-coordinate of the hero.
      * @param scale {number} scale of Player.
@@ -128,25 +152,25 @@ class Player extends Sprite {
                 dashSpeed: 16,
                 hoverTimer: 0,
                 maxHoverTimer: 240, // In ticks
-                dashDuration: 50, // In ticks
+                dashDuration: 40, // In ticks
                 jumpForce: 10,
                 gravity: 15,
                 power: 1, // Power of the shot
-                initDashDuration: 50, // In ticks
+                initDashDuration: 40, // In ticks
                 tempAnimation: undefined
             },
             [x, y],
             (t) => {
                 switch (this.states.get(PlayerSpawnState)) {
                     case PlayerSpawnState.beaming:
-                        const col = this.colliding(this.level);
+                        const bCol = this.colliding(this.level);
 
-                        if (col) {
+                        if (bCol) {
                             this.states.set(PlayerSpawnState, PlayerSpawnState.spawning)
 
                             // Important switch to get idle animation height not spawn_1
                             this.setIdle();
-                            this.by = col.collided.projectX(this.x);
+                            this.by = bCol.collided.projectX(this.x);
                             this.currentAnimation = this.animations.spawn_1;
 
                             // Recenter from beam going down
@@ -545,8 +569,266 @@ class Player extends Sprite {
                 1,
                 0,
                 3,
+            ),
+            charge_0: this.createAnimation(
+                3,
+                5,
+                121,
+                9,
+                1,
+                9,
+                84,
+                84,
+                1,
+                0,
+                2
+            ),
+            charge_1: this.createAnimation(
+                2,
+                9,
+                8,
+                7,
+                1,
+                7,
+                47,
+                46,
+                1,
+                0,
+                2,
             )
         };
+        this.#shootingAnimations = {
+            idle: this.createAnimation(
+                1,
+                341,
+                132,
+                1,
+                1,
+                1,
+                49,
+                47,
+                0,
+                0,
+                1
+            ),
+            startJump: this.createAnimation(
+                1,
+                27,
+                297,
+                7,
+                1,
+                7,
+                40,
+                58,
+                1,
+                0,
+                3,
+                undefined,
+                () => {
+                    this.transitionTo(PlayerMoveState.falling);
+                }
+            ),
+            falling: this.createAnimation(
+                1,
+                359,
+                322,
+                1,
+                1,
+                1,
+                38,
+                57,
+                0,
+                0,
+                1,
+                undefined,
+                undefined,
+                (x, y) => {
+                    return [
+                        {
+                            x,
+                            y,
+                            width: 29,
+                            height: 57
+                        }
+                    ];
+                }
+            ),
+            land: this.createAnimation(
+                1,
+                400,
+                322,
+                3,
+                1,
+                3,
+                44,
+                55,
+                1,
+                0,
+                3,
+                undefined,
+                () => {
+                    if (this.states.get(PlayerDisplacementState) === PlayerDisplacementState.idle) {
+                        this.transitionTo(PlayerMoveState.idle);
+                    } else {
+                        this.transitionTo(PlayerMoveState.startRunning);
+                    }
+                }
+            ),
+            startRun: this.createAnimation(
+                1,
+                14,
+                572,
+                3,
+                1,
+                3,
+                45,
+                49,
+                1,
+                0,
+                3,
+                undefined,
+                () => {
+                    this.currentAnimation = this.animations.runLoop_0;
+                }
+            ),
+            runLoop_0: this.createAnimation(
+                1,
+                156,
+                569,
+                8,
+                1,
+                8,
+                53,
+                51,
+                1,
+                0,
+                3,
+                undefined,
+                () => {
+                    this.currentAnimation = this.animations.runLoop_1;
+                }
+            ),
+            runLoop_1: this.createAnimation(
+                1,
+                14,
+                728,
+                5,
+                 1,
+                5,
+                56,
+                50,
+                1,
+                0,
+                3,
+                undefined,
+                () => {
+                    this.currentAnimation = this.animations.runLoop_0;
+                }
+            ),
+            dashStart: this.createAnimation(
+                1,
+                14,
+                896,
+                3,
+                1,
+                3,
+                62,
+                44,
+                1,
+                0,
+                2,
+                undefined,
+                () => {
+                    this.states.set(PlayerMoveState, PlayerMoveState.dashing);
+                    this.currentAnimation = this.animations.dash;
+                }
+            ),
+            dash: this.createAnimation(
+                1,
+                212,
+                880,
+                1,
+                1,
+                1,
+                66,
+                34,
+                0,
+                0,
+                1,
+                undefined,
+                undefined,
+                (x, y) => {
+                    return [
+                        {
+                            x,
+                            y,
+                            width: 55,
+                            height: 30
+                        }
+                    ];
+                }
+            ),
+            dashEnd: this.createAnimation(
+                1,
+                334,
+                890,
+                4,
+                1,
+                4,
+                48,
+                46,
+                1,
+                0,
+                3,
+                undefined,
+                () => {
+                    this.setIdle();
+                }
+            ),
+            hoverIdle: this.createAnimation(
+                1,
+                265,
+                1064,
+                3,
+                1,
+                3,
+                39,
+                64,
+                1,
+                0,
+                3
+            ),
+            hoverForward: this.createAnimation(
+                1,
+                15,
+                1266,
+                6,
+                1,
+                6,
+                55,
+                56,
+                1,
+                0,
+                3,
+            ),
+            hoverBackward: this.createAnimation(
+                1,
+                15,
+                1070,
+                5,
+                1,
+                5,
+                34,
+                61,
+                1,
+                0,
+                3
+            )
+        };
+        this.#shootMap = {};
+        this.#nonShootingMap = {};
+        // Link animations.
+        this.link();
 
         this.states.set(PlayerVerticalDisplacementState, PlayerVerticalDisplacementState.idle);
         this.states.set(PlayerDisplacementState, PlayerDisplacementState.idle);
@@ -554,6 +836,22 @@ class Player extends Sprite {
         this.states.set(PlayerSpawnState, PlayerSpawnState.beaming);
         this.states.set(PlayerControlsState, PlayerControlsState.inactive);
         this.currentAnimation = this.#animations.spawn_0;
+    }
+
+    /**
+     * Links the shooting and normal animations.
+     */
+    link() {
+        for (let k of Object.keys(this.#animations)) {
+            if (k in this.#shootingAnimations) {
+                const nid = this.#animations[k],
+                    sid = this.#shootingAnimations[k];
+
+                this.linkAnimations(sid, nid);
+                this.#shootMap[nid] = sid;
+                this.#nonShootingMap[sid] = nid;
+            }
+        }
     }
 
     /**
@@ -661,6 +959,32 @@ class Player extends Sprite {
         }
     }
 
+    /**
+     * @returns {number|undefined} current animation.
+     */
+    get currentAnimation() {
+        return super.currentAnimation;
+    }
+
+    /**
+     * @param id {number} new current animations.
+     */
+    set currentAnimation(id) {
+        if (this.states.get(PlayerAttackState) === PlayerAttackState.charging) {
+            if (id in this.#shootMap) {
+                super.currentAnimation = this.#shootMap[id];
+            } else {
+                super.currentAnimation = id;
+            }
+        } else {
+            if (id in this.#nonShootingMap) {
+                super.currentAnimation = this.#nonShootingMap[id];
+            } else {
+                super.currentAnimation = id;
+            }
+        }
+    }
+
     toHover() {
         this.states.set(PlayerMoveState, PlayerMoveState.hoverIdle);
         this.currentAnimation = this.animations.hoverIdle;
@@ -739,12 +1063,18 @@ class Player extends Sprite {
      */
     dash() {
         if (this.dashDuration <= 0) {
+            this.y -= 19 * this.scale;
             this.transitionTo(PlayerMoveState.stopDashing);
             this.dashDuration = this.desc.initDashDuration;
             return;
         }
 
         if (this.currentAnimation !== this.animations.damaged) {
+            // First dash
+            if (this.dashDuration === this.desc.initDashDuration) {
+                this.y += 19 * this.scale;
+            }
+
             this.x += this.flip ? -this.dashSpeed : this.dashSpeed;
             this.dashDuration--;
         }
@@ -802,6 +1132,13 @@ class Player extends Sprite {
      */
     get hoverTimer() {
         return this.desc.hoverTimer;
+    }
+
+    /**
+     * @returns {number} height of X.
+     */
+    get height() {
+        return 49 * this.scale;
     }
 
     /**
@@ -917,7 +1254,19 @@ class Player extends Sprite {
      * Charges the shot.
      */
     charge() {
-        this.states.set(PlayerAttackState, PlayerAttackState.charging);
+        if (this.states.get(PlayerAttackState) !== PlayerAttackState.charging) {
+            this.states.set(PlayerAttackState, PlayerAttackState.charging);
+
+            // To switch the animation to shooting
+            this.currentAnimation = this.#shootMap[this.currentAnimation];
+        }
+    }
+
+    /**
+     * @returns {number} actual shot power.
+     */
+    get shotPower() {
+        return Math.ceil(this.power / 12);
     }
 
     /**
@@ -926,18 +1275,21 @@ class Player extends Sprite {
     shoot() {
         this.states.set(PlayerAttackState, PlayerAttackState.none);
 
+        // To switch the animation to non shooting
+        this.currentAnimation = this.currentAnimation;
+
         this.game.insertSprite(
             new BusterShot(
-                this.rx,
-                this.y + this.height / 2,
+                this.flip ? this.x : (this.rx - 30),
+                this.y + this.height / 2 - 22,
                 this.flip,
-                Math.min(3, Math.ceil(this.power / 12)),
+                Math.min(4, this.shotPower),
                 [],
                 this.scale
             )
         );
 
-        this.power = 1;
+        this.power = 0;
     }
 
     /**
@@ -1061,11 +1413,49 @@ class Player extends Sprite {
     }
 
     /**
+     * Moves the current animation.
+     */
+    moveCurrentAnimation() {
+        if (this.states.get(PlayerAttackState) === PlayerAttackState.charging && this.shotPower >= 1.5) {
+            this.moveAnimation(
+                this.animations.charge_0
+            );
+            this.moveAnimation(
+                this.animations.charge_1
+            );
+        } else {
+            this.resetAnimation(
+                this.animations.charge_0
+            );
+            this.resetAnimation(
+                this.animations.charge_1
+            );
+        }
+
+        super.moveCurrentAnimation();
+    }
+
+    /**
      * Draws the rectangle in the 2d context.
      *
      * @param context {CanvasRenderingContext2D} 2d canvas element context.
      */
     draw(context) {
+        if (this.states.get(PlayerAttackState) === PlayerAttackState.charging && this.shotPower >= 1.5) {
+            this.drawAnimation(
+                this.animations.charge_0,
+                this.x - (this.flip ? 10 : 25) * this.scale,
+                this.y - 15 * this.scale,
+                context
+            );
+            this.drawAnimation(
+                this.animations.charge_1,
+                this.x - (this.flip ? -1 : 1) * 5 * this.scale,
+                this.y + 2 * this.scale,
+                context
+            );
+        }
+
         this.drawCurrentAnimation(this.x, this.y, context);
     }
 
@@ -1106,7 +1496,7 @@ class Player extends Sprite {
      * @returns {string[]} sprite sheets.
      */
     static get sheets() {
-        return ['x_0.png', 'x_1.png'];
+        return ['x_0.png', 'x_1.png', 'x_2.png', 'x_3.gif'];
     }
 
     /**

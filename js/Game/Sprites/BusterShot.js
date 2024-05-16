@@ -92,7 +92,7 @@ class BusterShot extends Sprite {
                     height: 18
                 }
             ]);
-        } else {
+        } else if (power < 4) {
             this.currentAnimation = this.createAnimation(
                 0,
                 310,
@@ -115,8 +115,32 @@ class BusterShot extends Sprite {
                     height: 30
                 }
             ]);
+        } else {
+            this.currentAnimation = this.createAnimation(
+                1,
+                503,
+                7,
+                4,
+                1,
+                4,
+                71,
+                58,
+                1,
+                0,
+                3
+            );
+
+            this.hitBox = this.convertHitBoxes([
+                {
+                    x,
+                    y,
+                    width: 71,
+                    height: 58
+                }
+            ]);
         }
 
+        this.y -= this.height / 2;
         this.flip = left;
     }
 
@@ -140,7 +164,7 @@ class BusterShot extends Sprite {
      * @returns {string[]} sprite sheets.
      */
     static get sheets() {
-        return ['x_3.gif'];
+        return ['x_3.gif', 'x_2.png'];
     }
 
     /**
