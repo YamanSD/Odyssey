@@ -891,6 +891,18 @@ class Player extends Sprite {
         this.#nonShootingMap = {};
         // Link animations.
         this.link();
+        this.playSound(
+            this.getSound(
+                0,
+            ),
+            true
+        );
+        this.playSound(
+            this.getSound(
+                5
+            ),
+            true
+        );
 
         this.states.set(PlayerVerticalDisplacementState, PlayerVerticalDisplacementState.idle);
         this.states.set(PlayerDisplacementState, PlayerDisplacementState.idle);
@@ -1341,6 +1353,13 @@ class Player extends Sprite {
      */
     charge() {
         if (this.states.get(PlayerAttackState) !== PlayerAttackState.charging) {
+            this.playSound(
+                this.getSound(
+                    3
+                ),
+                true
+            );
+
             this.states.set(PlayerAttackState, PlayerAttackState.charging);
 
             // To switch the animation to shooting
@@ -1359,6 +1378,14 @@ class Player extends Sprite {
      * Fires the shot.
      */
     shoot() {
+        this.playSound(
+            this.getSound(
+                4
+            ),
+            true
+        );
+        this.resetSound(3);
+
         this.states.set(PlayerAttackState, PlayerAttackState.none);
 
         // To switch the animation to non shooting
@@ -1644,7 +1671,10 @@ class Player extends Sprite {
      * @returns {string[]} sound files.
      */
     static get sounds() {
-        return [];
+        return [
+            'levels.mp3', 'sigma.mp3', 'iris.mp3',
+            'charge.wav', 'shoot.wav', 'x.wav'
+        ];
     }
 
     /**

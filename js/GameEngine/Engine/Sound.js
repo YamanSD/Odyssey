@@ -80,13 +80,10 @@ class Sound {
             console.warn(`Late loading ${name}`);
         }
 
+        this.#loading++;
         // Load the sound
         this.#loaded[name] = new Audio(this.source(name));
-
-        this.#loading++;
-        this.#loaded[name].onload = () => {
-            this.#loading--;
-        };
+        this.#loading--;
 
         return this.#loaded[name];
     }

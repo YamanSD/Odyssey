@@ -158,6 +158,14 @@ class Iris extends Sprite {
                                 d.dialog = "IRIS NO WAIT!";
                                 sentence++;
                             } else {
+                                this.player.resetSound(0);
+                                this.player.playSound(
+                                    this.player.getSound(
+                                        2,
+                                    ),
+                                    true
+                                );
+
                                 const hpB = new HealthBar(
                                     HealthBarType.iris,
                                     this,

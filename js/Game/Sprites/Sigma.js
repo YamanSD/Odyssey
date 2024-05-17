@@ -128,6 +128,14 @@ class Sigma extends Sprite {
                                 d.dialog = "This is your end X. \n Prepare to DIE!";
                                 sentence++;
                             } else {
+                                this.player.resetSound(0);
+                                this.player.playSound(
+                                    this.player.getSound(
+                                        1,
+                                    ),
+                                    true
+                                );
+
                                 const hpB = new HealthBar(
                                     HealthBarType.sigma,
                                     this,

@@ -985,7 +985,7 @@ class Sprite {
     }
 
     /**
-     * @param index {string} index of the sound file in the sounds array.
+     * @param index {number} index of the sound file in the sounds array.
      * @param reload {boolean} true to reload sound file.
      * @returns {HTMLAudioElement} Audio instance for use.
      */
@@ -1001,6 +1001,14 @@ class Sprite {
      */
     playSound(audio, noOverlap) {
         Sound.playAudio(audio, noOverlap);
+    }
+
+    /**
+     * @param index {number} index of the sound to reset. Must be non overlapping.
+     */
+    resetSound(index) {
+        this.getSound(index).pause();
+        this.getSound(index).currentTime = 0;
     }
 
     /**

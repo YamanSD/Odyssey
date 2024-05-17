@@ -58,6 +58,12 @@ class MainMenu extends Sprite {
                             case MainMenuState.waitingForClick:
                                 switch (e.key) {
                                     case 'Enter':
+                                        this.playSound(
+                                            this.getSound(
+                                                0,
+                                            )
+                                        );
+
                                         this.#foregroundAnimation = this.animations.onButtons;
                                         this.states.set(MainMenuState, MainMenuState.onStart);
                                         break;
@@ -65,6 +71,13 @@ class MainMenu extends Sprite {
                                 break;
                             case MainMenuState.onStart:
                             case MainMenuState.onOptions:
+                                this.playSound(
+                                    this.getSound(
+                                        0,
+                                    )
+                                );
+
+
                                 switch (e.key) {
                                     case 'Enter':
                                         if (keyHandlerId !== undefined) {
@@ -282,7 +295,7 @@ class MainMenu extends Sprite {
      * @returns {string[]} sound files.
      */
     static get sounds() {
-        return [];
+        return ['start.wav'];
     }
 
     /**
