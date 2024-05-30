@@ -1549,14 +1549,14 @@ class Player extends Sprite {
         if (l.type === this.level.type) {
             const hpB = new HealthBar(
                 HealthBarType.x,
-                p,
+                this,
                 l.scale
             );
             l.insertSprites(this, hpB);
         } else {
             game.removeAllEventListeners();
 
-            this.game.insertSprite(l);
+            game.insertSprite(l);
 
             const p = new Player(
                 100 * l.scale,
@@ -1566,14 +1566,15 @@ class Player extends Sprite {
                 true
             );
 
-            Sprite.player = p;
             const hpB = new HealthBar(
                 HealthBarType.x,
                 p,
                 l.scale
             );
-
             l.insertSprites(p, hpB);
+
+            Sprite.player = p;
+
             l.game.follow(p);
             l.load();
             this.level.offload();

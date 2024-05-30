@@ -854,11 +854,7 @@ class Game {
      * Erases all key listeners.
      */
     removeAllEventListeners() {
-        for (const event of Object.keys(this.#events)) {
-            for (const id of Object.keys(this.#events[event])) {
-                this.removeEventListener(event, Number(id));
-            }
-        }
+        this.#events = {};
     }
 
     /**

@@ -828,16 +828,9 @@ class Sprite {
      * @param id {number} new ID of the next animation to play.
      */
     set currentAnimation(id) {
-        this.setCurrentAnimation(id, false);
-    }
-
-    /**
-     * Resets the animation if the same.
-     *
-     * @param id {number} new ID of the next animation to play.
-     */
-    set currentAnimationReset(id) {
-        this.setCurrentAnimation(id, true);
+        if (id in this.#animations) {
+            this.setCurrentAnimation(id, false);
+        }
     }
 
     /**

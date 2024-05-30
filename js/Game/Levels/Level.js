@@ -158,7 +158,6 @@ class Level extends Sprite {
             this.enemies.delete(sprite);
         }
 
-        sprite.level = undefined;
         this.game.removeSprite(sprite);
         this.sprites.delete(sprite);
     }
