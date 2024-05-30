@@ -2,9 +2,9 @@
 
 ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
 
-![ex0](,/screenshots/ex0.png)
-
 An unfinished 2D game engine built from scratch strictly using vanilla JS. Currnetly NOT maintained, will later be optimized and repurposed for game I have in mind. 
+
+![ex0](/screenshots/ex0.png)
 
 # Usage
 
@@ -14,6 +14,13 @@ To use it simply open the `index.html` file in any browser of your choice.
 
 # Screenshots
 
+![ex0](/screenshots/ex0.png)
+
+![ex1](/screenshots/ex1.png)
+
+![ex3](/screenshots/ex3.png)
+
+![ex2](/screenshots/ex2.png)
 
 # License 
 
