@@ -2,6 +2,8 @@
 
 ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
 
+![ex0](,/screenshots/ex0.png)
+
 An unfinished 2D game engine built from scratch strictly using vanilla JS. Currnetly NOT maintained, will later be optimized and repurposed for game I have in mind. 
 
 # Usage
@@ -9,6 +11,9 @@ An unfinished 2D game engine built from scratch strictly using vanilla JS. Currn
 To demonstrate some of the features of the engine, I created a tiny woeful remake of Mega Man X4.
 
 To use it simply open the `index.html` file in any browser of your choice.
+
+# Screenshots
+
 
 # License 
 
